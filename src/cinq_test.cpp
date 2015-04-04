@@ -2,43 +2,67 @@
 
 int main(int argc, char **argv)
 {
-    // TODO: Automate the verification
-    std::vector<int> my_vector { 1, 4, 6, 3, -6, 0, -3, 2 };
-    auto result1 = cinq::from(my_vector)
-                   .where([](int x) { return x > 0; })
-                   .to_vector();
-    
-    std::cout << "[ ";
-    for (auto x : result1)
+    auto tests = make_tests();
+    int failed = 0;
+    for (test t : tests)
     {
-        std::cout << x << " ";
+        if (t.func())
+        {
+            cout << "[    ] ";
+        }
+        else
+        {
+            cout << "[fail] ";
+            failed++;
+        }
+        cout << t.name << "\n";
     }
-    std::cout << "]\n";
     
-    std::list<int> my_list(my_vector.cbegin(), my_vector.cend());
-    auto result2 = cinq::from(my_list)
-                   .where([](int x) { return x > 0; })
-                   .to_vector();
-    
-    std::cout << "[ ";
-    for (auto x : result2)
+    if (failed == 0)
     {
-        std::cout << x << " ";
+        printf("%lu tests passed :-)\n", tests.size());
     }
-    std::cout << "]\n";
-
-    std::array<int,4> my_array = { 1,2,3,-4 };
-
-    auto result3 = cinq::from(my_array)
-                         .where([](int x){ return x > 0;})
-                         .to_vector();
-
-    std::cout << "[ ";
-    for (auto x : result3)
+    else
     {
-        std::cout << x << " ";
+        printf("Failed %d / %lu tests\n", failed, tests.size());
     }
-    std::cout << "]\n";
     
-    return 0;
+    return failed;
+}
+
+vector<test> make_tests()
+{
+    vector<test> tests;
+    
+    tests.push_back(test("where() std::vector", []
+    {
+        std::vector<int> my_vector { 1, 4, 6, 3, -6, 0, -3, 2 };
+        auto result = cinq::from(my_vector)
+                      .where([](int x) { return x > 0; })
+                      .to_vector();
+        std::vector<int> answer { 1, 4, 6, 3, 2 };
+        return (result == answer);
+    }));
+    
+    tests.push_back(test("where() std::list", []
+    {
+        std::list<int> my_list { 1, 4, 6, 3, -6, 0, -3, 2 };
+        auto result = cinq::from(my_list)
+                      .where([](int x) { return x > 0; })
+                      .to_vector();
+        std::vector<int> answer { 1, 4, 6, 3, 2 };
+        return (result == answer);
+    }));
+    
+    tests.push_back(test("where() std::array", []
+    {
+        std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 };
+        auto result = cinq::from(my_array)
+                      .where([](int x){ return x > 0;})
+                      .to_vector();
+        std::vector<int> answer { 1, 4, 6, 3, 2 };
+        return (result == answer);
+    }));
+    
+    return tests;
 }
