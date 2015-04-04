@@ -76,6 +76,17 @@ namespace cinq
             return count;
 
         }
+        
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        bool all(TFunc predicate)
+        {
+            for(auto iter=begin; iter !=end; ++iter){
+                if(!predicate(*iter)) return false;
+            }
+
+            return true;
+        }
 
         vector<TElement> to_vector()
         {
