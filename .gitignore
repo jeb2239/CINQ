@@ -1,0 +1,4 @@
+*.o
+cinq_test
+
+*.DS_Store
