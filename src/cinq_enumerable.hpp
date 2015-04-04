@@ -61,7 +61,22 @@ namespace cinq
             
             return *this;
         }
-        
+
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        int count(TFunc predicate)
+        {
+
+            int count=0;
+            for(auto iter=begin; iter != end; ++iter) 
+              {
+               // printf("%u\n", *iter );
+                if(predicate(*iter)) ++count;
+            }
+            return count;
+
+        }
+
         vector<TElement> to_vector()
         {
             return data;
@@ -75,7 +90,7 @@ namespace cinq
         void ensure_data()
         {
             if (is_data_copied) return;
-        
+            
             vector<TElement> copy;
             for (auto iter = begin; iter != end; ++iter) copy.push_back(*iter);
             
