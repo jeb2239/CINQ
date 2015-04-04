@@ -11,28 +11,66 @@ namespace cinq
     using namespace std;
     using namespace origin;
     
-    template <typename TIter, typename TElement = typename iterator_traits<TIter>::value_type>
+    template <typename TSource, typename TElement = typename TSource::value_type, typename TIter = typename TSource::const_iterator>
     class enumerable
     {
     public:
-        template <typename TSource>
+        //template <typename TSource>
         //requires Container<TSource>()
-        enumerable(TSource& source);
+        enumerable(TSource& source)
+        {
+            is_data_copied = false;
+            begin = source.cbegin();
+            end = source.cend();
+        }
         
         template <typename TFunc>
-        requires Predicate<TFunc>()
-        enumerable<TIter> where(TFunc& f);
+        requires Predicate<TFunc, TElement>()
+        enumerable<TSource> where(TFunc predicate)
+        {
+            ensure_data();
+            
+            for (size_t i = 0; i < data.size(); i++)
+            {
+                if (!predicate(data[i]))
+                {
+                    data.erase(data.cbegin() + i);
+                    i--;
+                }
+            }
+            
+            return *this;
+        }
+        
+        vector<TElement> to_vector()
+        {
+            return data;
+        }
         
     private:
         TIter begin, end;
         vector<TElement> data;
+        bool is_data_copied;
         
-        void ensure_data();
+        void ensure_data()
+        {
+            if (is_data_copied) return;
+        
+            vector<TElement> copy;
+            for (auto iter = begin; iter != end; ++iter) copy.push_back(*iter);
+            
+            data = copy;
+        }
     };
     
     template <typename T>
     //requires Container<T>()
-    enumerable<T> from(T& source);
+    auto from(T& source)
+    {
+        //enumerable<decltype(source.cbegin())> e(source);
+        enumerable<T> e(source);
+        return e;
+    }
 }
 
 #endif
