@@ -27,17 +27,17 @@ int main(int argc, char **argv)
     }
     std::cout << "]\n";
 
-	std::array<int,4> my_array ={1,2,3,-4};
+    std::array<int,4> my_array = { 1,2,3,-4 };
 
-	auto result3 =cinq::from(my_array)
-						.where([](int x){ return x > 0;})
-						.to_vector();
+    auto result3 = cinq::from(my_array)
+                         .where([](int x){ return x > 0;})
+                         .to_vector();
 
-	std::cout << "[ ";
-	for( auto x : result3)
-	{
-		std::cout<< x <<" ";
-	}
+    std::cout << "[ ";
+    for (auto x : result3)
+    {
+        std::cout << x << " ";
+    }
     std::cout << "]\n";
     
     return 0;
