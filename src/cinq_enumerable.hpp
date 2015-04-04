@@ -42,6 +42,26 @@ namespace cinq
             return *this;
         }
         
+        template <typename TFunc>
+        requires Predicate<TFunc, TElement, size_t>()
+        enumerable<TSource> where(TFunc predicate)
+        {
+            ensure_data();
+            
+            size_t original_index = 0;
+            for (size_t i = 0; i < data.size(); i++)
+            {
+                if (!predicate(data[i], original_index))
+                {
+                    data.erase(data.cbegin() + i);
+                    i--;
+                }
+                original_index++;
+            }
+            
+            return *this;
+        }
+        
         vector<TElement> to_vector()
         {
             return data;

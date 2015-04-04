@@ -64,5 +64,36 @@ vector<test> make_tests()
         return (result == answer);
     }));
     
+    tests.push_back(test("where() with index std::vector", []
+    {
+        std::vector<int> my_vector { 0, 1, 2, 3, 4 };
+        auto result = cinq::from(my_vector)
+                      .where([](int x, int index) { return index <= 2; })
+                      .to_vector();
+        std::vector<int> answer { 0, 1, 2 };
+        return (result == answer);
+    }));
+    
+    
+    tests.push_back(test("where() with index std::list", []
+    {
+        std::list<int> my_list { 0, 1, 2, 3, 4 };
+        auto result = cinq::from(my_list)
+                      .where([](int x, int index) { return index <= 2; })
+                      .to_vector();
+        std::vector<int> answer { 0, 1, 2 };
+        return (result == answer);
+    }));
+    
+    tests.push_back(test("where() with index std::array", []
+    {
+        std::array<int, 8> my_array = { 0, 1, 2, 3, 4 };
+        auto result = cinq::from(my_array)
+                      .where([](int x, int index) { return index <= 2; })
+                      .to_vector();
+        std::vector<int> answer { 0, 1, 2 };
+        return (result == answer);
+    }));
+    
     return tests;
 }
