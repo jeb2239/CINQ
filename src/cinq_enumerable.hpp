@@ -76,7 +76,16 @@ namespace cinq
             return count;
 
         }
-        
+        //over load which takes no arguments
+        //if we do some type introspection this one could be faster
+        int count()
+        {
+            int count=0;
+            for(auto iter=begin; iter != end; ++iter) ++count;
+
+            return count;
+        }
+
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
@@ -91,6 +100,20 @@ namespace cinq
         vector<TElement> to_vector()
         {
             return data;
+        }
+
+        //using Equality_comparable concept
+        //weird syntax but it works
+        template <TElement>
+        requires Equality_comparable<TElement>()
+        bool contains(TElement elem)
+        {
+            for(auto iter=begin; iter !=end; ++iter)
+            {
+                if(elem == *iter) return true;
+            }
+
+            return false;
         }
         
     private:

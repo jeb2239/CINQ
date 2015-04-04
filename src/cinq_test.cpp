@@ -192,8 +192,45 @@ vector<test> make_tests()
         return (passed);
     }));
 
-
     
+     tests.push_back(test("count(void) std::array", []
+    {
+        std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
+                                                        // the reponse from count
+        auto result = cinq::from(my_array)
+                      .count();
+
+        std::array<int, 9> my_array2 = { 0, 1, 2, 3, 4 }; //note the difference
+        auto result2 = cinq::from(my_array2)
+                      .count();
+                      
+        int answer =5, answer2=9;
+        return ((result == answer)&&(result2==answer2));
+    }));
+
+    tests.push_back(test("count(void) std::vector", []
+    {
+        std::vector<int> my_vector = { 0, 1, 2, 3, 4 }; 
+        auto result = cinq::from(my_vector)
+                      .count();
+
+        
+                      
+        int answer =5;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("count(void) std::list", []
+    {
+        std::list<int> my_list = { 0, 1, 2, 3, 4 }; 
+        auto result = cinq::from(my_list)
+                      .count();
+
+        
+                      
+        int answer =5;
+        return (result == answer);
+    }));
 
 
 
