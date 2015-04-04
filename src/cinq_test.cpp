@@ -1,5 +1,9 @@
 #include "cinq_test.hpp"
 
+
+
+
+
 int main(int argc, char **argv)
 {
     auto tests = make_tests();
@@ -95,5 +99,49 @@ vector<test> make_tests()
         return (result == answer);
     }));
     
+    tests.push_back(test("count() std::array", []
+    {
+        std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
+        												// the reponse from count
+        auto result = cinq::from(my_array)
+                      .count([](int x) { return x <= 2; });
+
+        
+                      
+        int answer =3;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("count() std::vector", []
+    {
+        std::vector<int> my_vector = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
+        												// the reponse from count
+        auto result = cinq::from(my_vector)
+                      .count([](int x) { return x <= 2; });
+
+        
+                      
+        int answer =3;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("count() std::list", []
+    {
+        std::list<int> my_list = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
+        												// the reponse from count
+        auto result = cinq::from(my_list)
+                      .count([](int x) { return x <= 2; });
+
+        
+                      
+        int answer =3;
+        return (result == answer);
+    }));
+
+    
+
+
+
+
     return tests;
 }

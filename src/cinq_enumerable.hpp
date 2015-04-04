@@ -94,6 +94,7 @@ namespace cinq
             vector<TElement> copy;
             for (auto iter = begin; iter != end; ++iter) copy.push_back(*iter);
             
+            is_data_copied=true; // should be set to true after copy right
             data = copy;
         }
     };
