@@ -38,20 +38,7 @@ int main(int argc, char **argv)
 	{
 		std::cout<< x <<" ";
 	}
-
-	std::cout <<"]\n";
-	
-	int my_carray[4] = {1,2,3,-4};
-
-	auto result4 = cinq::from(my_carray)
-							.where([](int x){return x > 0;})
-							.to_vector();
-	std::cout << "[ ";
-	for(auto x : result4){
-		std::cout<< x <<" ";
-	}
-	std::cout<<"] ";
-
+    std::cout << "]\n";
     
     return 0;
 }
