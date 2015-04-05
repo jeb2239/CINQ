@@ -232,7 +232,39 @@ vector<test> make_tests()
         return (result == answer);
     }));
 
+    tests.push_back(test("take(int) std::vector",[]
+    {
+        std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+                            .take(3);
 
+        std::vector<int> answer = {0,1,2};
+
+        return (result==answer);
+
+
+    }));
+
+    tests.push_back(test("take(int) std::list",[]{
+
+        std::list<int> my_list = { 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_list)
+                            .take(3);
+        std::vector<int> answer = {0,1,2};
+
+        return (result==answer);
+
+    }));
+
+
+
+
+
+
+
+
+
+        
 
 
 

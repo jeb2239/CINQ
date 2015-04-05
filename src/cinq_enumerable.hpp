@@ -97,6 +97,19 @@ namespace cinq
             return true;
         }
 
+    
+
+        auto take(int index){
+            ensure_data();
+            for(size_t i=index; i<(size_t)index-data.size();i++){
+                data.pop_back();
+            }
+            return data;
+
+        }
+
+
+
         vector<TElement> to_vector()
         {
             return data;
@@ -141,6 +154,8 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
+
+
 }
 
 #endif
