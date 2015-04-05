@@ -1,6 +1,9 @@
 #include "cinq_test.hpp"
 
 
+#define START_TEST(MSG) tests.push_back(test(MSG, []{
+
+#define END_TEST }));
 
 
 
@@ -110,7 +113,7 @@ vector<test> make_tests()
         auto result2 = cinq::from(my_array2)
                       .count([](int x) { return x <= 2; });
                       
-        int answer =3, answer2=7;
+        size_t answer =3, answer2=7;
         return ((result == answer)&&(result2==answer2));
     }));
 
@@ -122,7 +125,7 @@ vector<test> make_tests()
 
         
                       
-        int answer =3;
+        size_t answer =3;
         return (result == answer);
     }));
 
@@ -134,7 +137,7 @@ vector<test> make_tests()
 
         
                       
-        int answer =3;
+        size_t answer =3;
         return (result == answer);
     }));
 
@@ -174,7 +177,7 @@ vector<test> make_tests()
         return (passed);
     }));
 
-    tests.push_back(test("all() std::list", []
+   tests.push_back(test("all() std::list", []
     {
         std::list<int> my_list = { 0, 1, 2, 3, 4 };
         bool result1 = cinq::from(my_list)
@@ -204,7 +207,7 @@ vector<test> make_tests()
         auto result2 = cinq::from(my_array2)
                       .count();
                       
-        int answer =5, answer2=9;
+        size_t answer =5, answer2=9;
         return ((result == answer)&&(result2==answer2));
     }));
 
@@ -216,7 +219,7 @@ vector<test> make_tests()
 
         
                       
-        int answer =5;
+        size_t answer =5;
         return (result == answer);
     }));
 
@@ -228,33 +231,29 @@ vector<test> make_tests()
 
         
                       
-        int answer =5;
+        size_t answer =5;
         return (result == answer);
     }));
 
-    tests.push_back(test("take(int) std::vector",[]
-    {
+   START_TEST("take(int) std::vector")
+    
         std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
         auto result = cinq::from(my_vector)
-                            .take(3);
+                            .take(3).to_vector();
 
         std::vector<int> answer = {0,1,2};
 
         return (result==answer);
 
 
-    }));
+    END_TEST
+    
 
-    tests.push_back(test("take(int) std::list",[]{
+   
 
-        std::list<int> my_list = { 0, 1, 2, 3, 4};
-        auto result = cinq::from(my_list)
-                            .take(3);
-        std::vector<int> answer = {0,1,2};
 
-        return (result==answer);
 
-    }));
+
 
 
 

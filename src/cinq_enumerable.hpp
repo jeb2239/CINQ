@@ -64,34 +64,36 @@ namespace cinq
 
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
-        int count(TFunc predicate)
+        size_t count(TFunc predicate)
         {
-
+            ensure_data();
             int count=0;
-            for(auto iter=begin; iter != end; ++iter) 
+
+            for(TElement i : data) 
               {
                // printf("%u\n", *iter );
-                if(predicate(*iter)) ++count;
+                if(predicate(i)) ++count;
             }
             return count;
 
         }
         //over load which takes no arguments
         //if we do some type introspection this one could be faster
-        int count()
-        {
-            int count=0;
-            for(auto iter=begin; iter != end; ++iter) ++count;
 
-            return count;
+        size_t count()
+        {   
+            ensure_data();
+
+            return data.size();
         }
 
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
         {
-            for(auto iter=begin; iter !=end; ++iter){
-                if(!predicate(*iter)) return false;
+            ensure_data();
+            for(TElement i : data){
+                if(!predicate(i)) return false;
             }
 
             return true;
@@ -99,12 +101,16 @@ namespace cinq
 
     
 
-        auto take(int index){
+        enumerable<TSource> take(int index){
             ensure_data();
-            for(size_t i=index; i<(size_t)index-data.size();i++){
+            //check if the container is empty
+            size_t npop =data.size()-(size_t)index;
+            for(size_t i=0; i < npop; ++i){
+
                 data.pop_back();
+               
             }
-            return data;
+            return *this;
 
         }
 
@@ -121,9 +127,11 @@ namespace cinq
         requires Equality_comparable<TElement>()
         bool contains(TElement elem)
         {
-            for(auto iter=begin; iter !=end; ++iter)
-            {
-                if(elem == *iter) return true;
+            ensure_data();
+
+            for(TElement i : data){
+
+                if(elem==i) return true;
             }
 
             return false;
@@ -154,6 +162,7 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
+    
 
 
 }
