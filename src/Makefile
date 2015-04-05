@@ -18,7 +18,7 @@ default: $(EXE)
 
 $(EXE): $(OBJ)
 
-$(OBJ): cinq_enumerable.hpp cinq_test.hpp all_concepts.hpp
+$(OBJ): cinq_enumerable.hpp cinq_test.hpp all_concepts.hpp test_code.cpp
 
 .PHONY: clean
 clean:

@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <string>
+#include <deque>
 
 #include "cinq_enumerable.hpp"
 #include "all_concepts.hpp"
