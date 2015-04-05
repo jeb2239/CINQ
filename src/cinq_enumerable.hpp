@@ -120,16 +120,16 @@ namespace cinq
         {
             return data;
         }
-
+        //some weird shit is going on here with std::string
         //using Equality_comparable concept
         //weird syntax but it works
-        template <TElement>
-        requires Equality_comparable<TElement>()
-        bool contains(TElement elem)
+        template <TElement&>
+        requires Equality_comparable<TElement&>()
+        bool contains(TElement& elem)
         {
             ensure_data();
 
-            for(TElement i : data){
+            for(TElement& i : data){
 
                 if(elem==i) return true;
             }

@@ -235,7 +235,7 @@ vector<test> make_tests()
         return (result == answer);
     }));
 
-   START_TEST("take(int) std::vector")
+    START_TEST("take(int) std::vector")
     
         std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
         auto result = cinq::from(my_vector)
@@ -247,25 +247,30 @@ vector<test> make_tests()
 
 
     END_TEST
-    
+
+
+    START_TEST("take(int) std::list")
+
+        std::list<int> my_list = {0,1,2,3,4};
+        auto result = cinq::from(my_list)
+                            .take(3).to_vector();
+
+       std::vector<int> answer={0,1,2};
+
+       return (result==answer);
+
+    END_TEST
 
    
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
+    START_TEST("take(int) std::array")
+        std::array<int,5> my_array = {0,1,2,3,4};
+        auto result = cinq::from(my_array)
+                            .take(3).to_vector();
+        std::vector<int> answer={0,1,2};
+        return (result==answer);
+    END_TEST
+    
+    
+    #include "test_code.cpp"
     return tests;
 }
