@@ -130,6 +130,7 @@ namespace cinq
 
         vector<TElement> to_vector()
         {
+            ensure_data();
             return data;
         }
         //some weird shit is going on here with std::string
