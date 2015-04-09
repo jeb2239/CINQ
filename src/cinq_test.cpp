@@ -247,6 +247,33 @@ vector<test> make_tests()
 
 
     END_TEST
+    
+    START_TEST("take(int) std::vector ensure_data")
+        std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.take(3).to_vector();
+
+        std::vector<int> answer = {0,1,2};
+
+        return (result==answer);
+    END_TEST
+    
+    START_TEST("take(int) std::vector ensure_data, count > size")
+        std::vector<int> my_vector = { 0, 1 };
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.take(3).to_vector();
+
+        return (result == my_vector);
+    END_TEST
+    
+    START_TEST("take(int) std::vector count > size")
+        std::vector<int> my_vector = { 0, 1 };
+        auto result = cinq::from(my_vector).take(3).to_vector();
+
+        return (result == my_vector);
+    END_TEST
 
 
     START_TEST("take(int) std::list")

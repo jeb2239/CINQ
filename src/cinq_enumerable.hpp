@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 #include "all_concepts.hpp"
+#include "cinq_test.hpp"
 
 namespace cinq
 {
@@ -110,20 +112,34 @@ namespace cinq
 
             return true;
         }
-
-    
-
-        enumerable<TSource> take(int index){
-            ensure_data();
-            //check if the container is empty
-            size_t npop =data.size()-(size_t)index;
-            for(size_t i=0; i < npop; ++i){
-
-                data.pop_back();
-               
+        
+        enumerable<TSource> take(size_t count)
+        {
+            if (is_data_copied)
+            {
+                // TODO: resize() is O(N) operation. See if there is a better way.
+                if (data.size() > count) data.resize(count);
             }
+            else
+            {
+                auto iter = begin;
+                // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
+                while (count > 0 && end != iter)
+                {
+                    ++iter;
+                    count--;
+                }
+                end = iter;
+            }
+            
             return *this;
-
+        }
+        
+        // Try to catch a negative count before it gets casted into a huge size_t.
+        enumerable<TSource> take(int count)
+        {
+            if (count >= 0) return take((size_t)count);
+            else throw invalid_argument("cinq: take() was called with negative count");
         }
 
 
@@ -165,6 +181,9 @@ namespace cinq
             is_data_copied=true; // should be set to true after copy right
             data = copy;
         }
+    
+    // Allow automated tests to access private stuff.
+    friend class test;
     };
     
     template <typename T>
