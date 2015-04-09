@@ -95,5 +95,226 @@ vector<test> make_tests()
         return (result == answer);
     }));
     
+    tests.push_back(test("count() std::array", []
+    {
+        std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
+        												// the reponse from count
+        auto result = cinq::from(my_array)
+                      .count([](int x) { return x <= 2; });
+
+        std::array<int, 9> my_array2 = { 0, 1, 2, 3, 4 }; //note the difference
+        auto result2 = cinq::from(my_array2)
+                      .count([](int x) { return x <= 2; });
+                      
+        size_t answer =3, answer2=7;
+        return ((result == answer)&&(result2==answer2));
+    }));
+
+    tests.push_back(test("count() std::vector", []
+    {
+        std::vector<int> my_vector = { 0, 1, 2, 3, 4 }; 
+        auto result = cinq::from(my_vector)
+                      .count([](int x) { return x <= 2; });
+
+        
+                      
+        size_t answer =3;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("count() std::list", []
+    {
+        std::list<int> my_list = { 0, 1, 2, 3, 4 }; 
+        auto result = cinq::from(my_list)
+                      .count([](int x) { return x <= 2; });
+
+        
+                      
+        size_t answer =3;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("all() std::vector", []
+    {
+        std::vector<int> my_vector { 0, 1, 2, 3, 4 };
+        bool result1 = cinq::from(my_vector)
+                      .all([](int x) { return x <= 2; });
+                      
+        bool answer1=false;
+
+        bool result2 = cinq::from(my_vector)
+        				.all([](int x){return x<=1000;});
+        bool answer2=true;
+
+        bool passed = (result1==answer1)&&(result2==answer2);
+
+
+        return (passed);
+    }));
+
+    tests.push_back(test("all() std::array", []
+    {
+        std::array<int,5> my_array = { 0, 1, 2, 3, 4 };
+        bool result1 = cinq::from(my_array)
+                      .all([](int x) { return x <= 2; });
+                      
+        bool answer1=false;
+
+        bool result2 = cinq::from(my_array)
+        				.all([](int x){return x<=1000;});
+        bool answer2=true;
+
+        bool passed = (result1==answer1)&&(result2==answer2);
+
+
+        return (passed);
+    }));
+
+    tests.push_back(test("all() std::list", []
+    {
+        std::list<int> my_list = { 0, 1, 2, 3, 4 };
+        bool result1 = cinq::from(my_list)
+                      .all([](int x) { return x <= 2; });
+                      
+        bool answer1=false;
+
+        bool result2 = cinq::from(my_list)
+        				.all([](int x){return x<=1000;});
+        bool answer2=true;
+
+        bool passed = (result1==answer1)&&(result2==answer2);
+
+
+        return (passed);
+    }));
+
+    
+    tests.push_back(test("count(void) std::array", []
+    {
+        std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
+                                                        // the reponse from count
+        auto result = cinq::from(my_array)
+                      .count();
+
+        std::array<int, 9> my_array2 = { 0, 1, 2, 3, 4 }; //note the difference
+        auto result2 = cinq::from(my_array2)
+                      .count();
+                      
+        size_t answer =5, answer2=9;
+        return ((result == answer)&&(result2==answer2));
+    }));
+
+    tests.push_back(test("count(void) std::vector", []
+    {
+        std::vector<int> my_vector = { 0, 1, 2, 3, 4 }; 
+        auto result = cinq::from(my_vector)
+                      .count();
+
+        
+                      
+        size_t answer =5;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("count(void) std::list", []
+    {
+        std::list<int> my_list = { 0, 1, 2, 3, 4 }; 
+        auto result = cinq::from(my_list)
+                      .count();
+
+        
+                      
+        size_t answer =5;
+        return (result == answer);
+    }));
+
+    tests.push_back(test("take(int) std::vector", []
+    {
+        std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+                            .take(3).to_vector();
+
+        std::vector<int> answer = {0,1,2};
+
+        return (result==answer);
+    }));
+    
+    tests.push_back(test("take(int) std::vector ensure_data", []
+    {
+        std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.take(3).to_vector();
+
+        std::vector<int> answer = {0,1,2};
+
+        return (result==answer);
+    }));
+    
+    tests.push_back(test("take(int) std::vector ensure_data, count > size", []
+    {
+        std::vector<int> my_vector = { 0, 1 };
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.take(3).to_vector();
+
+        return (result == my_vector);
+    }));
+    
+    tests.push_back(test("take(int) std::vector count > size", []
+    {
+        std::vector<int> my_vector = { 0, 1 };
+        auto result = cinq::from(my_vector).take(3).to_vector();
+
+        return (result == my_vector);
+    }));
+    
+    tests.push_back(test("take(int) std::list", []
+    {
+        std::list<int> my_list = {0,1,2,3,4};
+        auto result = cinq::from(my_list)
+                            .take(3).to_vector();
+
+       std::vector<int> answer={0,1,2};
+
+       return (result==answer);
+    }));
+    
+    tests.push_back(test("take(int) std::array", []
+    {
+        std::array<int,5> my_array = {0,1,2,3,4};
+        auto result = cinq::from(my_array)
+                            .take(3).to_vector();
+        std::vector<int> answer={0,1,2};
+        return (result==answer);
+    }));
+    
+    tests.push_back(test("take(string).where() std::list", []
+    {
+
+        std::string a,b,c;
+        a=b=c="str";
+        
+        std::list<std::string> my_list { a , b , c };
+      
+        auto result = cinq::from(my_list)
+                      .where([](string x){ return x=="str"; })
+                      .to_vector();
+        std::vector<std::string> answer { a , b , c };
+        return (result == answer);
+    }));
+
+    tests.push_back(test("take(string /*literals*/).where() std::vector ;", []
+    {
+        std::vector<string> my_vector {"cat","dog","rabbit","turtle"};
+
+        auto result = cinq::from(my_vector)
+                            .where([](string x){return (x=="cat"||x=="dog");})
+                            .take(1)
+                            .to_vector()[0];
+
+        return result=="cat";
+    }));
+    
     return tests;
 }
