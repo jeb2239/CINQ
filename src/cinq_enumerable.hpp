@@ -80,17 +80,13 @@ namespace cinq
 
         }
         
-        template <typename TIterator = TIter>
-        requires Random_access_iterator<TIterator>()
-        size_t count()
+        size_t count() requires Random_access_iterator<TIter>()
         {   
             if (is_data_copied) return data.size();
             else return end - begin;
         }
         
-        template <typename TIterator = TIter>
-        requires Forward_iterator<TIterator>()
-        size_t count()
+        size_t count() requires Forward_iterator<TIter>()
         {
             if (is_data_copied) return data.size();
             else
