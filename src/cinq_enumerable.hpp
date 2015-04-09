@@ -67,7 +67,7 @@ namespace cinq
         size_t count(TFunc predicate)
         {
             ensure_data();
-            int count=0;
+            size_t count=0;
 
             for(TElement i : data) 
               {
@@ -77,14 +77,26 @@ namespace cinq
             return count;
 
         }
-        //over load which takes no arguments
-        //if we do some type introspection this one could be faster
-
+        
+        template <typename TIterator = TIter>
+        requires Random_access_iterator<TIterator>()
         size_t count()
         {   
-            ensure_data();
-
-            return data.size();
+            if (is_data_copied) return data.size();
+            else return end - begin;
+        }
+        
+        template <typename TIterator = TIter>
+        requires Forward_iterator<TIterator>()
+        size_t count()
+        {
+            if (is_data_copied) return data.size();
+            else
+            {
+                size_t count = 0;
+                for (auto iter = begin; iter != end; ++iter) count++;
+                return count;
+            }
         }
 
         template <typename TFunc>
