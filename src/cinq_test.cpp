@@ -1,12 +1,5 @@
 #include "cinq_test.hpp"
 
-
-#define START_TEST(MSG) tests.push_back(test(MSG, []{
-
-#define END_TEST }));
-
-
-
 int main(int argc, char **argv)
 {
     auto tests = make_tests();
@@ -177,7 +170,7 @@ vector<test> make_tests()
         return (passed);
     }));
 
-   tests.push_back(test("all() std::list", []
+    tests.push_back(test("all() std::list", []
     {
         std::list<int> my_list = { 0, 1, 2, 3, 4 };
         bool result1 = cinq::from(my_list)
@@ -196,7 +189,7 @@ vector<test> make_tests()
     }));
 
     
-     tests.push_back(test("count(void) std::array", []
+    tests.push_back(test("count(void) std::array", []
     {
         std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
                                                         // the reponse from count
@@ -235,8 +228,8 @@ vector<test> make_tests()
         return (result == answer);
     }));
 
-    START_TEST("take(int) std::vector")
-    
+    tests.push_back(test("take(int) std::vector", []
+    {
         std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
         auto result = cinq::from(my_vector)
                             .take(3).to_vector();
@@ -244,11 +237,10 @@ vector<test> make_tests()
         std::vector<int> answer = {0,1,2};
 
         return (result==answer);
-
-
-    END_TEST
+    }));
     
-    START_TEST("take(int) std::vector ensure_data")
+    tests.push_back(test("take(int) std::vector ensure_data", []
+    {
         std::vector<int> my_vector ={ 0, 1, 2, 3, 4};
         auto temp = cinq::from(my_vector);
         temp.ensure_data();
@@ -257,27 +249,28 @@ vector<test> make_tests()
         std::vector<int> answer = {0,1,2};
 
         return (result==answer);
-    END_TEST
+    }));
     
-    START_TEST("take(int) std::vector ensure_data, count > size")
+    tests.push_back(test("take(int) std::vector ensure_data, count > size", []
+    {
         std::vector<int> my_vector = { 0, 1 };
         auto temp = cinq::from(my_vector);
         temp.ensure_data();
         auto result = temp.take(3).to_vector();
 
         return (result == my_vector);
-    END_TEST
+    }));
     
-    START_TEST("take(int) std::vector count > size")
+    tests.push_back(test("take(int) std::vector count > size", []
+    {
         std::vector<int> my_vector = { 0, 1 };
         auto result = cinq::from(my_vector).take(3).to_vector();
 
         return (result == my_vector);
-    END_TEST
-
-
-    START_TEST("take(int) std::list")
-
+    }));
+    
+    tests.push_back(test("take(int) std::list", []
+    {
         std::list<int> my_list = {0,1,2,3,4};
         auto result = cinq::from(my_list)
                             .take(3).to_vector();
@@ -285,19 +278,43 @@ vector<test> make_tests()
        std::vector<int> answer={0,1,2};
 
        return (result==answer);
-
-    END_TEST
-
-   
-    START_TEST("take(int) std::array")
+    }));
+    
+    tests.push_back(test("take(int) std::array", []
+    {
         std::array<int,5> my_array = {0,1,2,3,4};
         auto result = cinq::from(my_array)
                             .take(3).to_vector();
         std::vector<int> answer={0,1,2};
         return (result==answer);
-    END_TEST
+    }));
     
+    tests.push_back(test("take(string).where() std::list", []
+    {
+
+        std::string a,b,c;
+        a=b=c="str";
+        
+        std::list<std::string> my_list { a , b , c };
+      
+        auto result = cinq::from(my_list)
+                      .where([](string x){ return x=="str"; })
+                      .to_vector();
+        std::vector<std::string> answer { a , b , c };
+        return (result == answer);
+    }));
+
+    tests.push_back(test("take(string /*literals*/).where() std::vector ;", []
+    {
+        std::vector<string> my_vector {"cat","dog","rabbit","turtle"};
+
+        auto result = cinq::from(my_vector)
+                            .where([](string x){return (x=="cat"||x=="dog");})
+                            .take(1)
+                            .to_vector()[0];
+
+        return result=="cat";
+    }));
     
-    #include "test_code.cpp"
     return tests;
 }

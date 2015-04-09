@@ -141,14 +141,7 @@ namespace cinq
             if (count >= 0) return take((size_t)count);
             else throw invalid_argument("cinq: take() was called with negative count");
         }
-
-
-
-        vector<TElement> to_vector()
-        {
-            ensure_data();
-            return data;
-        }
+        
         //some weird shit is going on here with std::string
         //using Equality_comparable concept
         //weird syntax but it works
@@ -164,6 +157,12 @@ namespace cinq
             }
 
             return false;
+        }
+        
+        vector<TElement> to_vector()
+        {
+            ensure_data();
+            return data;
         }
         
     private:
@@ -194,9 +193,6 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
-    
-
-
 }
 
 #endif

@@ -1,8 +1,9 @@
 #ifndef __custom_concepts_hpp__
 #define __custom_concepts_hpp__
 
-#include "all_concepts.hpp"
 #include <type_traits>
+
+#include "all_concepts.hpp"
 
 using namespace origin;
 
@@ -39,11 +40,5 @@ template<typename _Iter1, typename _Iter2, typename _Out, typename _Comp>
           && Indirectly_copyable<_Iter1, _Out>()
           && Indirectly_copyable<_Iter2, _Out>();
     }
-
-
-
-
-
-
 
 #endif
