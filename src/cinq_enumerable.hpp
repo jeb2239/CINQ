@@ -245,6 +245,59 @@ namespace cinq
 
         }
 
+        TElement single(){
+            if(is_data_copied ){
+                if(data.size()>1) throw invalid_argument("cinq: structure has more than one element");
+                else return data[0];
+            }
+            if(std::distance(begin,end)>1) //n time if container has no Random Access, constant otherwise
+                throw invalid_argument("cinq: structure has more than one element");
+
+            return *begin;
+
+        }
+
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        TElement single(TFunc predicate){
+                bool found = false;
+                
+                if(is_data_copied){
+                    size_t return_idx;
+                for(size_t i=0;i<data.size();i++){
+                    if(found && predicate(data[i]))
+                     throw invalid_argument("cinq: more than one element satisfies the predicate");
+                    if(predicate(data[i])){
+                     found = true;
+                     return_idx=i;
+                 }
+                }
+                return data[return_idx];
+                }
+
+
+                
+                TElement rv;
+                for(auto iter=begin;iter!=end;++iter){
+                    if(found && predicate(*iter))
+                     throw invalid_argument("cinq: more than one element satisfies the predicate");
+                    if(predicate(*iter)){
+                        found=true;
+                        rv=*iter;
+
+                    }
+
+                }
+
+                return rv;
+
+
+            }
+
+        
+
+
+
 
         
 

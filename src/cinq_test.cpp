@@ -404,9 +404,59 @@ vector<test> make_tests()
         return result==7;
 
         }));
-    
-     
 
+     tests.push_back(test("single() ensure_data std::list string",[]{
+
+        std::list<string> my_list{"cat" /*,"apple","face","snake"*/};
+        auto temp=cinq::from(my_list);
+        temp.ensure_data();
+        auto result = temp.single();
+        return result=="cat";
+
+     }));
+
+     tests.push_back(test("single()  std::list string",[]{
+
+        std::list<string> my_list{"cat" /*,"apple","face","snake"*/};
+        auto temp=cinq::from(my_list);
+      //  temp.ensure_data();
+        auto result = temp.single();
+        return result=="cat";
+
+     }));
+
+     tests.push_back(test("single()  std::vector string",[]{
+
+        std::vector<string> my_vector{"cat"};
+        auto temp=cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.single();
+        return result=="cat";
+
+
+    }));
+
+     tests.push_back(test("single(predicate) ensure_data std::vector string",[]{
+
+            std::vector<string> my_vector{"cat","dog","goat","pig"};
+            auto temp = cinq::from(my_vector);
+            temp.ensure_data();
+            auto result = temp.single([](string x){return x.length()==4;});
+            return result=="goat";
+
+
+         }));
+
+     tests.push_back(test("single(predicate)  std::vector string",[]{
+
+            std::vector<string> my_vector{"cat","dog","goat","pig"};
+            auto temp = cinq::from(my_vector);
+            //temp.ensure_data();
+            auto result = temp.single([](string x){return x.length()==4;});
+            return result=="goat";
+
+
+         }));
 
 
 
