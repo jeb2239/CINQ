@@ -2,6 +2,15 @@
 
 int main(int argc, char **argv)
 {
+    int failed = test_correctness();
+    
+    test_performance();
+    
+    return failed;
+}
+
+int test_correctness()
+{
     auto tests = make_tests();
     int failed = 0;
     for (test t : tests)
@@ -28,6 +37,15 @@ int main(int argc, char **argv)
     }
     
     return failed;
+}
+
+void test_performance()
+{
+    auto tests = make_tests_perf();
+    for (test_perf t : tests)
+    {
+        printf("[%4d] %s\n", t.func(), t.name.c_str());
+    }
 }
 
 vector<test> make_tests()
