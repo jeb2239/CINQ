@@ -63,6 +63,10 @@ namespace cinq
             
             return *this;
         }
+        
+        // ARITHMETIC
+        
+        // Count
 
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
@@ -96,7 +100,199 @@ namespace cinq
                 return count;
             }
         }
-
+        
+        inline bool empty()
+        {
+            if (is_data_copied) return (data.size() == 0);
+            else return (begin == end);
+        }
+        
+        // Max
+        
+        // This is where the power of C++ templates & concepts really shines. You can't do this
+        // in any other mainstream language. Check out the C# implementation and cry...
+        // https://github.com/mono/mono/blob/effa4c0/mcs/class/System.Core/System.Linq/Enumerable.cs
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        TReturn max(TFunc mapper)
+        {
+            if (empty()) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TReturn max = numeric_limits<TReturn>::min();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TReturn val = mapper(*iter);
+                if (val > max) max = val;
+            }
+            
+            return max;
+        }
+        
+        // TODO: This could call the other max override w/ a lambda that returns itself, if we
+        // figure out lambda inlining.
+        TElement max() requires Number<TElement>()
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement max = numeric_limits<TElement>::min();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TElement val = *iter;
+                if (val > max) max = val;
+            }
+            
+            return max;
+        }
+        
+        // Min
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        TReturn min(TFunc mapper)
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TReturn min = numeric_limits<TReturn>::max();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TReturn val = mapper(*iter);
+                if (val < min) min = val;
+            }
+            
+            return min;
+        }
+        
+        TElement min() requires Number<TElement>()
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement min = numeric_limits<TElement>::max();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TElement val = *iter;
+                if (val < min) min = val;
+            }
+            
+            return min;
+        }
+        
+        // Sum
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        TReturn sum(TFunc mapper)
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TReturn sum = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter) sum += mapper(*iter);
+            return sum;
+        }
+        
+        TElement sum() requires Number<TElement>()
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement sum = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter) sum += *iter;
+            return sum;
+        }
+        
+        // Average
+        
+        // TODO: OK, this manual templating REALLY needs to be cleaned up.
+        
+        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TValue>() && is_integral<TValue>::value
+        double average(TFunc mapper)
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TValue sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += mapper(*iter);
+                count++;
+            }
+            return sum / (double)count;
+        }
+        
+        double average() requires Number<TElement>() && is_integral<TElement>::value
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += *iter;
+                count++;
+            }
+            return sum / (double)count;
+        }
+        
+        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TValue>()
+        TElement average(TFunc mapper)
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TValue sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += mapper(*iter);
+                count++;
+            }
+            return sum / count;
+        }
+        
+        TElement average() requires Number<TElement>()
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += *iter;
+                count++;
+            }
+            return sum / count;
+        }
+        
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
@@ -175,6 +371,11 @@ namespace cinq
             
             is_data_copied=true; // should be set to true after copy right
             data = copy;
+        }
+        
+        inline void ensure_nonempty()
+        {
+            if (empty()) throw length_error("cinq: sequence is empty");
         }
     
     // Allow automated tests to access private stuff.
