@@ -217,6 +217,82 @@ namespace cinq
             return sum;
         }
         
+        // Average
+        
+        // TODO: OK, this manual templating REALLY needs to be cleaned up.
+        
+        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TValue>() && is_integral<TValue>::value
+        double average(TFunc mapper)
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TValue sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += mapper(*iter);
+                count++;
+            }
+            return sum / (double)count;
+        }
+        
+        double average() requires Number<TElement>() && is_integral<TElement>::value
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += *iter;
+                count++;
+            }
+            return sum / (double)count;
+        }
+        
+        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TValue>()
+        TElement average(TFunc mapper)
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TValue sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += mapper(*iter);
+                count++;
+            }
+            return sum / count;
+        }
+        
+        TElement average() requires Number<TElement>()
+        {
+            ensure_nonempty();
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += *iter;
+                count++;
+            }
+            return sum / count;
+        }
+        
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
