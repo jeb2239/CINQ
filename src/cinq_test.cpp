@@ -373,6 +373,43 @@ vector<test> make_tests()
         return result == 4.454;
 
     }));
+    tests.push_back(test("last(predicate) ensure_data std::vector strings; ",[] {
+        std::vector<string> my_vector{"C++","python","ada", "Ocaml","C#"};
+        auto temp =cinq::from(my_vector);
+        temp.ensure_data();
+
+        auto result = temp.last([](string x){return x.length()>3;});
+        
+        return result=="Ocaml";
+
+
+    }));
+
+    tests.push_back(test("last()  std::list int; ",[] {
+
+        std::list<int> my_list{1,2,4,5,7};
+        auto result =cinq::from(my_list).last();
+
+        return result==7;
+
+
+    }));
+    tests.push_back(test("last() ensure_data std::list int; ",[] {
+
+        std::list<int> my_list{1,2,4,5,7};
+        auto temp =cinq::from(my_list);
+        temp.ensure_data();
+        auto result = temp.last();
+
+        return result==7;
+
+        }));
+    
+     
+
+
+
+
     
     return tests;
 }
