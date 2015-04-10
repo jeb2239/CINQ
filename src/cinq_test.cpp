@@ -315,6 +315,64 @@ vector<test> make_tests()
 
         return result=="cat";
     }));
+
+    tests.push_back(test("first() std::vector; ", []
+    {
+        std::vector<string> my_vector {"cat","dog","rabbit","turtle"};
+
+        auto result = cinq::from(my_vector)
+                            .first();
+
+
+        return result=="cat";
+    }));
+
+    tests.push_back(test("first() ensure_data std::vector; ", [] {
+
+        std::vector<string> my_vector {"cat","dog","rabbit","turtle"};
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.first();
+
+        return result=="cat";
+
+    }));
+
+
+
+    tests.push_back(test("first(predicate) ensure_data std::vector str; ",[] {
+
+        std::vector<string> my_vector{"cat","dog","rabbit","turtle"};
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.first([](string x){return x=="rabbit";});
+
+        return result == "rabbit";
+
+
+
+    }));
+    tests.push_back(test("first(predicate) std::vector str; ",[] {
+
+        std::vector<string> my_vector{"cat","dog","rabbit","turtle"};
+        auto result = cinq::from(my_vector).first([](string x){return x=="rabbit";});
+        return result == "rabbit";
+    }));
+    tests.push_back(test("first(predicate) std::list ints; ",[] {
+
+        std::list<int> my_list{1,2,4,5};
+        auto result = cinq::from(my_list).first([](int x){return x==5;});
+        return result == 5;
+
+    }));
+    tests.push_back(test("first(predicate) ensure_data std::list doubles; ",[] {
+        std::list<double> my_list{1.435,2.4345,4.454,5.5555};
+        auto temp = cinq::from(my_list);
+        temp.ensure_data();
+        auto result = temp.first([](double x){return x>4;});
+        return result == 4.454;
+
+    }));
     
     return tests;
 }
