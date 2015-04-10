@@ -65,16 +65,18 @@ namespace cinq
         }
 
 
-		//
-		//
-		// Reverse
-		enumerable<TSource> reverse()
-		{
-			ensure_data();
-			this->begin = data.crend();
-			this->end = data.crbegin();
-			return *this;
-		}
+	//
+	//
+	// Reverse
+	enumerable<TSource> reverse()
+	{
+		//actually swaps data so actual data is reversed
+		//might be better to reverse direction of the iterators
+		//though I'm not sure if this is possible
+		ensure_data();
+		std::reverse(data.begin(), data.end());
+		return *this;
+	}
         
         // ARITHMETIC
         
