@@ -72,6 +72,18 @@ namespace cinq
 		return !empty();
 	}
 
+	template <typename TFunc>
+	requires Predicate<TFunc,TElement>()
+	bool any(TFunc predicate)
+	{
+		ensure_data();
+		for(TElement i : data){
+			if(predicate(i)) return true;
+		}
+
+		return false;
+	}
+
 
 	//
 	//

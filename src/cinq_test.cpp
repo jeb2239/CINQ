@@ -113,6 +113,24 @@ vector<test> make_tests()
         return (result == answer);
 	}));
 
+	tests.push_back(test("any(Predicate) true unit test", []
+	{
+        std::vector<int> my_vector {0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+						.any([](int x) { return x > 2; });
+        bool answer = true;
+        return (result == answer);
+	}));
+
+	tests.push_back(test("any(Predicate) false unit test", []
+	{
+        std::vector<int> my_vector {};
+        auto result = cinq::from(my_vector)
+						.any([](int x) { return x > 4; });
+        bool answer = false;
+        return (result == answer);
+	}));
+
     tests.push_back(test("reverse() std::vector", []
     {
         std::vector<int> my_vector { 0, 1, 2, 3, 4};
