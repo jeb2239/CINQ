@@ -183,6 +183,34 @@ namespace cinq
             return min;
         }
         
+        // Sum
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        TReturn sum(TFunc mapper)
+        {
+            if (count() == 0) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TReturn sum = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter) sum += mapper(*iter);
+            return sum;
+        }
+        
+        TElement sum() requires Number<TElement>()
+        {
+            if (count() == 0) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement sum = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter) sum += *iter;
+            return sum;
+        }
+        
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)

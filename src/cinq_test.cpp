@@ -358,5 +358,26 @@ vector<test> make_tests()
         return (result == authors[0].length()); // chen
     }));
     
+    tests.push_back(test("sum() on int", []
+    {
+        vector<int> nums { -1, 26, 42, -10002, 0, 8 };
+        int result = cinq::from(nums).sum();
+        return (result == -9927);
+    }));
+    
+    tests.push_back(test("sum() on double", []
+    {
+        vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+        double result = cinq::from(nums).sum();
+        return (result == nums[0] + nums[1] + nums[2] + nums[3] + nums[4] + nums[5]);
+    }));
+    
+    tests.push_back(test("sum() on strings with mapping function", []
+    {
+        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wang" };
+        auto result = cinq::from(authors).sum([](string x) { return x.length(); });
+        return (result == authors[0].length() + authors[1].length() + authors[2].length());
+    }));
+    
     return tests;
 }
