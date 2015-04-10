@@ -109,7 +109,7 @@ namespace cinq
         
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
-        TReturn max(TFunc predicate)
+        TReturn max(TFunc mapper)
         {
             if (count() == 0) throw length_error("cinq: sequence is empty");
             
@@ -119,7 +119,7 @@ namespace cinq
             TReturn max = numeric_limits<TReturn>::min();
             for (auto iter = seq_begin; iter != seq_end; ++iter)
             {
-                TReturn val = predicate(*iter);
+                TReturn val = mapper(*iter);
                 if (val > max) max = val;
             }
             
@@ -143,6 +143,44 @@ namespace cinq
             }
             
             return max;
+        }
+        
+        // Min
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        TReturn min(TFunc mapper)
+        {
+            if (count() == 0) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TReturn min = numeric_limits<TReturn>::max();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TReturn val = mapper(*iter);
+                if (val < min) min = val;
+            }
+            
+            return min;
+        }
+        
+        TElement min() requires Number<TElement>()
+        {
+            if (count() == 0) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement min = numeric_limits<TElement>::max();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TElement val = *iter;
+                if (val < min) min = val;
+            }
+            
+            return min;
         }
         
         template <typename TFunc>

@@ -337,5 +337,26 @@ vector<test> make_tests()
         return (result == authors[1].length()); // barrios
     }));
     
+    tests.push_back(test("min() on int", []
+    {
+        vector<int> nums { -1, 26, 42, -10002, 0, 8 };
+        int result = cinq::from(nums).min();
+        return (result == -10002);
+    }));
+    
+    tests.push_back(test("min() on double", []
+    {
+        vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+        double result = cinq::from(nums).min();
+        return (result == nums[3]); // 4.2
+    }));
+    
+    tests.push_back(test("min() on strings with mapping function", []
+    {
+        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wang" };
+        auto result = cinq::from(authors).min([](string x) { return x.length(); });
+        return (result == authors[0].length()); // chen
+    }));
+    
     return tests;
 }
