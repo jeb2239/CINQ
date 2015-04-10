@@ -94,6 +94,16 @@ vector<test> make_tests()
         std::vector<int> answer { 0, 1, 2 };
         return (result == answer);
     }));
+
+    tests.push_back(test("reverse() std::vector", []
+    {
+        std::vector<int> my_vector { 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+					  .reverse()
+                      .to_vector();
+        std::vector<int> answer { 4, 3, 2, 1, 0};
+        return (result == answer);
+    }));
     
     tests.push_back(test("count() std::array", []
     {

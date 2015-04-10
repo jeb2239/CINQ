@@ -63,6 +63,18 @@ namespace cinq
             
             return *this;
         }
+
+
+		//
+		//
+		// Reverse
+		enumerable<TSource> reverse()
+		{
+			ensure_data();
+			this.begin = source.crend();
+			this.end = source.crbegin();
+			return *this;
+		}
         
         // ARITHMETIC
         
