@@ -64,6 +64,14 @@ namespace cinq
             return *this;
         }
 
+	//
+	//
+	// Any
+	bool any() 
+	{
+		return !empty();
+	}
+
 
 	//
 	//
