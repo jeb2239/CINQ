@@ -101,6 +101,12 @@ namespace cinq
             }
         }
         
+        inline bool empty()
+        {
+            if (is_data_copied) return (data.size() == 0);
+            else return (begin == end);
+        }
+        
         // Max
         
         // This is where the power of C++ templates & concepts really shines. You can't do this
@@ -111,7 +117,7 @@ namespace cinq
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
         TReturn max(TFunc mapper)
         {
-            if (count() == 0) throw length_error("cinq: sequence is empty");
+            if (empty()) throw length_error("cinq: sequence is empty");
             
             auto seq_begin = (is_data_copied ? data.cbegin() : begin);
             auto seq_end   = (is_data_copied ? data.cend()   : end  );
@@ -130,7 +136,7 @@ namespace cinq
         // figure out lambda inlining.
         TElement max() requires Number<TElement>()
         {
-            if (count() == 0) throw length_error("cinq: sequence is empty");
+            ensure_nonempty();
             
             auto seq_begin = (is_data_copied ? data.cbegin() : begin);
             auto seq_end   = (is_data_copied ? data.cend()   : end  );
@@ -151,7 +157,7 @@ namespace cinq
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
         TReturn min(TFunc mapper)
         {
-            if (count() == 0) throw length_error("cinq: sequence is empty");
+            ensure_nonempty();
             
             auto seq_begin = (is_data_copied ? data.cbegin() : begin);
             auto seq_end   = (is_data_copied ? data.cend()   : end  );
@@ -168,7 +174,7 @@ namespace cinq
         
         TElement min() requires Number<TElement>()
         {
-            if (count() == 0) throw length_error("cinq: sequence is empty");
+            ensure_nonempty();
             
             auto seq_begin = (is_data_copied ? data.cbegin() : begin);
             auto seq_end   = (is_data_copied ? data.cend()   : end  );
@@ -189,7 +195,7 @@ namespace cinq
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
         TReturn sum(TFunc mapper)
         {
-            if (count() == 0) throw length_error("cinq: sequence is empty");
+            ensure_nonempty();
             
             auto seq_begin = (is_data_copied ? data.cbegin() : begin);
             auto seq_end   = (is_data_copied ? data.cend()   : end  );
@@ -201,7 +207,7 @@ namespace cinq
         
         TElement sum() requires Number<TElement>()
         {
-            if (count() == 0) throw length_error("cinq: sequence is empty");
+            ensure_nonempty();
             
             auto seq_begin = (is_data_copied ? data.cbegin() : begin);
             auto seq_end   = (is_data_copied ? data.cend()   : end  );
@@ -289,6 +295,11 @@ namespace cinq
             
             is_data_copied=true; // should be set to true after copy right
             data = copy;
+        }
+        
+        inline void ensure_nonempty()
+        {
+            if (empty()) throw length_error("cinq: sequence is empty");
         }
     
     // Allow automated tests to access private stuff.
