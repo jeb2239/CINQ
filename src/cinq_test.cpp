@@ -332,7 +332,7 @@ vector<test> make_tests()
     
     tests.push_back(test("max() on strings with mapping function", []
     {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wang" };
+        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
         auto result = cinq::from(authors).max([](string x) { return x.length(); });
         return (result == authors[1].length()); // barrios
     }));
@@ -353,7 +353,7 @@ vector<test> make_tests()
     
     tests.push_back(test("min() on strings with mapping function", []
     {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wang" };
+        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
         auto result = cinq::from(authors).min([](string x) { return x.length(); });
         return (result == authors[0].length()); // chen
     }));
@@ -374,7 +374,7 @@ vector<test> make_tests()
     
     tests.push_back(test("sum() on strings with mapping function", []
     {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wang" };
+        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
         auto result = cinq::from(authors).sum([](string x) { return x.length(); });
         return (result == authors[0].length() + authors[1].length() + authors[2].length());
     }));
@@ -396,7 +396,7 @@ vector<test> make_tests()
     
     tests.push_back(test("average() on string length with mapping function", []
     {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wang", "hi" };
+        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong", "hi" };
         auto result = cinq::from(authors).average([](string x) { return x.length(); });
         return is_same<decltype(result), double>::value
                && (result == (double)(authors[0].length() + authors[1].length() + authors[2].length() + authors[3].length()) / authors.size());
