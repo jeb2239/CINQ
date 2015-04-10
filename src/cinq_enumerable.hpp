@@ -210,6 +210,42 @@ namespace cinq
 
         }
 
+        TElement last()
+        {
+
+           if(is_data_copied) return data[data.size()-1];
+           else{
+           auto iter=end;
+            --iter;
+            return *iter;
+        }
+        }
+
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        TElement last(TFunc predicate)
+        {
+
+            if(is_data_copied){
+                for(size_t i=data.size()-1;i>=0;--i) if(predicate(data[i])) return data[i];
+
+                throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+            }
+
+            auto iter = end;
+            --iter;
+             //because end points to one past the end
+            while(!predicate(*iter) && begin != iter) --iter;
+
+            if(!predicate(*iter))
+                throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+
+            return *iter;
+
+
+        }
+
+
         
 
 
@@ -252,6 +288,9 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
+
+
+
 
 }
 
