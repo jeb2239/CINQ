@@ -71,8 +71,8 @@ namespace cinq
 		enumerable<TSource> reverse()
 		{
 			ensure_data();
-			this.begin -> data.crend();
-			this.end -> data.crbegin();
+			this->begin = data.crend();
+			this->end = data.crbegin();
 			return *this;
 		}
         
