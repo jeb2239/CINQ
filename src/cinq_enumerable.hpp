@@ -154,12 +154,75 @@ namespace cinq
 
             return false;
         }
+
+        template <TElement&>
+        TElement& element_at(int index)
+        {
+            if(is_data_copied){
+
+                return data.at(index);
+            }
+            else{
+
+                auto iter = begin;
+                // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
+                while (index > 0 && end != iter)
+                {
+                    ++iter;
+                    index--;
+                }
+
+               return *iter;
+            }
+
+
+        }
+
+        
+        TElement first()
+        {
+
+            if(is_data_copied) return data[0];
+            else return *begin;
+
+        }
+
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        TElement first(TFunc predicate)
+        {
+            if(is_data_copied){
+                for(TElement& i: data)
+                    if(predicate(i)) return i;                       
+                 throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+                 }
+
+            
+
+                auto iter = begin;
+                while (!predicate(*iter) && end != iter) ++iter;
+
+                if(!predicate(*iter))
+                    throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+
+                return *iter;
+            
+
+        }
+
+        
+
+
+
+
         
         vector<TElement> to_vector()
         {
             ensure_data();
             return data;
         }
+
+
         
     private:
         TIter begin, end;
@@ -189,6 +252,7 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
+
 }
 
 #endif
