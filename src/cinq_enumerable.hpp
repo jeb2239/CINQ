@@ -63,6 +63,10 @@ namespace cinq
             
             return *this;
         }
+        
+        // ARITHMETIC
+        
+        // Count
 
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
@@ -96,7 +100,51 @@ namespace cinq
                 return count;
             }
         }
-
+        
+        // Max
+        
+        // This is where the power of C++ templates & concepts really shines. You can't do this
+        // in any other mainstream language. Check out the C# implementation and cry...
+        // https://github.com/mono/mono/blob/effa4c0/mcs/class/System.Core/System.Linq/Enumerable.cs
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
+        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        TReturn max(TFunc predicate)
+        {
+            if (count() == 0) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TReturn max = numeric_limits<TReturn>::min();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TReturn val = predicate(*iter);
+                if (val > max) max = val;
+            }
+            
+            return max;
+        }
+        
+        // TODO: This could call the other max override w/ a lambda that returns itself, if we
+        // figure out lambda inlining.
+        TElement max() requires Number<TElement>()
+        {
+            if (count() == 0) throw length_error("cinq: sequence is empty");
+            
+            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
+            auto seq_end   = (is_data_copied ? data.cend()   : end  );
+            
+            TElement max = numeric_limits<TElement>::min();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TElement val = *iter;
+                if (val > max) max = val;
+            }
+            
+            return max;
+        }
+        
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
