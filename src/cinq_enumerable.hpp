@@ -91,14 +91,19 @@ namespace cinq
 	{
 		//possibly inefficient
 		std::vector<TElement> new_data;
-		new_data.reserve(data.size() + second.data.size());
+		new_data.reserve(std::distance(begin, end) + std::distance(second.begin, second.end));
 		new_data.insert(new_data.end(), begin, end);
 		new_data.insert(new_data.end(), second.begin, second.end);
 
 		enumerable<TSource> new_enum {new_data};
+		//cout << data.size() << " " << second.data.size() << endl;
 
-		for(TElement e : new_data) {
-			std::cout << e << " ";
+		cout << "new_data ";
+	//	for(TElement e : new_data) {
+	//		std::cout << e << " ";
+	//	}
+		for(auto it = new_enum.begin; it != new_enum.end; ++it) {
+			std::cout << *it << " ";
 		}
 		std::cout << endl;
 
