@@ -44,7 +44,7 @@ namespace cinq
             return *this;
         }
         
-        template <typename TFunc>
+        template <typename TFunc>                                   
         requires Predicate<TFunc, TElement, size_t>()
         enumerable<TSource> where(TFunc predicate)
         {
@@ -96,7 +96,7 @@ namespace cinq
                 return count;
             }
         }
-
+        //TODO: fix all
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
@@ -137,6 +137,54 @@ namespace cinq
             if (count >= 0) return take((size_t)count);
             else throw invalid_argument("cinq: take() was called with negative count");
         }
+
+        enumerable<TSource> skip(int count)
+        {
+            if (count >= 0) return skip((size_t)count);
+            else throw invalid_argument("cinq: skip() was called with negative count");
+        }
+
+        enumerable<TSource> skip(size_t count)
+        {
+
+                //the could be a much better way to this
+               // ensure_data();
+            if(is_data_copied){
+                if(data.size()<count) throw invalid_argument("cinq: wtf"); //idk
+                
+
+                
+            
+                data.erase(data.cbegin(),data.cbegin()+count);
+                //begin=data.cbegin();
+                   
+                   
+                   
+            //there will probably be a memory leak, still reachable
+
+             
+
+            }
+
+            else{
+
+                auto iter = begin;
+                // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
+                while (count > 0 && end != iter)
+                {
+
+                    ++iter;
+
+                    count--;
+                }
+                begin = iter; //there will probably be a memory leak, still reachable
+                
+            }
+            return *this;
+        }
+
+
+        
         
         //some weird shit is going on here with std::string
         //using Equality_comparable concept
@@ -293,6 +341,10 @@ namespace cinq
 
 
             }
+
+
+
+
 
         
 

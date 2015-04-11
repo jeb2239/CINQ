@@ -447,7 +447,7 @@ vector<test> make_tests()
 
          }));
 
-     tests.push_back(test("single(predicate)  std::vector string",[]{
+     tests.push_back(test("single(predicate) std::vector string",[]{
 
             std::vector<string> my_vector{"cat","dog","goat","pig"};
             auto temp = cinq::from(my_vector);
@@ -457,6 +457,44 @@ vector<test> make_tests()
 
 
          }));
+
+     tests.push_back(test("skip(string) std::vector string",[]{
+
+             std::vector<string> my_vector{"cat","dog","goat","pig"};
+             auto temp = cinq::from(my_vector);
+            // temp.ensure_data();
+            auto result= temp.skip(2).to_vector();
+           // for(string a: result) cout<<a<<endl;
+             std::vector<string> answer{"goat","pig"};
+             return result == answer;
+
+
+    }));
+
+     tests.push_back(test("skip(string) ensure_data std::vector string",[]{
+
+                std::vector<string> my_vector{"cat","dog","goat","pig"};
+             auto temp = cinq::from(my_vector);
+             temp.ensure_data();
+            auto result= temp.skip(2).to_vector();
+           // for(string a: result) cout<<a<<endl;
+             std::vector<string> answer{"goat","pig"};
+             return result == answer;
+
+        }));
+
+     tests.push_back(test("skip(string) std::list string",[]{
+
+            std::list<string> my_vector{"cat","dog","goat","pig"};
+             auto temp = cinq::from(my_vector);
+             //temp.ensure_data();
+            auto result= temp.skip(2).to_vector();
+           // for(string a: result) cout<<a<<endl;
+             std::vector<string> answer{"goat","pig"};
+             return result == answer;
+
+        }));
+
 
 
 
