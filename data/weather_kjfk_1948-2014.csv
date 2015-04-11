@@ -1,4 +1,4 @@
-EST,Max TemperatureF,Mean TemperatureF,Min TemperatureF,Max Dew PointF,MeanDew PointF,Min DewpointF,Max Humidity, Mean Humidity, Min Humidity, Max Sea Level PressureIn, Mean Sea Level PressureIn, Min Sea Level PressureIn, Max VisibilityMiles, Mean VisibilityMiles, Min VisibilityMiles, Max Wind SpeedMPH, Mean Wind SpeedMPH, Max Gust SpeedMPH,PrecipitationIn, CloudCover, Events, WindDirDegrees
+EST,Max TemperatureF,Mean TemperatureF,Min TemperatureF,Max Dew PointF,MeanDew PointF,Min DewpointF,Max Humidity,Mean Humidity,Min Humidity,Max Sea Level PressureIn,Mean Sea Level PressureIn,Min Sea Level PressureIn,Max VisibilityMiles,Mean VisibilityMiles,Min VisibilityMiles,Max Wind SpeedMPH,Mean Wind SpeedMPH,Max Gust SpeedMPH,PrecipitationIn,CloudCover,Events,WindDirDegrees
 1948-7-1,84,78,72,71,65,58,93,65,46,30.07,30.01,29.98,10,7,2,16,8,,0.00,0,Fog,264
 1948-7-2,82,72,63,62,53,49,76,51,33,30.20,30.15,30.08,15,14,10,16,10,,0.00,0,,315
 1948-7-3,78,71,64,66,58,53,84,62,42,30.17,30.12,30.04,15,10,5,14,6,,0.00,0,,203
