@@ -84,6 +84,30 @@ namespace cinq
 		return false;
 	}
 
+	//
+	//
+	// Concat
+	enumerable<TSource> concat(enumerable<TSource> second)
+	{
+		//possibly inefficient
+		std::vector<TElement> new_data;
+		new_data.reserve(data.size() + second.data.size());
+		new_data.insert(new_data.end(), begin, end);
+		new_data.insert(new_data.end(), second.begin, second.end);
+
+		enumerable<TSource> new_enum {new_data};
+
+		for(TElement e : new_data) {
+			std::cout << e << " ";
+		}
+		std::cout << endl;
+
+		cout << new_data.size() << endl;
+		
+		return new_enum; 
+	}
+
+
 
 	//
 	//
