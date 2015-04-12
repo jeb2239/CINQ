@@ -149,25 +149,14 @@ namespace cinq
 
                 //the could be a much better way to this
                // ensure_data();
-            if(is_data_copied){
-                if(data.size()<count) throw invalid_argument("cinq: wtf"); //idk
-                
-
-                
-            
+            if(is_data_copied)
+            {
+                if(data.size()<count) throw invalid_argument("cinq: wtf"); 
                 data.erase(data.cbegin(),data.cbegin()+count);
-                //begin=data.cbegin();
-                   
-                   
-                   
-            //there will probably be a memory leak, still reachable
-
-             
-
             }
 
-            else{
-
+            else
+            {
                 auto iter = begin;
                 // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
                 while (count > 0 && end != iter)
@@ -195,7 +184,8 @@ namespace cinq
         {
             ensure_data();
 
-            for(TElement& i : data){
+            for(TElement& i : data)
+            {
 
                 if(elem==i) return true;
             }
@@ -206,11 +196,13 @@ namespace cinq
         template <TElement&>
         TElement& element_at(int index)
         {
-            if(is_data_copied){
+            if(is_data_copied)
+            {
 
                 return data.at(index);
             }
-            else{
+            else
+            {
 
                 auto iter = begin;
                 // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
@@ -239,22 +231,20 @@ namespace cinq
         requires Predicate<TFunc,TElement>()
         TElement first(TFunc predicate)
         {
-            if(is_data_copied){
-                for(TElement& i: data)
-                    if(predicate(i)) return i;                       
-                 throw invalid_argument("cinq: no element satisfies the condition in predicate ");
-                 }
+            if(is_data_copied)
+            {
+            for(TElement& i: data)
+                if(predicate(i)) return i;                       
+                throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+            }
 
-            
+            auto iter = begin;
+            while (!predicate(*iter) && end != iter) ++iter;
 
-                auto iter = begin;
-                while (!predicate(*iter) && end != iter) ++iter;
+            if(!predicate(*iter))
+                throw invalid_argument("cinq: no element satisfies the condition in predicate ");
 
-                if(!predicate(*iter))
-                    throw invalid_argument("cinq: no element satisfies the condition in predicate ");
-
-                return *iter;
-            
+            return *iter;
 
         }
 
@@ -262,11 +252,12 @@ namespace cinq
         {
 
            if(is_data_copied) return data[data.size()-1];
-           else{
+           else
+            {
            auto iter=end;
             --iter;
             return *iter;
-        }
+            }
         }
 
         template <typename TFunc>
@@ -274,7 +265,8 @@ namespace cinq
         TElement last(TFunc predicate)
         {
 
-            if(is_data_copied){
+            if(is_data_copied)
+            {
                 for(size_t i=data.size()-1;i>=0;--i) if(predicate(data[i])) return data[i];
 
                 throw invalid_argument("cinq: no element satisfies the condition in predicate ");
@@ -293,8 +285,10 @@ namespace cinq
 
         }
 
-        TElement single(){
-            if(is_data_copied ){
+        TElement single()
+        {
+            if(is_data_copied )
+            {
                 if(data.size()>1) throw invalid_argument("cinq: structure has more than one element");
                 else return data[0];
             }
@@ -307,18 +301,22 @@ namespace cinq
 
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
-        TElement single(TFunc predicate){
+        TElement single(TFunc predicate)
+        {
                 bool found = false;
                 
-                if(is_data_copied){
+                if(is_data_copied)
+                {
                     size_t return_idx;
-                for(size_t i=0;i<data.size();i++){
+                for(size_t i=0;i<data.size();i++)
+                {
                     if(found && predicate(data[i]))
-                     throw invalid_argument("cinq: more than one element satisfies the predicate");
-                    if(predicate(data[i])){
+                        throw invalid_argument("cinq: more than one element satisfies the predicate");
+                    if(predicate(data[i]))
+                    {
                      found = true;
                      return_idx=i;
-                 }
+                    }
                 }
                 return data[return_idx];
                 }
@@ -326,37 +324,21 @@ namespace cinq
 
                 
                 TElement rv;
-                for(auto iter=begin;iter!=end;++iter){
+                for(auto iter=begin;iter!=end;++iter)
+                {
                     if(found && predicate(*iter))
                      throw invalid_argument("cinq: more than one element satisfies the predicate");
-                    if(predicate(*iter)){
+                    if(predicate(*iter))
+                    {
                         found=true;
                         rv=*iter;
 
                     }
-
                 }
-
                 return rv;
+        }
 
 
-            }
-
-
-
-
-
-        
-
-
-
-
-        
-
-
-
-
-        
         vector<TElement> to_vector()
         {
             ensure_data();
