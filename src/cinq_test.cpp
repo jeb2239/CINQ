@@ -139,19 +139,27 @@ vector<test> make_tests()
 						.concat(cinq::from(my_vector2))
 						.to_vector();
         std::vector<int> answer {1,1,2,3,4,5} ;
-		cout << result.size() << " " << answer.size() << "\n";
-		cout << "result ";
-		for(auto it = result.begin(); it != result.end(); ++it) {
-			cout << *it << " ";
-		}
-		cout << "\nanswer";
-		for(int i : answer) {
-			cout << i << " ";
-		}
-		cout << endl;
+		
 
         return (result == answer);
 	}));
+
+    tests.push_back(test("concat().where() std::vector<string>", []
+    {
+
+        std::vector<string> my_vector1 {"hi"};
+        std::vector<string> my_vector2 {"by"};
+        auto result = cinq::from(my_vector1)
+                        .concat(cinq::from(my_vector2)).where([](string x){return x=="hi";})
+                        .to_vector();
+        
+        std::vector<string> answer {"hi"} ;
+        
+
+        return (result == answer);
+    }));
+
+
 
     tests.push_back(test("reverse() std::vector", []
     {

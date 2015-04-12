@@ -95,21 +95,15 @@ namespace cinq
 		new_data.insert(new_data.end(), begin, end);
 		new_data.insert(new_data.end(), second.begin, second.end);
 
-		enumerable<TSource> new_enum {new_data};
-		//cout << data.size() << " " << second.data.size() << endl;
-
-		cout << "new_data ";
-	//	for(TElement e : new_data) {
-	//		std::cout << e << " ";
-	//	}
-		for(auto it = new_enum.begin; it != new_enum.end; ++it) {
-			std::cout << *it << " ";
-		}
-		std::cout << endl;
-
-		cout << new_data.size() << endl;
+        data=new_data;
+        is_data_copied=true;
+        
 		
-		return new_enum; 
+
+	
+		
+		
+		return *this; 
 	}
 
 
