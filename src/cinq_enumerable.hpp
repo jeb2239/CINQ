@@ -18,7 +18,7 @@ namespace cinq
     {
     public:
         //template <typename TSource>
-        //requires Container<TSource>()
+        // requires Container<TSource>()
         enumerable(TSource& source)
         {
             is_data_copied = false;
@@ -43,6 +43,9 @@ namespace cinq
             
             return *this;
         }
+        /*
+        this is a comment block
+        */
         
         template <typename TFunc>                                   
         requires Predicate<TFunc, TElement, size_t>()
@@ -97,8 +100,8 @@ namespace cinq
             }
         }
         //TODO: fix all
-        template <typename TFunc>
-        requires Predicate<TFunc,TElement>()
+        template <typename TFunc> 
+        requires Predicate<TFunc,TElement>() 
         bool all(TFunc predicate)
         {
             ensure_data();
@@ -178,7 +181,16 @@ namespace cinq
         //some weird shit is going on here with std::string
         //using Equality_comparable concept
         //weird syntax but it works
-        template <TElement&>
+        /**
+         * @brief [brief description]
+         * quick
+         * @details [long description]
+         * deets
+         * 
+         * @param elem [description]
+         * @return [description]
+         */
+        template <TElement&> 
         requires Equality_comparable<TElement&>()
         bool contains(TElement& elem)
         {
