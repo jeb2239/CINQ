@@ -320,7 +320,7 @@ namespace cinq
                 }
                 return data[return_idx];
                 }
-
+                
 
                 
                 TElement rv;
@@ -339,12 +339,28 @@ namespace cinq
         }
 
 
+
+
         vector<TElement> to_vector()
         {
             ensure_data();
             return data;
         }
 
+
+        
+        
+        enumerable<TSource> order_by() requires Weakly_ordered<TElement&>()
+        {
+            ensure_data();
+
+            std::sort(data.begin(),data.end());
+
+            return *this;
+
+
+        }
+        
 
         
     private:

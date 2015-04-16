@@ -495,6 +495,37 @@ vector<test> make_tests()
 
         }));
 
+      tests.push_back(test("orderby(void),  std::vector int",[]{
+
+            std::vector<int> my_vector{5,6,1,3};
+             auto result = cinq::from(my_vector)
+                        .order_by()
+                        .to_vector();
+             //temp.ensure_data();
+           
+           // for(string a: result) cout<<a<<endl;
+             std::vector<int> answer{1,3,5,6};
+             return result == answer;
+
+        }));
+
+       tests.push_back(test("orderby(void),  std::vector string",[]{
+
+            std::vector<string> my_vector{"cat","dog","goat","pig"};
+             auto result = cinq::from(my_vector)
+                        .order_by()
+                        .to_vector();
+             //temp.ensure_data();
+           
+           // for(string a: result) cout<<a<<endl;
+                   std::vector<string> answer=my_vector;
+                    std::sort(answer.begin(),answer.end());
+             
+             return result == answer;
+
+        }));
+
+
 
 
 
