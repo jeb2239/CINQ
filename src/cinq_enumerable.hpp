@@ -19,13 +19,29 @@ namespace cinq
     public:
         //template <typename TSource>
         // requires Container<TSource>()
+        /**
+         * @brief A wrapper which allows cinq to operate on various containers
+         * 
+         * 
+         * @param source the source container which
+         * provides the data cinq operates on
+         */
         enumerable(TSource& source)
         {
-            is_data_copied = false;
-            begin = source.cbegin();
-            end = source.cend();
+            is_data_copied = false; ///< set to true when ever the data is copied into data 
+                                    ///<set true by ensure_data()
+            begin = source.cbegin(); ///<holds the beginning iterator
+                                    ///<only relevant if ensure_data() has not been called
+            end = source.cend(); ///<holds the end iterator
+                                ///<only relevant if ensure_data() has not been called
         }
-        
+        /**
+         * @brief Filters a sequence of values based on a predicate.
+         * 
+         * 
+         * @param predicate A function to test each element for a condition. 
+         * @return an enumerable with the data filtered
+         */
         template <typename TFunc>
         requires Predicate<TFunc, TElement>()
         enumerable<TSource> where(TFunc predicate)
@@ -46,7 +62,14 @@ namespace cinq
         /*
         this is a comment block
         */
-        
+        /**
+         * @brief Filters a sequence of values based on a predicate. 
+         * Each element's index is used in the logic of the predicate function.
+         * 
+         * 
+         * @param predicate A function to test each element for a condition. 
+         * @return An enumerable that contains elements from the input sequence that satisfy the condition.
+         */
         template <typename TFunc>                                   
         requires Predicate<TFunc, TElement, size_t>()
         enumerable<TSource> where(TFunc predicate)
@@ -66,7 +89,12 @@ namespace cinq
             
             return *this;
         }
-
+        /**
+         * @brief Returns a number that represents how many elements in the specified sequence satisfy a condition.
+         * 
+         * @param predicate A function to test each element for a condition. 
+         * @return size_t equal to the number of elements for which the predicate is true
+         */
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         size_t count(TFunc predicate)
@@ -82,13 +110,30 @@ namespace cinq
             return count;
 
         }
-        
+        /**
+         * @brief Returns the number of elements in a sequence for 
+         * a Random_access_iterator container
+         * 
+         * 
+         * 
+         * @return number of elements in a sequence
+         */
         size_t count() requires Random_access_iterator<TIter>()
         {   
             if (is_data_copied) return data.size();
             else return end - begin;
         }
         
+
+
+        /**
+         * @brief Returns the number of elements in a sequence for 
+         * a Forward_iterator container
+         * 
+         * 
+         * 
+         * @return number of elements in a sequence
+         */
         size_t count() requires Forward_iterator<TIter>()
         {
             if (is_data_copied) return data.size();
@@ -100,6 +145,13 @@ namespace cinq
             }
         }
         //TODO: fix all
+        /**
+         * @brief Determines whether all elements of a sequence satisfy a condition.
+         * 
+         * 
+         * @param predicate A function to test each element for a condition.  
+         * @return bool which is true if the predicate is true for all elements
+         */
         template <typename TFunc> 
         requires Predicate<TFunc,TElement>() 
         bool all(TFunc predicate)
@@ -111,7 +163,13 @@ namespace cinq
 
             return true;
         }
-        
+        /**
+         * @brief Returns a specified number of contiguous elements from the start of a sequence.
+         * 
+         * 
+         * @param count number of elements
+         * @return specified number of contiguous elements
+         */
         enumerable<TSource> take(size_t count)
         {
             if (is_data_copied)
@@ -135,6 +193,13 @@ namespace cinq
         }
         
         // Try to catch a negative count before it gets casted into a huge size_t.
+        /**
+         * @brief Returns a specified number of contiguous elements from the start of a sequence.
+         * 
+         * 
+         * @param count number of elements
+         * @return specified number of contiguous elements
+         */
         enumerable<TSource> take(int count)
         {
             if (count >= 0) return take((size_t)count);
@@ -147,6 +212,13 @@ namespace cinq
             else throw invalid_argument("cinq: skip() was called with negative count");
         }
 
+        /**
+         * @brief [brief description]
+         * @details [long description]
+         * 
+         * @param count [description]
+         * @return [description]
+         */
         enumerable<TSource> skip(size_t count)
         {
 
@@ -205,6 +277,13 @@ namespace cinq
             return false;
         }
 
+        /**
+         * @brief [brief description]
+         * @details [long description]
+         * 
+         * @param index [description]
+         * @return [description]
+         */
         template <TElement&>
         TElement& element_at(int index)
         {
