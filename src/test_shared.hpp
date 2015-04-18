@@ -22,7 +22,7 @@ public:
 class test_perf
 {
 public:
-    test_perf(string name, function<void()> func)
+    test_perf(string name, function<void()> func, int run_count = 100)
     {
         this->name = name;
         this->func = [=]()
@@ -30,7 +30,7 @@ public:
             using namespace std::chrono;
             
             auto begin = high_resolution_clock::now();
-            func();
+            for (int i = 0; i < run_count; i++) func();
             auto end = high_resolution_clock::now();
             return duration_cast<milliseconds>(end - begin).count();
         };
