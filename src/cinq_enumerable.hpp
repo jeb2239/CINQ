@@ -28,12 +28,10 @@ namespace cinq
          */
         enumerable(TSource& source)
         {
-            is_data_copied = false; ///< set to true when ever the data is copied into data 
-                                    ///<set true by ensure_data()
-            begin = source.cbegin(); ///<holds the beginning iterator
-                                    ///<only relevant if ensure_data() has not been called
-            end = source.cend(); ///<holds the end iterator
-                                ///<only relevant if ensure_data() has not been called
+            is_data_copied = false;                        
+            begin = source.cbegin();       
+            end = source.cend(); 
+                                 
         }
         /**
          * @brief Filters a sequence of values based on a predicate.
@@ -213,11 +211,13 @@ namespace cinq
         }
 
         /**
-         * @brief [brief description]
-         * @details [long description]
+         * @brief Bypasses a specified number of elements in a sequence 
+         * and then returns the remaining elements.
          * 
-         * @param count [description]
-         * @return [description]
+         *
+         * 
+         * @param count number of elements to bypass
+         * @return the sequence of the remaining elements
          */
         enumerable<TSource> skip(size_t count)
         {
@@ -254,13 +254,13 @@ namespace cinq
         //using Equality_comparable concept
         //weird syntax but it works
         /**
-         * @brief [brief description]
-         * quick
-         * @details [long description]
-         * deets
+         * @brief Determines whether a sequence contains a specified element by using the default equality comparer.
          * 
-         * @param elem [description]
-         * @return [description]
+         * 
+         * 
+         * 
+         * @param elem element whose presence we are checking for
+         * @return bool which is true iff the sequence contains elem
          */
         template <TElement&> 
         requires Equality_comparable<TElement&>()
@@ -278,11 +278,11 @@ namespace cinq
         }
 
         /**
-         * @brief [brief description]
-         * @details [long description]
+         * @brief Returns the element at a specified index in a sequence, with range checking
          * 
-         * @param index [description]
-         * @return [description]
+         * 
+         * @param index returns the element at this number
+         * @return The element at the specified position in the source sequence.
          */
         template <TElement&>
         TElement& element_at(int index)
@@ -309,7 +309,12 @@ namespace cinq
 
         }
 
-        
+        /**
+         * @brief Returns the first element of a sequence.
+         *          
+         * 
+         * @return first element
+         */
         TElement first()
         {
 
@@ -317,6 +322,13 @@ namespace cinq
             else return *begin;
 
         }
+        /**
+         * @brief Returns the first element in a sequence that satisfies a specified condition.
+         * 
+         * 
+         * @param  predicate A function to test each element for a condition.  
+         * @return first element in a sequence that satisfies a specified condition.
+         */
 
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
@@ -338,7 +350,13 @@ namespace cinq
             return *iter;
 
         }
-
+        /**
+         * @brief Returns the last element of a sequence.
+         * 
+         * 
+         * 
+         * @return last element of a sequence
+         */
         TElement last()
         {
 
@@ -350,7 +368,13 @@ namespace cinq
             return *iter;
             }
         }
-
+        /**
+         * @brief Returns the last element of a sequence that satisfies a specified condition.
+         * 
+         * 
+         * @param predicate A function to test each element for a condition.
+         * @return last element that satisfies a specified condition
+         */
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         TElement last(TFunc predicate)
@@ -375,7 +399,14 @@ namespace cinq
 
 
         }
-
+        /**
+         * @brief Returns the only element of a sequence, and throws an exception if there 
+         * is not exactly one element in the sequence.
+         * 
+         * 
+         * 
+         * @return only element in the sequence
+         */
         TElement single()
         {
             if(is_data_copied )
@@ -389,7 +420,15 @@ namespace cinq
             return *begin;
 
         }
-
+        /**
+         * @brief Returns the only element of a sequence that satisfies a 
+         * specified condition, and throws an exception if more than one such element exists.
+         * 
+         * 
+         * @param predicate A function to test each element for a condition.
+         * @return only element of a sequence that satisfies a 
+         * specified condition
+         */
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         TElement single(TFunc predicate)
@@ -431,7 +470,11 @@ namespace cinq
 
 
 
-
+        /**
+         * @brief returns vector of data contained in enumerable
+         * 
+         * @return data
+         */
         vector<TElement> to_vector()
         {
             ensure_data();
@@ -455,10 +498,38 @@ namespace cinq
 
         
     private:
+        /**
+         * @brief begin iterator, only relevent if is_data_copied 
+         * is false
+         * 
+         */
+         /**
+          * @brief end iterator, only relevent if is_data_copied
+          * is false
+          * 
+          */
         TIter begin, end;
+        /**
+         * @brief stores the original container's
+         * data for processing
+         * 
+         * 
+         */
         vector<TElement> data;
+        /**
+         * @brief is set to true when our data has been copied.
+         * In most cases this will done by ensure_data()
+         * 
+         */
         bool is_data_copied;
-        
+        /**
+         * @brief this will check to see if the 
+         * passed in container has been copied to data.
+         * this optimization reduces usless copying.
+         * 
+         * 
+         * 
+         */
         void ensure_data()
         {
             if (is_data_copied) return;
@@ -474,6 +545,14 @@ namespace cinq
     friend class test;
     };
     
+    /**
+     * @brief [brief description]
+     * @details [long description]
+     * 
+     * @param source the container passed in by the user for processing
+     * @requires requires Container<T>()
+     * @return constructs a type enumerable from the container
+     */
     template <typename T>
     //requires Container<T>()
     auto from(T& source)

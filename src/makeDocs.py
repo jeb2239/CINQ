@@ -10,10 +10,10 @@ def commentReqs(filename):
     for line in lines:
         if "requires" not in line.strip().split(' ')[0]:
             modLines.append(line)
-        elif '///' in line and '//' in line:
+        elif '///' in line or '//' in line:
             modLines.append(line)
         else:
-            modLines.append("///"+line)
+            modLines.append("///@requires"+line)
 
     os.chdir('docs')
     nfd=open(filename,"w")
@@ -45,10 +45,11 @@ def eachSrc():
         break
 
     for name in filenames[0]:
-        if 'Doxyfile' in name : copyDoxy(name)
+       # if 'Doxyfile' in name : copyDoxy(name)
         if '.cpp' in name: commentReqs(name)
         if '.hpp' in name: commentReqs(name)
     os.chdir('docs')
+
 
     call("doxygen")
 
