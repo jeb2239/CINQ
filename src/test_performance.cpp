@@ -6,8 +6,19 @@ vector<test_perf> make_tests_perf()
     
     vector<test_perf> tests;
     
-    tests.push_back(test_perf("my great test", []
+    tests.push_back(test_perf("where() by temperature", [=]
     {
+        cinq::from(weather_data)
+              .where([](auto& x) -> bool { return x.temp_max > 90; });
+    }));
+    
+    tests.push_back(test_perf("where() by temperature - manual", [=]
+    {
+        vector<weather_point> result;
+        for (auto data : weather_data)
+        {
+            if (data.temp_max > 90) result.push_back(data);
+        }
     }));
     
     return tests;
