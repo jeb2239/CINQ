@@ -19,13 +19,13 @@ enum weather_event { fog, rain, thunderstorm, snow };
 class weather_point
 {
 public:
-    time_t date;
-    int temp_max, temp_mean, temp_min;
-    int dew_max, dew_mean, dew_min;
-    int humidity_max, humidity_mean, humidity_min;
-    double pressure_max, pressure_mean, pressure_min;
-    int visibility_max, visibility_mean, visibility_min;
-    int windspeed_max, windspeed_mean;
+    tm date;
+    int temp_max, temp_avg, temp_min;
+    int dew_max, dew_avg, dew_min;
+    int humidity_max, humidity_avg, humidity_min;
+    double pressure_max, pressure_avg, pressure_min;
+    int visibility_max, visibility_avg, visibility_min;
+    int windspeed_max, windspeed_avg;
     int gustspeed_max;
     double precipitation;
     int cloud_cover;
