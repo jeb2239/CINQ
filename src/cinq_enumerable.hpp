@@ -83,31 +83,23 @@ namespace cinq
 
 		return false;
 	}
-
-	//
-	//
-	// Concat
-	enumerable<TSource> concat(enumerable<TSource> second)
-	{
-		//possibly inefficient
-		std::vector<TElement> new_data;
-		new_data.reserve(std::distance(begin, end) + std::distance(second.begin, second.end));
-		new_data.insert(new_data.end(), begin, end);
-		new_data.insert(new_data.end(), second.begin, second.end);
-
-        data=new_data;
-        is_data_copied=true;
+    
+    /**
+     * @brief Concatenate another enumerable to this enumerable.
+     * 
+     * @param other the enumerable to append
+     * @return this enumerable with the other enumerable appended
+     */
+    enumerable<TSource> concat(enumerable<TSource> other)
+    {
+        ensure_data();
         
-		
-
-	
-		
-		
-		return *this; 
-	}
-
-
-
+        if (other.is_data_copied) data.insert(data.end(), other.data.cbegin(), other.data.cend());
+        else data.insert(data.end(), other.begin, other.end);
+        
+        return *this; 
+    }
+    
 	//
 	//
 	// Reverse
