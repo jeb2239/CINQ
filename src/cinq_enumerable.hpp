@@ -401,15 +401,18 @@ namespace cinq
          */
         TElement single()
         {
-            if(is_data_copied )
+            if (empty()) throw out_of_range("cinq: structure has no elements");
+            
+            if (is_data_copied)
             {
-                if(data.size()>1) throw invalid_argument("cinq: structure has more than one element");
+                if(data.size() > 1) throw out_of_range("cinq: structure has more than one element");
                 else return data[0];
             }
-            if(std::distance(begin,end)>1) //n time if container has no Random Access, constant otherwise
-                throw invalid_argument("cinq: structure has more than one element");
-
-            return *begin;
+            else
+            {
+                if(std::distance(begin,end) > 1) throw invalid_argument("cinq: structure has more than one element");
+                return *begin;
+            }
         }
         
         /**
