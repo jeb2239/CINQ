@@ -81,6 +81,40 @@ namespace cinq
             
             return *this;
         }
+
+	//
+	//
+	// Any
+	bool any() 
+	{
+		return !empty();
+	}
+
+	template <typename TFunc>
+	requires Predicate<TFunc,TElement>()
+	bool any(TFunc predicate)
+	{
+		ensure_data();
+		for(TElement i : data){
+			if(predicate(i)) return true;
+		}
+
+		return false;
+	}
+
+
+	//
+	//
+	// Reverse
+	enumerable<TSource> reverse()
+	{
+		//actually swaps data so actual data is reversed
+		//might be better to reverse direction of the iterators
+		//though I'm not sure if this is possible
+		ensure_data();
+		std::reverse(data.begin(), data.end());
+		return *this;
+	}
         
         /**
          * @brief Returns a number that represents how many elements in the specified sequence satisfy a condition.

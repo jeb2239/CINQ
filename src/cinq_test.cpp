@@ -94,6 +94,52 @@ vector<test> make_tests()
         std::vector<int> answer { 0, 1, 2 };
         return (result == answer);
     }));
+
+	tests.push_back(test("any() true unit test", []
+	{
+        std::vector<int> my_vector {0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+						.any();
+        bool answer = true;
+        return (result == answer);
+	}));
+
+	tests.push_back(test("any() false unit test", []
+	{
+        std::vector<int> my_vector {};
+        auto result = cinq::from(my_vector)
+						.any();
+        bool answer = false;
+        return (result == answer);
+	}));
+
+	tests.push_back(test("any(Predicate) true unit test", []
+	{
+        std::vector<int> my_vector {0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+						.any([](int x) { return x > 2; });
+        bool answer = true;
+        return (result == answer);
+	}));
+
+	tests.push_back(test("any(Predicate) false unit test", []
+	{
+        std::vector<int> my_vector {};
+        auto result = cinq::from(my_vector)
+						.any([](int x) { return x > 4; });
+        bool answer = false;
+        return (result == answer);
+	}));
+
+    tests.push_back(test("reverse() std::vector", []
+    {
+        std::vector<int> my_vector { 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+			.reverse()
+			.to_vector();
+        std::vector<int> answer { 4, 3, 2, 1, 0};
+        return (result == answer);
+    }));
     
     tests.push_back(test("count() std::array", []
     {
