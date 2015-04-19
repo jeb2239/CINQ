@@ -260,8 +260,7 @@ namespace cinq
          * @param index returns the element at this number
          * @return The element at the specified position in the source sequence.
          */
-        template <TElement&>
-        TElement& element_at(int index)
+        const TElement& element_at(size_t index)
         {
             if(is_data_copied)
             {
@@ -269,28 +268,38 @@ namespace cinq
             }
             else
             {
-
                 auto iter = begin;
                 // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
-                while (index > 0 && end != iter)
+                while (index > 0)
                 {
+                    if (end != iter) throw out_of_range("index out of range");
                     ++iter;
                     index--;
                 }
                 return *iter;
             }
         }
-
+        
+        /**
+         * @brief Returns the element at a specified index in a sequence, with range checking
+         * 
+         * @param index returns the element at this number
+         * @return The element at the specified position in the source sequence.
+         */
+        const TElement& element_at(int index)
+        {
+            if (index >= 0) return element_at((size_t)index);
+            else throw out_of_range("cinq: element_at() was called with negative index");
+        }
+        
         /**
          * @brief Returns the first element of a sequence.
          * 
          * @return first element
          */
-        TElement first()
+        const TElement& first()
         {
-
-            if(is_data_copied) return data[0];
-            else return *begin;
+            return element_at((size_t)0);
         }
         
         /**

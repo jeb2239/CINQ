@@ -494,7 +494,7 @@ vector<test> make_tests()
              return result == answer;
 
         }));
-
+/*
      tests.push_back(test("orderby(void),  std::vector int",[]{
 
             std::vector<int> my_vector{5,6,1,3};
@@ -512,7 +512,7 @@ vector<test> make_tests()
              return result == answer;
 
         }));
-/*
+
       tests.push_back(test("orderby(void),  std::vector int",[]{
 
             std::vector<int> my_vector{5,6,1,3};
