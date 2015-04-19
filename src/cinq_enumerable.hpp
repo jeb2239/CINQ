@@ -131,6 +131,17 @@ namespace cinq
             }
         }
         
+        /**
+         * @brief Tests whether the enumerable contains no elements.
+         * 
+         * @return true if the enumerable contains no elements. false otherwise.
+         */
+        bool empty()
+        {
+           if (is_data_copied) return (data.size() == 0);
+           else return (begin == end); 
+        }
+        
         //TODO: fix all
         /**
          * @brief Determines whether all elements of a sequence satisfy a condition.
@@ -312,14 +323,21 @@ namespace cinq
         requires Predicate<TFunc, TElement>()
         TElement first(TFunc predicate)
         {
-            auto iter = is_data_copied ? data.cbegin() : begin;
-            
-            while (!predicate(*iter))
+            if (is_data_copied)
             {
-                if (end == iter) throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+                for (TElement& i : data)
+                {
+                    if (predicate(i)) return i;
+                }
             }
-            
-            return *iter;
+            else
+            {
+                for (auto iter = begin; iter != end; ++iter)
+                {
+                    if (predicate(*iter)) return *iter;
+                }
+            }
+            throw invalid_argument("cinq: no element satisfies the condition in predicate");
         }
         
         /**
@@ -329,8 +347,9 @@ namespace cinq
          */
         TElement last()
         {
-
-            if (is_data_copied) return data[data.size()-1];
+            if (empty()) throw out_of_range("cinq: cannot get last element of empty enumerable");
+            
+            if (is_data_copied) return data[data.size() - 1];
             else
             {
                 auto iter = end;
