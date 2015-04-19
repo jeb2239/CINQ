@@ -6,6 +6,8 @@
 #include <list>
 #include <string>
 #include <deque>
+#include <functional>
+#include <initializer_list>
 
 #include "cinq_enumerable.hpp"
 #include "all_concepts.hpp"

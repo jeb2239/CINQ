@@ -315,6 +315,238 @@ vector<test> make_tests()
 
         return result=="cat";
     }));
+
+    tests.push_back(test("first() std::vector; ", []
+    {
+        std::vector<string> my_vector {"cat","dog","rabbit","turtle"};
+
+        auto result = cinq::from(my_vector)
+                            .first();
+
+
+        return result=="cat";
+    }));
+
+    tests.push_back(test("first() ensure_data std::vector; ", [] {
+
+        std::vector<string> my_vector {"cat","dog","rabbit","turtle"};
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.first();
+
+        return result=="cat";
+
+    }));
+
+
+
+    tests.push_back(test("first(predicate) ensure_data std::vector str; ",[] {
+
+        std::vector<string> my_vector{"cat","dog","rabbit","turtle"};
+        auto temp = cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.first([](string x){return x=="rabbit";});
+
+        return result == "rabbit";
+
+
+
+    }));
+    tests.push_back(test("first(predicate) std::vector str; ",[] {
+
+        std::vector<string> my_vector{"cat","dog","rabbit","turtle"};
+        auto result = cinq::from(my_vector).first([](string x){return x=="rabbit";});
+        return result == "rabbit";
+    }));
+    tests.push_back(test("first(predicate) std::list ints; ",[] {
+
+        std::list<int> my_list{1,2,4,5};
+        auto result = cinq::from(my_list).first([](int x){return x==5;});
+        return result == 5;
+
+    }));
+    tests.push_back(test("first(predicate) ensure_data std::list doubles; ",[] {
+        std::list<double> my_list{1.435,2.4345,4.454,5.5555};
+        auto temp = cinq::from(my_list);
+        temp.ensure_data();
+        auto result = temp.first([](double x){return x>4;});
+        return result == 4.454;
+
+    }));
+    tests.push_back(test("last(predicate) ensure_data std::vector strings; ",[] {
+        std::vector<string> my_vector{"C++","python","ada", "Ocaml","C#"};
+        auto temp =cinq::from(my_vector);
+        temp.ensure_data();
+
+        auto result = temp.last([](string x){return x.length()>3;});
+        
+        return result=="Ocaml";
+
+
+    }));
+
+    tests.push_back(test("last()  std::list int; ",[] {
+
+        std::list<int> my_list{1,2,4,5,7};
+        auto result =cinq::from(my_list).last();
+
+        return result==7;
+
+
+    }));
+    tests.push_back(test("last() ensure_data std::list int; ",[] {
+
+        std::list<int> my_list{1,2,4,5,7};
+        auto temp =cinq::from(my_list);
+        temp.ensure_data();
+        auto result = temp.last();
+
+        return result==7;
+
+        }));
+
+     tests.push_back(test("single() ensure_data std::list string",[]{
+
+        std::list<string> my_list{"cat" /*,"apple","face","snake"*/};
+        auto temp=cinq::from(my_list);
+        temp.ensure_data();
+        auto result = temp.single();
+        return result=="cat";
+
+     }));
+
+     tests.push_back(test("single()  std::list string",[]{
+
+        std::list<string> my_list{"cat" /*,"apple","face","snake"*/};
+        auto temp=cinq::from(my_list);
+      //  temp.ensure_data();
+        auto result = temp.single();
+        return result=="cat";
+
+     }));
+
+     tests.push_back(test("single()  std::vector string",[]{
+
+        std::vector<string> my_vector{"cat"};
+        auto temp=cinq::from(my_vector);
+        temp.ensure_data();
+        auto result = temp.single();
+        return result=="cat";
+
+
+    }));
+
+     tests.push_back(test("single(predicate) ensure_data std::vector string",[]{
+
+            std::vector<string> my_vector{"cat","dog","goat","pig"};
+            auto temp = cinq::from(my_vector);
+            temp.ensure_data();
+            auto result = temp.single([](string x){return x.length()==4;});
+            return result=="goat";
+
+
+         }));
+
+     tests.push_back(test("single(predicate) std::vector string",[]{
+
+            std::vector<string> my_vector{"cat","dog","goat","pig"};
+            auto temp = cinq::from(my_vector);
+            //temp.ensure_data();
+            auto result = temp.single([](string x){return x.length()==4;});
+            return result=="goat";
+
+
+         }));
+
+     tests.push_back(test("skip(string) std::vector string",[]{
+
+             std::vector<string> my_vector{"cat","dog","goat","pig"};
+             auto temp = cinq::from(my_vector);
+            // temp.ensure_data();
+            auto result= temp.skip(2).to_vector();
+           // for(string a: result) cout<<a<<endl;
+             std::vector<string> answer{"goat","pig"};
+             return result == answer;
+
+
+    }));
+
+     tests.push_back(test("skip(string) ensure_data std::vector string",[]{
+
+                std::vector<string> my_vector{"cat","dog","goat","pig"};
+             auto temp = cinq::from(my_vector);
+             temp.ensure_data();
+            auto result= temp.skip(2).to_vector();
+           // for(string a: result) cout<<a<<endl;
+             std::vector<string> answer{"goat","pig"};
+             return result == answer;
+
+        }));
+
+     tests.push_back(test("skip(string) std::list string",[]{
+
+            std::list<string> my_vector{"cat","dog","goat","pig"};
+             auto temp = cinq::from(my_vector);
+             //temp.ensure_data();
+            auto result= temp.skip(2).to_vector();
+           // for(string a: result) cout<<a<<endl;
+             std::vector<string> answer{"goat","pig"};
+             return result == answer;
+
+        }));
+/*
+     tests.push_back(test("orderby(void),  std::vector int",[]{
+
+            std::vector<int> my_vector{5,6,1,3};
+            std::initializer_list<function<int(int)>> func_vec={
+                            [](int x){return 0;},
+                            [](int x){return x;}
+                        };
+             auto result = cinq::from(my_vector)
+                        .order_by<int(int)>(func_vec).to_vector();
+                        
+             //temp.ensure_data();
+           
+           // for(string a: result) cout<<a<<endl;
+             std::vector<int> answer{1,3,5,6};
+             return result == answer;
+
+        }));
+
+      tests.push_back(test("orderby(void),  std::vector int",[]{
+
+            std::vector<int> my_vector{5,6,1,3};
+             auto result = cinq::from(my_vector)
+                        .order_by()
+                        .to_vector();
+             //temp.ensure_data();
+           
+           // for(string a: result) cout<<a<<endl;
+             std::vector<int> answer{1,3,5,6};
+             return result == answer;
+
+        }));
+
+       tests.push_back(test("orderby(void),  std::vector string",[]{
+
+            std::vector<string> my_vector{"cat","dog","goat","pig"};
+             auto result = cinq::from(my_vector)
+                        .order_by()
+                        .to_vector();
+             //temp.ensure_data();
+           
+           // for(string a: result) cout<<a<<endl;
+                   std::vector<string> answer=my_vector;
+                    std::sort(answer.begin(),answer.end());
+             
+             return result == answer;
+
+        }));
+
+
+*/
+
+
     
     tests.push_back(test("max() on int", []
     {

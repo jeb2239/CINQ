@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 
+
 #include "all_concepts.hpp"
 #include "cinq_test.hpp"
 
@@ -17,15 +18,25 @@ namespace cinq
     class enumerable
     {
     public:
-        //template <typename TSource>
-        //requires Container<TSource>()
-        enumerable(TSource& source)
+        /**
+         * @brief A wrapper which allows cinq to operate on various containers
+         * 
+         * @param source the source container which
+         * provides the data cinq operates on
+         */
+        enumerable(TSource& source) // requires Container<TSource>()
         {
             is_data_copied = false;
             begin = source.cbegin();
             end = source.cend();
         }
         
+        /**
+         * @brief Filters a sequence of values based on a predicate.
+         * 
+         * @param predicate A function to test each element for a condition. 
+         * @return an enumerable with the data filtered
+         */
         template <typename TFunc>
         requires Predicate<TFunc, TElement>()
         enumerable<TSource> where(TFunc predicate)
@@ -44,7 +55,14 @@ namespace cinq
             return *this;
         }
         
-        template <typename TFunc>
+        /**
+         * @brief Filters a sequence of values based on a predicate. 
+         * Each element's index is used in the logic of the predicate function.
+         * 
+         * @param predicate A function to test each element for a condition. 
+         * @return An enumerable that contains elements from the input sequence that satisfy the condition.
+         */
+        template <typename TFunc>                                   
         requires Predicate<TFunc, TElement, size_t>()
         enumerable<TSource> where(TFunc predicate)
         {
@@ -64,10 +82,12 @@ namespace cinq
             return *this;
         }
         
-        // ARITHMETIC
-        
-        // Count
-
+        /**
+         * @brief Returns a number that represents how many elements in the specified sequence satisfy a condition.
+         * 
+         * @param predicate A function to test each element for a condition. 
+         * @return size_t equal to the number of elements for which the predicate is true
+         */
         template <typename TFunc>
         requires Predicate<TFunc,TElement>()
         size_t count(TFunc predicate)
@@ -83,13 +103,24 @@ namespace cinq
             return count;
 
         }
-        
+        /**
+         * @brief Returns the number of elements in a sequence for 
+         * a Random_access_iterator container
+         * 
+         * @return number of elements in a sequence
+         */
         size_t count() requires Random_access_iterator<TIter>()
         {   
             if (is_data_copied) return data.size();
             else return end - begin;
         }
         
+        /**
+         * @brief Returns the number of elements in a sequence for 
+         * a Forward_iterator container
+         * 
+         * @return number of elements in a sequence
+         */
         size_t count() requires Forward_iterator<TIter>()
         {
             if (is_data_copied) return data.size();
@@ -99,12 +130,6 @@ namespace cinq
                 for (auto iter = begin; iter != end; ++iter) count++;
                 return count;
             }
-        }
-        
-        inline bool empty()
-        {
-            if (is_data_copied) return (data.size() == 0);
-            else return (begin == end);
         }
         
         // Max
@@ -293,7 +318,25 @@ namespace cinq
             return sum / count;
         }
         
-        template <typename TFunc>
+        /**
+         * @brief Tests whether the enumerable contains no elements.
+         * 
+         * @return true if the enumerable contains no elements. false otherwise.
+         */
+        inline bool empty()
+        {
+           if (is_data_copied) return (data.size() == 0);
+           else return (begin == end); 
+        }
+        
+        //TODO: fix all
+        /**
+         * @brief Determines whether all elements of a sequence satisfy a condition.
+         * 
+         * @param predicate A function to test each element for a condition.  
+         * @return bool which is true if the predicate is true for all elements
+         */
+        template <typename TFunc> 
         requires Predicate<TFunc,TElement>()
         bool all(TFunc predicate)
         {
@@ -305,6 +348,13 @@ namespace cinq
             return true;
         }
         
+        /**
+         * @brief Returns a specified number of contiguous elements from the start of a sequence.
+         * 
+         * 
+         * @param count number of elements
+         * @return specified number of contiguous elements
+         */
         enumerable<TSource> take(size_t count)
         {
             if (is_data_copied)
@@ -328,40 +378,357 @@ namespace cinq
         }
         
         // Try to catch a negative count before it gets casted into a huge size_t.
+        /**
+         * @brief Returns a specified number of contiguous elements from the start of a sequence.
+         * 
+         * 
+         * @param count number of elements
+         * @return specified number of contiguous elements
+         */
         enumerable<TSource> take(int count)
         {
             if (count >= 0) return take((size_t)count);
             else throw invalid_argument("cinq: take() was called with negative count");
         }
+
+        enumerable<TSource> skip(int count)
+        {
+            if (count >= 0) return skip((size_t)count);
+            else throw invalid_argument("cinq: skip() was called with negative count");
+        }
+
+        /**
+         * @brief Bypasses a specified number of elements in a sequence 
+         * and then returns the remaining elements.
+         * 
+         * @param count number of elements to bypass
+         * @return the sequence of the remaining elements
+         */
+        enumerable<TSource> skip(size_t count)
+        {
+
+                //the could be a much better way to this
+               // ensure_data();
+            if(is_data_copied)
+            {
+                if(data.size()<count) throw invalid_argument("cinq: wtf"); 
+                data.erase(data.cbegin(),data.cbegin()+count);
+            }
+
+            else
+            {
+                auto iter = begin;
+                // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
+                while (count > 0 && end != iter)
+                {
+
+                    ++iter;
+
+                    count--;
+                }
+                begin = iter; //there will probably be a memory leak, still reachable
+                
+            }
+            return *this;
+        }
         
-        //some weird shit is going on here with std::string
-        //using Equality_comparable concept
-        //weird syntax but it works
-        template <TElement&>
+        /**
+         * @brief Determines whether a sequence contains a specified element by using the default equality comparer.
+         * 
+         * @param elem element whose presence we are checking for
+         * @return bool which is true iff the sequence contains elem
+         */
+        template <TElement&> 
         requires Equality_comparable<TElement&>()
         bool contains(TElement& elem)
         {
             ensure_data();
 
-            for(TElement& i : data){
-
+            for(TElement& i : data)
+            {
                 if(elem==i) return true;
             }
 
             return false;
         }
+
+        /**
+         * @brief Returns the element at a specified index in a sequence, with range checking
+         * 
+         * @param index returns the element at this number
+         * @return The element at the specified position in the source sequence.
+         */
+        const TElement& element_at(size_t index)
+        {
+            if(is_data_copied)
+            {
+                return data.at(index);
+            }
+            else
+            {
+                auto iter = begin;
+                // This loop looks wrong, but the ending iterator should be 1 beyond the last element.
+                while (index > 0)
+                {
+                    if (end != iter) throw out_of_range("index out of range");
+                    ++iter;
+                    index--;
+                }
+                return *iter;
+            }
+        }
         
+        /**
+         * @brief Returns the element at a specified index in a sequence, with range checking
+         * 
+         * @param index returns the element at this number
+         * @return The element at the specified position in the source sequence.
+         */
+        const TElement& element_at(int index)
+        {
+            if (index >= 0) return element_at((size_t)index);
+            else throw out_of_range("cinq: element_at() was called with negative index");
+        }
+        
+        /**
+         * @brief Returns the first element of a sequence.
+         * 
+         * @return first element
+         */
+        const TElement& first()
+        {
+            return element_at((size_t)0);
+        }
+        
+        /**
+         * @brief Returns the first element in a sequence that satisfies a specified condition.
+         * 
+         * @param  predicate A function to test each element for a condition.  
+         * @return first element in a sequence that satisfies a specified condition.
+         */
+        template <typename TFunc>
+        requires Predicate<TFunc, TElement>()
+        TElement first(TFunc predicate)
+        {
+            if (is_data_copied)
+            {
+                for (TElement& i : data)
+                {
+                    if (predicate(i)) return i;
+                }
+            }
+            else
+            {
+                for (auto iter = begin; iter != end; ++iter)
+                {
+                    if (predicate(*iter)) return *iter;
+                }
+            }
+            throw invalid_argument("cinq: no element satisfies the condition in predicate");
+        }
+        
+        /**
+         * @brief Returns the last element of a sequence.
+         * 
+         * @return last element of a sequence
+         */
+        TElement last()
+        {
+            if (empty()) throw out_of_range("cinq: cannot get last element of empty enumerable");
+            
+            if (is_data_copied) return data[data.size() - 1];
+            else
+            {
+                auto iter = end;
+                --iter;
+                return *iter;
+            }
+        }
+        
+        /**
+         * @brief Returns the last element of a sequence that satisfies a specified condition.
+         * 
+         * @param predicate A function to test each element for a condition.
+         * @return last element that satisfies a specified condition
+         */
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        TElement last(TFunc predicate)
+        {
+            if (empty()) throw out_of_range("cinq: cannot get last element of empty enumerable");
+            
+            if(is_data_copied)
+            {
+                for (size_t i = data.size() - 1; i >= 0; --i)
+                {
+                    if(predicate(data[i])) return data[i];
+                }
+            }
+            else
+            {
+                auto iter = end;
+                --iter; //because end points to one past the end
+                while (!predicate(*iter) && begin != iter) --iter;
+                
+                do
+                {
+                    --iter;
+                    if (predicate(*iter)) return *iter;
+                } while (iter != begin);
+            }
+            
+            throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+        }
+        
+        /**
+         * @brief Returns the only element of a sequence, and throws an exception if there 
+         * is not exactly one element in the sequence.
+         * 
+         * @return only element in the sequence
+         */
+        TElement single()
+        {
+            if (empty()) throw out_of_range("cinq: structure has no elements");
+            
+            if (is_data_copied)
+            {
+                if(data.size() > 1) throw out_of_range("cinq: structure has more than one element");
+                else return data[0];
+            }
+            else
+            {
+                if(std::distance(begin,end) > 1) throw invalid_argument("cinq: structure has more than one element");
+                return *begin;
+            }
+        }
+        
+        /**
+         * @brief Returns the only element of a sequence that satisfies a 
+         * specified condition, and throws an exception if more than one such element exists.
+         * 
+         * @param predicate A function to test each element for a condition.
+         * @return only element of a sequence that satisfies a 
+         * specified condition
+         */
+        template <typename TFunc>
+        requires Predicate<TFunc, TElement>()
+        TElement single(TFunc predicate)
+        {
+                bool found = false;
+                
+                if (is_data_copied)
+                {
+                    size_t return_idx;
+                    for (size_t i = 0; i < data.size(); i++)
+                    {
+                        bool matches = predicate(data[i]);
+                        if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
+                        if (matches)
+                        {
+                            found = true;
+                            return_idx = i;
+                        }
+                    }
+                    return data[return_idx];
+                }
+                else
+                {
+                    TElement rv;
+                    for (auto iter = begin; iter != end; ++iter)
+                    {
+                        bool matches = predicate(*iter);
+                        if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
+                        if (matches)
+                        {
+                            found = true;
+                            rv = *iter;
+                        }
+                    }
+                    return rv;
+                }
+        }
+        
+        /**
+         * @brief returns vector of data contained in enumerable
+         * 
+         * @return data
+         */
         vector<TElement> to_vector()
         {
             ensure_data();
             return data;
         }
         
+        template<typename TFunc>
+        requires Invokable<TFunc>()
+        enumerable<TSource> order_by(vector<TFunc> func_list) 
+        {
+            ensure_data();
+            orderBuilder<TFunc> ob = func_list;
+            std::stable_sort(data.begin(),data.end(),ob);
+
+            return *this;
+
+
+        }
+
+        
+
+        
     private:
-        TIter begin, end;
+        
+        template<typename TFunc>
+        struct orderBuilder{
+
+            std::vector<TFunc> mappers;
+
+
+            orderBuilder(std::vector<TFunc> func_list){
+                mappers=func_list;
+
+            }
+
+         bool operator()(TElement& e1, TElement& e2){
+
+                for(TFunc mapper: mappers){
+                    if(mapper(e1)!=mapper(e2))
+                        return mapper(e1)<mapper(e2);
+                }
+                return false;
+            }
+        };
+
+        /**
+         * @brief begin iterator, only relevent if is_data_copied 
+         * is false
+         * 
+         */
+        TIter begin;
+        
+        /**
+          * @brief end iterator, only relevent if is_data_copied
+          * is false
+          * 
+          */
+        TIter end;
+        
+        /**
+         * @brief stores the original container's
+         * data for processing
+         */
         vector<TElement> data;
+        /**
+         * @brief is set to true when our data has been copied.
+         * In most cases this will done by ensure_data()
+         */
+        
         bool is_data_copied;
         
+        /**
+         * @brief this will check to see if the 
+         * passed in container has been copied to data.
+         * this optimization reduces usless copying.
+         */
         void ensure_data()
         {
             if (is_data_copied) return;
@@ -382,6 +749,13 @@ namespace cinq
     friend class test;
     };
     
+    /**
+     * @brief Convenience method for constructing enumerable objects.
+     * 
+     * @param source the container passed in by the user for processing
+     * @requires requires Container<T>()
+     * @return constructs a type enumerable from the container
+     */
     template <typename T>
     //requires Container<T>()
     auto from(T& source)
@@ -390,6 +764,10 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
+
+
+
+
 }
 
 #endif
