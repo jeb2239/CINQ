@@ -101,8 +101,23 @@ namespace cinq
 
 		return false;
 	}
-
-
+    
+    /**
+     * @brief Concatenate another enumerable to this enumerable.
+     * 
+     * @param other the enumerable to append
+     * @return this enumerable with the other enumerable appended
+     */
+    enumerable<TSource> concat(enumerable<TSource> other)
+    {
+        ensure_data();
+        
+        if (other.is_data_copied) data.insert(data.end(), other.data.cbegin(), other.data.cend());
+        else data.insert(data.end(), other.begin, other.end);
+        
+        return *this; 
+    }
+    
 	//
 	//
 	// Reverse

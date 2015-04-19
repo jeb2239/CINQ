@@ -131,6 +131,36 @@ vector<test> make_tests()
         return (result == answer);
 	}));
 
+	tests.push_back(test("concat() std::vector", []
+	{
+        std::vector<int> my_vector1 {1,1,2};
+        std::vector<int> my_vector2 {3,4,5};
+        auto result = cinq::from(my_vector1)
+						.concat(cinq::from(my_vector2))
+						.to_vector();
+        std::vector<int> answer {1,1,2,3,4,5} ;
+		
+
+        return (result == answer);
+	}));
+
+    tests.push_back(test("concat().where() std::vector<string>", []
+    {
+
+        std::vector<string> my_vector1 {"hi"};
+        std::vector<string> my_vector2 {"by"};
+        auto result = cinq::from(my_vector1)
+                        .concat(cinq::from(my_vector2)).where([](string x){return x=="hi";})
+                        .to_vector();
+        
+        std::vector<string> answer {"hi"} ;
+        
+
+        return (result == answer);
+    }));
+
+
+
     tests.push_back(test("reverse() std::vector", []
     {
         std::vector<int> my_vector { 0, 1, 2, 3, 4};
