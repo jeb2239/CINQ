@@ -43,14 +43,12 @@ namespace cinq
         {
             ensure_data();
             
-            for (size_t i = 0; i < data.size(); i++)
+            vector<TElement> updated;
+            for (auto element : data)
             {
-                if (!predicate(data[i]))
-                {
-                    data.erase(data.cbegin() + i);
-                    i--;
-                }
+                if (predicate(element)) updated.push_back(element);
             }
+            data = updated;
             
             return *this;
         }
@@ -68,16 +66,12 @@ namespace cinq
         {
             ensure_data();
             
-            size_t original_index = 0;
+            vector<TElement> updated;
             for (size_t i = 0; i < data.size(); i++)
             {
-                if (!predicate(data[i], original_index))
-                {
-                    data.erase(data.cbegin() + i);
-                    i--;
-                }
-                original_index++;
+                if (predicate(data[i], i)) updated.push_back(data[i]);
             }
+            data = updated;
             
             return *this;
         }
@@ -782,11 +776,8 @@ namespace cinq
         {
             if (is_data_copied) return;
             
-            vector<TElement> copy;
-            for (auto iter = begin; iter != end; ++iter) copy.push_back(*iter);
-            
-            is_data_copied=true; // should be set to true after copy right
-            data = copy;
+            data = vector<TElement>(begin, end);
+            is_data_copied = true;
         }
         
         inline void ensure_nonempty()

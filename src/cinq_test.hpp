@@ -11,23 +11,14 @@
 
 #include "cinq_enumerable.hpp"
 #include "all_concepts.hpp"
+#include "test_shared.hpp"
+#include "test_performance.hpp"
 
 using namespace std;
 using namespace origin;
 
-class test
-{
-public:
-    test(string name, function<bool()> func)
-    {
-        this->name = name;
-        this->func = func;
-    }
-    
-    string name;
-    function<bool()> func;
-};
-
+int test_correctness();
+void test_performance();
 vector<test> make_tests();
 
 #endif
