@@ -424,42 +424,41 @@ namespace cinq
          * specified condition
          */
         template <typename TFunc>
-        requires Predicate<TFunc,TElement>()
+        requires Predicate<TFunc, TElement>()
         TElement single(TFunc predicate)
         {
                 bool found = false;
                 
-                if(is_data_copied)
+                if (is_data_copied)
                 {
                     size_t return_idx;
-                for(size_t i=0;i<data.size();i++)
-                {
-                    if(found && predicate(data[i]))
-                        throw invalid_argument("cinq: more than one element satisfies the predicate");
-                    if(predicate(data[i]))
+                    for (size_t i = 0; i < data.size(); i++)
                     {
-                     found = true;
-                     return_idx=i;
+                        bool matches = predicate(data[i]);
+                        if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
+                        if (matches)
+                        {
+                            found = true;
+                            return_idx = i;
+                        }
                     }
+                    return data[return_idx];
                 }
-                return data[return_idx];
-                }
-                
-
-                
-                TElement rv;
-                for(auto iter=begin;iter!=end;++iter)
+                else
                 {
-                    if(found && predicate(*iter))
-                     throw invalid_argument("cinq: more than one element satisfies the predicate");
-                    if(predicate(*iter))
+                    TElement rv;
+                    for (auto iter = begin; iter != end; ++iter)
                     {
-                        found=true;
-                        rv=*iter;
-
+                        bool matches = predicate(*iter);
+                        if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
+                        if (matches)
+                        {
+                            found = true;
+                            rv = *iter;
+                        }
                     }
+                    return rv;
                 }
-                return rv;
         }
         
         /**
