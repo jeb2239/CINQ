@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 
+
 #include "all_concepts.hpp"
 #include "cinq_test.hpp"
 
@@ -483,21 +484,45 @@ namespace cinq
 
 
         
-        
-        enumerable<TSource> order_by() requires Weakly_ordered<TElement&>()
+        template<typename TFunc>
+        requires Invokable<TFunc>()
+        enumerable<TSource> order_by(vector<TFunc> func_list) 
         {
             ensure_data();
-
-            std::sort(data.begin(),data.end());
+            orderBuilder<TFunc> ob = func_list;
+            std::stable_sort(data.begin(),data.end(),ob);
 
             return *this;
 
 
         }
+
         
 
         
     private:
+        
+        template<typename TFunc>
+        struct orderBuilder{
+
+            std::vector<TFunc> mappers;
+
+
+            orderBuilder(std::vector<TFunc> func_list){
+                mappers=func_list;
+
+            }
+
+         bool operator()(TElement& e1, TElement& e2){
+
+                for(TFunc mapper: mappers){
+                    if(mapper(e1)!=mapper(e2))
+                        return mapper(e1)<mapper(e2);
+                }
+                return false;
+            }
+        };
+
         /**
          * @brief begin iterator, only relevent if is_data_copied 
          * is false
@@ -508,7 +533,13 @@ namespace cinq
           * is false
           * 
           */
-        TIter begin, end;
+        TIter begin;
+        /**
+          * @brief end iterator, only relevent if is_data_copied
+          * is false
+          * 
+          */
+        TIter end;
         /**
          * @brief stores the original container's
          * data for processing
