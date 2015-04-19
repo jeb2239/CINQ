@@ -2,6 +2,7 @@
 import os
 from os.path import isfile
 from subprocess import call
+import shutil
 
 def commentReqs(filename):
     fp=open(filename,'r')
@@ -14,9 +15,9 @@ def commentReqs(filename):
             modLines.append(line)
         else:
             modLines.append("///@requires"+line)
-
-    os.chdir('docs')
-    nfd=open(filename,"w")
+    
+    os.chdir('./src/')
+    nfd=open(os.path.basename(filename), "w")
     nfd.writelines(modLines)
     os.chdir('../')
 
@@ -30,27 +31,27 @@ def copyDoxy(filename):
     nfd=open(filename,"w")
     nfd.writelines(modLines)
     os.chdir('../')
-        
 
 def eachSrc():
     try:
-     os.mkdir('docs')
+        os.mkdir('src')
     except(OSError):
         pass
-    
+
     filenames=[]
 
-    for (dirpath, dirnames, f) in os.walk('./'):
-        filenames.append(f)
+    for (dirpath, dirnames, dirfiles) in os.walk('../src/'):
+        for dirfile in dirfiles:
+            filenames.append(os.path.join(dirpath, dirfile))
         break
 
-    for name in filenames[0]:
+    for name in filenames:
        # if 'Doxyfile' in name : copyDoxy(name)
         if '.cpp' in name: commentReqs(name)
         if '.hpp' in name: commentReqs(name)
-    os.chdir('docs')
-
 
     call("doxygen")
+    
+    shutil.rmtree('src')
 
 eachSrc()

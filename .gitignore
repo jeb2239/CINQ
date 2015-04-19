@@ -1,4 +1,5 @@
 *.o
 cinq_test
+docs/html/
 
 *.DS_Store
