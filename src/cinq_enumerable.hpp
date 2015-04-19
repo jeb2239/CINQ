@@ -309,24 +309,17 @@ namespace cinq
          * @return first element in a sequence that satisfies a specified condition.
          */
         template <typename TFunc>
-        requires Predicate<TFunc,TElement>()
+        requires Predicate<TFunc, TElement>()
         TElement first(TFunc predicate)
         {
-            if(is_data_copied)
+            auto iter = is_data_copied ? data.cbegin() : begin;
+            
+            while (!predicate(*iter))
             {
-            for(TElement& i: data)
-                if(predicate(i)) return i;                       
-                throw invalid_argument("cinq: no element satisfies the condition in predicate ");
+                if (end == iter) throw invalid_argument("cinq: no element satisfies the condition in predicate ");
             }
-
-            auto iter = begin;
-            while (!predicate(*iter) && end != iter) ++iter;
-
-            if(!predicate(*iter))
-                throw invalid_argument("cinq: no element satisfies the condition in predicate ");
-
+            
             return *iter;
-
         }
         
         /**
