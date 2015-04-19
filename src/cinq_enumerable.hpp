@@ -702,12 +702,13 @@ namespace cinq
             return data;
         }
         
-        template<typename TFunc>
-        requires Invokable<TFunc>()
-        enumerable<TSource> order_by(vector<TFunc> func_list) 
+        template<typename ... TFunc>
+       // requires Invokable<TFunc ...>() && Totally_ordered<result_of<TFunc ...>>()
+        enumerable<TSource> order_by(typename std::forward<std::function<void(TFunc...)>>::type first,TFunc ... rest) 
         {
             ensure_data();
-            orderBuilder<TFunc> ob = func_list;
+            orderBuilder ob;
+            ob.loadBuilder<TFunc...>(first,rest...);
             std::stable_sort(data.begin(),data.end(),ob);
 
             return *this;
@@ -720,20 +721,34 @@ namespace cinq
         
     private:
         
-        template<typename TFunc>
+        
+        template<typename ... TFunc>
         struct orderBuilder{
 
-            std::vector<TFunc> mappers;
+            std::vector<typename std::forward<std::function<void(TFunc...)>>::type> mappers;
 
-
-            orderBuilder(std::vector<TFunc> func_list){
-                mappers=func_list;
+           
+           void loadBuilder(typename std::forward<std::function<void(TFunc...)>>::type first, TFunc ... rest){
+                mappers.push_back(first);
+                loadBuilder(rest...);
 
             }
 
-         bool operator()(TElement& e1, TElement& e2){
+           void loadBuilder(typename std::forward<std::function<void(TFunc...)>>::type first){
+            mappers.push_back(first);
+            
 
-                for(TFunc mapper: mappers){
+            }
+            void loadBuilder(){
+
+            }
+
+            
+
+
+         bool operator()(TElement e1, TElement e2){
+
+                for(typename std::forward<std::function<void(TFunc...)>>::type mapper: mappers){
                     if(mapper(e1)!=mapper(e2))
                         return mapper(e1)<mapper(e2);
                 }
