@@ -76,14 +76,22 @@ namespace cinq
             return *this;
         }
 
-	//
-	//
-	// Any
+	/**
+     * @brief Determines whether a sequence contains any elements.
+     * 
+     * @return true if the source sequence contains any elements; otherwise, false.
+     */
 	bool any() 
 	{
 		return !empty();
 	}
-
+    /**
+     * @brief Determines whether any element of a sequence satisfies a condition.
+     * 
+     * @param predicate A function to test each element for a condition.
+     * @return true if any elements in the source sequence pass the test 
+     * in the specified predicate; otherwise, false.
+     */
 	template <typename TFunc>
 	requires Predicate<TFunc,TElement>()
 	bool any(TFunc predicate)
@@ -112,9 +120,11 @@ namespace cinq
         return *this; 
     }
     
-	//
-	//
-	// Reverse
+	/**
+     * @brief Inverts the order of the elements in a sequence.
+     * 
+     * @return A sequence whose elements correspond to those of the input sequence in reverse order
+     */
 	enumerable<TSource> reverse()
 	{
 		//actually swaps data so actual data is reversed
@@ -180,6 +190,13 @@ namespace cinq
         // This is where the power of C++ templates & concepts really shines. You can't do this
         // in any other mainstream language. Check out the C# implementation and cry...
         // https://github.com/mono/mono/blob/effa4c0/mcs/class/System.Core/System.Linq/Enumerable.cs
+        /**
+         * @brief the maximum value in a sequence of mapped values.
+         * 
+         * 
+         * @param mapper function to expose the field of interest
+         * @return max value element based on the field of interest
+         */
         
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
@@ -202,6 +219,14 @@ namespace cinq
         
         // TODO: This could call the other max override w/ a lambda that returns itself, if we
         // figure out lambda inlining.
+        /**
+         * @brief returns max value
+         * 
+         * 
+         * 
+         * @return max value
+         * @requires requires Number<TElement>()
+         */
         TElement max() requires Number<TElement>()
         {
             ensure_nonempty();
@@ -221,6 +246,14 @@ namespace cinq
         
         // Min
         
+         /**
+         * @brief the minimum value in a sequence of mapped values.
+         * 
+         * 
+         * @param mapper function to expose the field of interest
+         * @return min value element based on the field of interest
+         */
+        
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
         TReturn min(TFunc mapper)
@@ -239,7 +272,14 @@ namespace cinq
             
             return min;
         }
-        
+         /**
+         * @brief returns min value
+         * 
+         * 
+         * @param mapper function to expose the field of interest
+         * @return min value element based on the field of interest
+         */
+         
         TElement min() requires Number<TElement>()
         {
             ensure_nonempty();
@@ -258,7 +298,13 @@ namespace cinq
         }
         
         // Sum
-        
+        /**
+         * @brief computes the sum of a sequence
+         * 
+         * 
+         * @param  mapper function to expose the field of interest
+         * @return sum of the values once mapped
+         */
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
         TReturn sum(TFunc mapper)
@@ -272,6 +318,14 @@ namespace cinq
             for (auto iter = seq_begin; iter != seq_end; ++iter) sum += mapper(*iter);
             return sum;
         }
+         /**
+         * @brief computes the sum of a sequence
+         * 
+         * 
+         * 
+         * @return sum of the values 
+         * @requires requires Number<TElement>()
+         */
         
         TElement sum() requires Number<TElement>()
         {
@@ -288,6 +342,13 @@ namespace cinq
         // Average
         
         // TODO: OK, this manual templating REALLY needs to be cleaned up.
+        /**
+         * @brief calculates the average of the terms in a sequence
+         * 
+         * 
+         * @param mapper function to expose the field of interest
+         * @return average of fields of interest
+         */
         
         template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
         requires Invokable<TFunc, TElement>() && Number<TValue>() && is_integral<TValue>::value
@@ -307,6 +368,14 @@ namespace cinq
             }
             return sum / (double)count;
         }
+
+        /**
+         * @brief calculates the average of the terms in a sequence
+         * 
+         * 
+         * 
+         * @return average
+         */
         
         double average() requires Number<TElement>() && is_integral<TElement>::value
         {
