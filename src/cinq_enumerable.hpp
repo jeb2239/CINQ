@@ -111,6 +111,41 @@ namespace cinq
         
         return *this; 
     }
+
+	//
+	//
+	// Select
+	template <typename TFunc>
+	requires Predicate<TFunc,TElement>()
+	enumerable<TSource> select(TFunc predicate)
+	{
+		ensure_data();
+		vector<TElement> updated;
+		for(auto it = begin; it != end; ++it) {
+			updated.push_back(predicate(*it));
+		}
+		data = updated;
+
+		return *this;
+	}
+
+	template <typename TFunc>
+	requires Predicate<TFunc, TElement, int>()
+	enumerable<TSource> select(TFunc predicate)
+	{
+		ensure_data();
+		vector<TElement> updated;
+		int index = 0;
+		for(auto it = begin; it != end; ++it) {
+			updated.push_back(predicate(*it, index));
+			++index;
+		}
+		data = updated;
+
+		return *this;
+	}
+
+
     
 	//
 	//
