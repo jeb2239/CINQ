@@ -116,13 +116,13 @@ namespace cinq
 	//
 	// Select
 	template <typename TFunc>
-	requires Predicate<TFunc,TElement>()
-	enumerable<TSource> select(TFunc predicate)
+	requires Function<TFunc,TElement>()
+	enumerable<TSource> select(TFunc function)
 	{
 		ensure_data();
 		vector<TElement> updated;
 		for(auto it = begin; it != end; ++it) {
-			updated.push_back(predicate(*it));
+			updated.push_back(function(*it));
 		}
 		data = updated;
 
@@ -130,14 +130,14 @@ namespace cinq
 	}
 
 	template <typename TFunc>
-	requires Predicate<TFunc, TElement, int>()
-	enumerable<TSource> select(TFunc predicate)
+	requires Function<TFunc, TElement, size_t>()
+	enumerable<TSource> select(TFunc function)
 	{
 		ensure_data();
 		vector<TElement> updated;
-		int index = 0;
+		size_t index = 0;
 		for(auto it = begin; it != end; ++it) {
-			updated.push_back(predicate(*it, index));
+			updated.push_back(function(*it, index));
 			++index;
 		}
 		data = updated;

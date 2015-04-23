@@ -213,7 +213,6 @@ vector<test> make_tests()
 			.select([](int x, int index) { return x*index; })
 			.to_vector();
 
-
         std::vector<int> answer { 0, 1, 4, 9, 16};
 
         return (result == answer);
