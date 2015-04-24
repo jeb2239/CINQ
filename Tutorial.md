@@ -42,3 +42,16 @@ $ git clone https://github.com/jeb2239/Linq4Cpp.git
 
 -----
 ###__Basic CINQ usage__
+Lets take a look at a basic CINQ query:
+
+```c++
+std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 };
+        auto result = cinq::from(my_array)
+                      .where([](int x){ return x > 0;})
+                      .to_vector();
+        std::vector<int> answer { 1, 4, 6, 3, 2 }; //the output
+        
+``` 
+First we construct an `std::array` object. This could be any sequence container such as an `std::vector` or `std::list`.
+
+First of all notice the initial call to `cinq::from()` this function serves as the entry point of all CINQ queries. It constructs an `enumerable` object from the passed in sequence container. This enumerable is then returned and is passed as the implicit argument to `where()`. Where constrains the input function to those only satisfying the `Predicate` concept. For convenience we use a lambda function which returns a type convertible to bool. This `Predicate` is applied to each item in the sequence, only the items for which this predicate evaluates true will be included in the output sequence. `Where` now 
