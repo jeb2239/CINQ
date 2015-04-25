@@ -6,11 +6,11 @@
 Because we are using a development branch of gcc we will need to compile our own gcc toolchain which supports concepts syntax such as the `concept` and `requires` keywords. Obtain the branch you will need to have Subversion installed on you machine.
 Go to your home directory and enter the following commands.
 ```shell
-$ svn checkout svn://gcc.gnu.org/svn/gcc/branches/c++-concepts
+$ svn checkout svn://gcc.gnu.org/svn/gcc/branches/cpp-concepts
 ```
 You will now have to configure GCC by running, adjusting the paths accordingly:
 ```shell
-$ ../configure --disable-checking --enable-languages=c,c++   --enable-multiarch --enable-shared --enable-threads=posix   --program-suffix=concepts-latest  --without-included-gettext  --with-tune=generic   --prefix=$HOME/install/gcc-concepts-latest --disable-multilib
+$ ../configure --disable-checking --enable-languages=c,cpp   --enable-multiarch --enable-shared --enable-threads=posix   --program-suffix=concepts-latest  --without-included-gettext  --with-tune=generic   --prefix=$HOME/install/gcc-concepts-latest --disable-multilib
 ```
 This will produce a minimal install of GCC because we don't need support for Ada, Fortran etc..
 
@@ -44,7 +44,7 @@ $ git clone https://github.com/jeb2239/Linq4Cpp.git
 ###__Basic CINQ usage__
 Lets take a look at a basic CINQ query:
 
-```c++
+```cpp
 std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 };
         auto result = cinq::from(my_array)
                       .where([](int x){ return x > 0;})
@@ -63,7 +63,7 @@ The CINQ library allows for type safe, generic and arbitrarily complex queries v
 ####[_select()_]() 
 
 Consider the following example using `select()`:
-```c++
+```cpp
 vector<int> nums { 1,2,3,4,5 };
 auto result = cinq::from(nums)
 .select([](int x) { return x * x; })
@@ -75,7 +75,7 @@ Lets use a `vector<int>` this time. As before `from()` returns an enumerable whi
 ####[_where()_]()
 
 The following shows a different way of using `where`:
-```c++
+```cpp
 std::list<int> my_list { 1, 30, 2, 5, 4 };
 auto result = cinq::from(my_list)
         .where([](int x, int index) {return index == x;})
@@ -90,7 +90,7 @@ by the source container and the second being the index of the item. This means w
 ####[_any()_]()
 
 When `any()` is called with no arguments it will return true or false based on if there are elements in the container or not for example:
-```c++
+```cpp
 std::vector<int> my_vector1 {0, 1, 2, 3, 4};
         bool result1 = cinq::from(my_vector1)
 						.any();
@@ -98,10 +98,10 @@ std::vector<int> my_vector2{};
 		bool result2 =cinq::from(my_vector2)
 						.any();
 ```
-`result1` is `true` while result2 would be `false`
+`result1` is `true` while `result2` would be `false`
 	
 As you will notice with many CINQ methods, there is often an additional overload which takes in a predicate to allow for a more specific question. If you wanted to know if the vector contained at least one value greater than 2 you would simply write:
-```c++
+```cpp
 std::vector<int> my_vector1 {0, 1, 2, 3, 4};
         bool result1 = cinq::from(my_vector1)
 						 .any([](int x){return x>2;});
@@ -109,6 +109,41 @@ std::vector<int> my_vector1 {0, 1, 2, 3, 4};
 This would of course evaluate to `true`.
 
 ####[_count()_]()
+Count as its name would suggest, returns the number of elements in an enumerable. The simplest example would look like:
+```cpp
+	std::vector<string> my_vector{"hi","how","are","you","today"};
+	int count= from(my_vector).count();
+```
+`count` would equal 5. `Count()` also has an overload which takes a `Predicate` and
+counts the number of elements which satisfy that predicate. 
+An example:
+```cpp
+	int count = from(my_vector)
+	.count([](string x){return x.length()>3;});
+```
+`count` equals 1 as the only `string` whose length is greater than 3 is `"today"`
 
+####[_all()_]()
 
+All returns a bool which is true if all the elements in a sequence satisfy a certain condition and false otherwise.
+An example using the same vector from before:
+```cpp
+int r1 = from(my_vector)
+		.all([](string x){return x.length()>3;});
+int r2 = from(my_vector)
+		.all([](string x){return x.length()<6;});
+```
+In the above example `r1` would be false while `r2` would be true because every string has a length less than 6
 
+We have already learned quite a bit about C-plus-plus integrated query. Lets just practice combining some of the techniques we have learned so far. 
+
+Imagine I have the data set below:
+```cpp
+vector<string> strVec{"apple","banana","peaches","melon","pineapple"};
+```
+Say I want to only include the fruits who's last character is an `'e'`.
+This is easy to do with CINQ! Just build a simple query.
+
+```cpp
+
+```
