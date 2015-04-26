@@ -145,5 +145,85 @@ Say I want to only include the fruits who's last character is an `'e'`.
 This is easy to do with CINQ! Just build a simple query.
 
 ```cpp
-
+cinq::from(strVec)
+.where([](string x){ return x[x.length()-1]=='e'];);
 ```
+in just a line of code we have filtered our data set.  What if we wanted only the lengths of the of the words which ended in `'e'`? We just need to add the extra step of mapping the the enumerable returned from where to the lengths of the included strings as so:
+```cpp
+cinq::from(strVec)
+.where([](string x){ return x[x.length()-1]=='e'];)
+.select([](string x){return x.length();});
+```
+this would give you an array of the lengths of the strings which end in `'e'`. We will be visiting more complex examples of CINQ usage later in the tutorial. Lets continue going over our toolkit.
+
+####[_reverse()_]()
+
+Can you guess what this method does? It just reverses the sequence which is passed to it. This is nothing new but it makes it easy to include this operation  in query chains as it returns an `enumerable`.
+
+```cpp
+std::list<int> my_list{ 1,2,3,4,5,6};
+auto result=my_list.reverse().to_vector();
+//result contains {6,5,4,3,2,1}
+```
+
+####[_concat()_]()
+
+Another sequence operation which comes in handy is `concat`. This enables the user to Concatenate an enumerable to another enumerable. We shall give a basic example below:
+
+```cpp
+std::list<int> my_list1{1,2,3};
+std::list<int> my_list2{4,5,6};
+auto result=my_list1.concat(my_list2).to_vector();
+```
+
+One of the best features of CINQ is its ability to conduct various math operations on lists such as max, min ,sum and average in a fully generic manner.
+
+####[_min()_]() and [_max()_]()
+
+The `max()` method finds the maximum element in an enumerable. It has the option of taking a mapper function in order to select the max element based on a certain field with in the object. `min()` operates in the same manner but finds the minimum element. Consider the `Person` structure:
+```cpp
+struct Person{
+string name;
+int age;
+int weight;
+Person(string n, int a, int w)
+{
+	name=n;
+	age=a;
+	weight=w;
+}
+} tim("Tim",14,120), rich("Rich",20,150),kevin("Kevin",19,145);
+```
+what if I have a list of People and I want to find the oldest or youngest person in the set. Using CINQ we would do:
+
+```cpp
+std::vector<Person> my_people= {tim,rich,kevin};
+Person result_old=from(my_people).max([](Person x){return x.age;});
+//result = rich
+Person result_young=from(my_people).min([](Person x){return x.age;});
+//result =tim
+```
+Keep in mind that the return value of these lambdas are values which can be ordered and have the needed operators to do so. CINQ will not allow the code to compile without this constraint being satisfied. 
+
+If the object itself has the needed operators for comparison then leaving `max()` with no arguments will result in the selection of the max element based on the default comparison operators.
+
+####[_sum()_]()
+You can take the sum over a set of elements or field from those sets, again the options you have depend on what concepts are satisfied by the object being used for the calculation. Say I want to know the combined weigh of all the people from the example above.
+```cpp
+int total= from(my_people).sum([](Person x){return x.weight;});
+//total = 315
+```
+Unless you specifiy a lambda sum will just sum up the objects un mapper assuming they satisy the correct constraints.
+
+####[_average()_]()
+This is similar to sum except that it also divides the sum by the number of elements in the set. This necesitates that the items of interest satisfy the concepts `Number` and `is_integral`. 
+Say I wanted to find the average weight, or age of the people listed above. I would just do
+```cpp
+auto seq = from(my_people);
+int avg_age=seq.average([](Person x){return x.age;});
+int avg_weight=seq.average([](Person x){return x.weight;});
+```
+as with other math operations average doesn't need to have an augment if the elements in the sequence satisfy the concept `Number` .
+
+
+
