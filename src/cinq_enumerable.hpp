@@ -4,10 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <typeinfo>
 
 
 #include "all_concepts.hpp"
 #include "cinq_test.hpp"
+
+
 
 namespace cinq
 {
@@ -115,32 +118,42 @@ namespace cinq
 	//
 	//
 	// Select
-	template <typename TFunc>
+	template <typename TFunc,typename ret =typename std::result_of<TFunc(TElement&)>::type>
 	requires Function<TFunc,TElement>()
-	enumerable<TSource> select(TFunc function)
+	enumerable<vector<ret>> select(TFunc function) 
 	{
+    
+   // ret result = function(TElement);
+    
 		ensure_data();
-		vector<TElement> updated;
+		vector<ret> updated;
 		for(auto it = begin; it != end; ++it) {
 			updated.push_back(function(*it));
 		}
-		data = updated;
+		//data = updated;
+    //enumerable<vector<ret>>* new_type = new enumerable<vector<ret>>(updated);
+    //for(ret r: updated) cout<<r<<endl;
+    
 
-		return *this;
+
+		return e;
 	}
+
 
 	template <typename TFunc>
 	requires Function<TFunc, TElement, size_t>()
 	enumerable<TSource> select(TFunc function)
 	{
+    //using TReturn = decltype(function);
+
 		ensure_data();
-		vector<TElement> updated;
+	/*	vector<TReturn> updated;
 		size_t index = 0;
 		for(auto it = begin; it != end; ++it) {
 			updated.push_back(function(*it, index));
 			++index;
 		}
-		data = updated;
+		//data = updated;*/
 
 		return *this;
 	}
@@ -822,6 +835,7 @@ namespace cinq
     
     // Allow automated tests to access private stuff.
     friend class test;
+
     };
     
     /**
