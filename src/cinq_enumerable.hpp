@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-
+#include <tuple>
 
 #include "all_concepts.hpp"
 #include "cinq_test.hpp"
@@ -703,58 +703,54 @@ namespace cinq
         }
         
         template<typename ... TFunc>
-       // requires Invokable<TFunc ...>() && Totally_ordered<result_of<TFunc ...>>()
-        enumerable<TSource> order_by(typename std::forward<std::function<void(TFunc...)>>::type first,TFunc ... rest) 
+        enumerable<TSource> order_by(TFunc... rest) 
         {
             ensure_data();
-            orderBuilder ob;
-            ob.loadBuilder<TFunc...>(first,rest...);
-            std::stable_sort(data.begin(),data.end(),ob);
+            std::stable_sort(data.begin(), data.end(), multicmp(rest...));
 
             return *this;
-
-
         }
-
         
-
-        
+        enumerable<TSource> order_by()
+        {
+            ensure_data();
+            std::stable_sort(data.begin(), data.end());
+            
+            return *this;
+        }
+    
     private:
         
+        /**
+         * @brief Constructs a comparison function suitable for std::sort from the given mappers
+         * @param first The first mapper to use for comparison
+         * @param rest The other mappers
+         * @return Lambda that compares first by the return value of the first mapper, then the rest.
+         */
+        template<typename ... TFunc,
+                 typename TFirst = typename std::tuple_element<0, std::tuple<TFunc...>>::type,
+                 typename TReturn = typename result_of<TFirst(TElement)>::type>
+        requires Invokable<TFirst, TElement>() && Totally_ordered<TReturn>()
+        auto multicmp(TFirst first, TFunc... rest)
+        {
+            return [=](const TElement& a, const TElement& b) -> bool
+            {
+                auto a_map = first(a);
+                auto b_map = first(b);
+                if (a_map == b_map) return multicmp(rest...)(a, b);
+                else return a_map < b_map;
+            };
+        }
         
-        template<typename ... TFunc>
-        struct orderBuilder{
-
-            std::vector<typename std::forward<std::function<void(TFunc...)>>::type> mappers;
-
-           
-           void loadBuilder(typename std::forward<std::function<void(TFunc...)>>::type first, TFunc ... rest){
-                mappers.push_back(first);
-                loadBuilder(rest...);
-
-            }
-
-           void loadBuilder(typename std::forward<std::function<void(TFunc...)>>::type first){
-            mappers.push_back(first);
-            
-
-            }
-            void loadBuilder(){
-
-            }
-
-            
-
-
-         bool operator()(TElement e1, TElement e2){
-
-                for(typename std::forward<std::function<void(TFunc...)>>::type mapper: mappers){
-                    if(mapper(e1)!=mapper(e2))
-                        return mapper(e1)<mapper(e2);
-                }
-                return false;
-            }
-        };
+        template<typename TFirst, typename TReturn = typename result_of<TFirst(TElement)>::type>
+        requires Invokable<TFirst, TElement>() && Totally_ordered<TReturn>()
+        auto multicmp(TFirst first)
+        {
+            return [=](const TElement& a, const TElement& b) -> bool
+            {
+                return first(a) < first(b);
+            };
+        }
 
         /**
          * @brief begin iterator, only relevent if is_data_copied 
