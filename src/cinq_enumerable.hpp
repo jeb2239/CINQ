@@ -76,15 +76,15 @@ namespace cinq
             return *this;
         }
 
-	/**
+    /**
      * @brief Determines whether a sequence contains any elements.
      * 
      * @return true if the source sequence contains any elements; otherwise, false.
      */
-	bool any() 
-	{
-		return !empty();
-	}
+    bool any() 
+    {
+        return !empty();
+    }
     /**
      * @brief Determines whether any element of a sequence satisfies a condition.
      * 
@@ -92,17 +92,17 @@ namespace cinq
      * @return true if any elements in the source sequence pass the test 
      * in the specified predicate; otherwise, false.
      */
-	template <typename TFunc>
-	requires Predicate<TFunc,TElement>()
-	bool any(TFunc predicate)
-	{
-		ensure_data();
-		for(TElement i : data){
-			if(predicate(i)) return true;
-		}
+    template <typename TFunc>
+    requires Predicate<TFunc,TElement>()
+    bool any(TFunc predicate)
+    {
+        ensure_data();
+        for(TElement i : data){
+            if(predicate(i)) return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
     
     /**
      * @brief Concatenate another enumerable to this enumerable.
@@ -120,20 +120,20 @@ namespace cinq
         return *this; 
     }
     
-	/**
+    /**
      * @brief Inverts the order of the elements in a sequence.
      * 
      * @return A sequence whose elements correspond to those of the input sequence in reverse order
      */
-	enumerable<TSource> reverse()
-	{
-		//actually swaps data so actual data is reversed
-		//might be better to reverse direction of the iterators
-		//though I'm not sure if this is possible
-		ensure_data();
-		std::reverse(data.begin(), data.end());
-		return *this;
-	}
+    enumerable<TSource> reverse()
+    {
+        //actually swaps data so actual data is reversed
+        //might be better to reverse direction of the iterators
+        //though I'm not sure if this is possible
+        ensure_data();
+        std::reverse(data.begin(), data.end());
+        return *this;
+    }
         
         /**
          * @brief Returns a number that represents how many elements in the specified sequence satisfy a condition.

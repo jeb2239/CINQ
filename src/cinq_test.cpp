@@ -113,54 +113,54 @@ vector<test> make_tests()
         return (result == answer);
     }));
 
-	tests.push_back(test("any() true unit test", []
-	{
+    tests.push_back(test("any() true unit test", []
+    {
         std::vector<int> my_vector {0, 1, 2, 3, 4};
         auto result = cinq::from(my_vector)
-						.any();
+                        .any();
         bool answer = true;
         return (result == answer);
-	}));
+    }));
 
-	tests.push_back(test("any() false unit test", []
-	{
+    tests.push_back(test("any() false unit test", []
+    {
         std::vector<int> my_vector {};
         auto result = cinq::from(my_vector)
-						.any();
+                        .any();
         bool answer = false;
         return (result == answer);
-	}));
+    }));
 
-	tests.push_back(test("any(Predicate) true unit test", []
-	{
+    tests.push_back(test("any(Predicate) true unit test", []
+    {
         std::vector<int> my_vector {0, 1, 2, 3, 4};
         auto result = cinq::from(my_vector)
-						.any([](int x) { return x > 2; });
+                        .any([](int x) { return x > 2; });
         bool answer = true;
         return (result == answer);
-	}));
+    }));
 
-	tests.push_back(test("any(Predicate) false unit test", []
-	{
+    tests.push_back(test("any(Predicate) false unit test", []
+    {
         std::vector<int> my_vector {};
         auto result = cinq::from(my_vector)
-						.any([](int x) { return x > 4; });
+                        .any([](int x) { return x > 4; });
         bool answer = false;
         return (result == answer);
-	}));
+    }));
 
-	tests.push_back(test("concat() std::vector", []
-	{
+    tests.push_back(test("concat() std::vector", []
+    {
         std::vector<int> my_vector1 {1,1,2};
         std::vector<int> my_vector2 {3,4,5};
         auto result = cinq::from(my_vector1)
-						.concat(cinq::from(my_vector2))
-						.to_vector();
+                        .concat(cinq::from(my_vector2))
+                        .to_vector();
         std::vector<int> answer {1,1,2,3,4,5} ;
-		
+        
 
         return (result == answer);
-	}));
+    }));
 
     tests.push_back(test("concat().where() std::vector<string>", []
     {
@@ -183,8 +183,8 @@ vector<test> make_tests()
     {
         std::vector<int> my_vector { 0, 1, 2, 3, 4};
         auto result = cinq::from(my_vector)
-			.reverse()
-			.to_vector();
+            .reverse()
+            .to_vector();
         std::vector<int> answer { 4, 3, 2, 1, 0};
         return (result == answer);
     }));
@@ -192,7 +192,7 @@ vector<test> make_tests()
     tests.push_back(test("count() std::array", []
     {
         std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
-        												// the reponse from count
+                                                        // the reponse from count
         auto result = cinq::from(my_array)
                       .count([](int x) { return x <= 2; });
 
@@ -237,7 +237,7 @@ vector<test> make_tests()
         bool answer1=false;
 
         bool result2 = cinq::from(my_vector)
-        				.all([](int x){return x<=1000;});
+                        .all([](int x){return x<=1000;});
         bool answer2=true;
 
         bool passed = (result1==answer1)&&(result2==answer2);
@@ -255,7 +255,7 @@ vector<test> make_tests()
         bool answer1=false;
 
         bool result2 = cinq::from(my_array)
-        				.all([](int x){return x<=1000;});
+                        .all([](int x){return x<=1000;});
         bool answer2=true;
 
         bool passed = (result1==answer1)&&(result2==answer2);
@@ -273,7 +273,7 @@ vector<test> make_tests()
         bool answer1=false;
 
         bool result2 = cinq::from(my_list)
-        				.all([](int x){return x<=1000;});
+                        .all([](int x){return x<=1000;});
         bool answer2=true;
 
         bool passed = (result1==answer1)&&(result2==answer2);
