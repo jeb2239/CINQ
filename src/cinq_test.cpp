@@ -599,6 +599,17 @@ vector<test> make_tests()
         return result == answer;
     }));
     
+    tests.push_back(test("orderby(2 lambdas),  std::vector string",[]
+    {
+        std::vector<string> my_vector { "cow", "cat", "dog", "platypus", "goat", "pig" };
+        auto result = cinq::from(my_vector)
+                     .order_by([](const string& x) { return x.size(); }, [](const string& x) { return x; })
+                     .to_vector();
+        std::vector<string> answer { "cat", "cow", "dog", "pig", "goat", "platypus" };
+        
+        return result == answer;
+    }));
+    
     tests.push_back(test("orderby(void),  std::vector int",[]
     {
         std::vector<int> my_vector{5,6,1,3};
