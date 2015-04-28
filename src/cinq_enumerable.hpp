@@ -33,6 +33,14 @@ namespace cinq
             begin = source.cbegin();
             end = source.cend();
         }
+
+        enumerable(TSource&& source) // requires Container<TSource>()
+        {
+            is_data_copied = false;
+            begin = source.cbegin();
+            end = source.cend();
+        }
+
         
         /**
          * @brief Filters a sequence of values based on a predicate.
@@ -126,17 +134,20 @@ namespace cinq
    // ret result = function(TElement);
     
 		ensure_data();
-		vector<ret> updated;
-		for(auto it = begin; it != end; ++it) {
-			updated.push_back(function(*it));
+    
+		vector<ret>* updated=new std::vector<ret>();
+		for(TElement e: data) {
+
+      ret a =function(e);
+			updated->push_back(a);
 		}
 		//data = updated;
     //enumerable<vector<ret>>* new_type = new enumerable<vector<ret>>(updated);
     //for(ret r: updated) cout<<r<<endl;
-    
+    enumerable<std::vector<ret>>* e = new enumerable<std::vector<ret>>(*updated);
 
 
-		return e;
+		return *e;
 	}
 
 
