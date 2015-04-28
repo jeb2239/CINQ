@@ -134,7 +134,7 @@ namespace cinq
    // ret result = function(TElement);
     
 		ensure_data();
-    
+    //should use a smart pointer or find a less jank way of doing this.
 		vector<ret>* updated=new std::vector<ret>();
 		for(TElement e: data) {
 
@@ -151,23 +151,31 @@ namespace cinq
 	}
 
 
-	template <typename TFunc>
+	template <typename TFunc,typename ret =typename std::result_of<TFunc(TElement&,size_t)>::type>
 	requires Function<TFunc, TElement, size_t>()
 	enumerable<TSource> select(TFunc function)
 	{
     //using TReturn = decltype(function);
 
 		ensure_data();
-	/*	vector<TReturn> updated;
-		size_t index = 0;
-		for(auto it = begin; it != end; ++it) {
-			updated.push_back(function(*it, index));
-			++index;
-		}
-		//data = updated;*/
+	vector<ret>* updated=new std::vector<ret>();
+  size_t index =0;
+    for(TElement& e: data) {
 
-		return *this;
+      ret a =function(e,index);
+      updated->push_back(a);
+      ++index;
+    }
+
+    //data = updated;
+    //enumerable<vector<ret>>* new_type = new enumerable<vector<ret>>(updated);
+    //for(ret r: updated) cout<<r<<endl;
+    enumerable<std::vector<ret>>* e = new enumerable<std::vector<ret>>(*updated);
+
+		return *e;
 	}
+
+
 
 
     
