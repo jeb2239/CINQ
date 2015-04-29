@@ -197,5 +197,38 @@ int avg_weight=seq.average([](Person x){return x.weight;});
 ```
 as with other math operations average doesn't need to have an augment if the elements in the sequence satisfy the concept `Number` .
 
+####[_take()_]()
 
+Take takes a single integer $n$ as an argument and returns the first $n$ items of the sequence. Here is a basic example:
 
+```cpp
+std::vector<string> my_vector{"hi","how","are","you","today"};
+auto result=from(my_vector).take(2).to_vector();
+//returns {"hi","how"}
+```
+####[_skip()_]()
+the functional complement of `take` is `skip`. Like `take`, `skip` takes in  a single integer $n$ and removes the first $n$ elements from the sequence Here is a basic example using the same vector as before:
+```cpp
+auto result = from(my_vector).skip(2).to_vector();
+//returns {"are","you","today"}
+```
+####[_element_at()_]()
+`element_at()` takes in an integer and returns the element at that index.
+```cpp
+string result = from(my_vector).element_at(3);
+//returns "you"
+```
+####[_first()_]() and [_last()_]()
+Takes up to one `Predicate` and returns the first or last element for which the condition is true. If you pass nothing it will return the first or last element.
+```cpp
+string result1 = from(my_vector).first();
+				//return "hi"
+string result2 = from(my_vector)
+				.first([](string x){return x[0]=='h';});
+				//return "hi"
+string result3 = from(my_vector)
+				.last([](string x){return x[0]=='h';});
+				//returns "how"
+string result4 = from(my_vector).last();
+				//returns "today"
+```
