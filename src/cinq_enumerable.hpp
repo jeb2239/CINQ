@@ -128,16 +128,15 @@ namespace cinq
         enumerable<vector<TReturn>> select(TFunc function) 
         {
             ensure_data();
-            //should use a smart pointer or find a less jank way of doing this.
-            vector<TReturn>* updated = new std::vector<TReturn>();
-            for(TElement e : data)
-            {
-                TReturn a = function(e);
-                updated->push_back(a);
-            }
-            enumerable<std::vector<TReturn>>* e = new enumerable<std::vector<TReturn>>(*updated);
             
-            return *e;
+            vector<TReturn> updated;
+            for (TElement e : data) updated.push_back(function(e));
+            
+            enumerable<decltype(updated)> e(updated);
+            e.data = updated;
+            e.is_data_copied = true;
+            
+            return e;
         }
 
 
@@ -146,18 +145,20 @@ namespace cinq
         enumerable<TSource> select(TFunc function)
         {
             ensure_data();
-            vector<TReturn>* updated=new std::vector<TReturn>();
-            size_t index =0;
-            for(TElement& e : data)
+            
+            vector<TReturn> updated;
+            size_t index = 0;
+            for (TElement e : data)
             {
-                TReturn a = function(e,index);
-                updated->push_back(a);
-                ++index;
+                updated.push_back(function(e, index));
+                index++;
             }
             
-            enumerable<std::vector<TReturn>>* e = new enumerable<std::vector<TReturn>>(*updated);
-
-            return *e;
+            enumerable<decltype(updated)> e(updated);
+            e.data = updated;
+            e.is_data_copied = true;
+            
+            return e;
         }
     
     //
