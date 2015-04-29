@@ -87,25 +87,25 @@ namespace cinq
             return *this;
         }
 
-	//
-	//
-	// Any
-	bool any() 
-	{
-		return !empty();
-	}
+    //
+    //
+    // Any
+    bool any() 
+    {
+        return !empty();
+    }
 
-	template <typename TFunc>
-	requires Predicate<TFunc,TElement>()
-	bool any(TFunc predicate)
-	{
-		ensure_data();
-		for(TElement i : data){
-			if(predicate(i)) return true;
-		}
+    template <typename TFunc>
+    requires Predicate<TFunc,TElement>()
+    bool any(TFunc predicate)
+    {
+        ensure_data();
+        for(TElement i : data){
+            if(predicate(i)) return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
     
     /**
      * @brief Concatenate another enumerable to this enumerable.
@@ -122,75 +122,56 @@ namespace cinq
         
         return *this; 
     }
-
-	//
-	//
-	// Select
-	template <typename TFunc,typename ret =typename std::result_of<TFunc(TElement&)>::type>
-	requires Function<TFunc,TElement>()
-	enumerable<vector<ret>> select(TFunc function) 
-	{
     
-   // ret result = function(TElement);
+        template <typename TFunc,typename TReturn = typename std::result_of<TFunc(TElement&)>::type>
+        requires Function<TFunc, TElement>()
+        enumerable<vector<TReturn>> select(TFunc function) 
+        {
+            ensure_data();
+            //should use a smart pointer or find a less jank way of doing this.
+            vector<TReturn>* updated = new std::vector<TReturn>();
+            for(TElement e : data)
+            {
+                TReturn a = function(e);
+                updated->push_back(a);
+            }
+            enumerable<std::vector<TReturn>>* e = new enumerable<std::vector<TReturn>>(*updated);
+            
+            return *e;
+        }
+
+
+        template <typename TFunc, typename TReturn = typename std::result_of<TFunc(TElement&, size_t)>::type>
+        requires Function<TFunc, TElement, size_t>()
+        enumerable<TSource> select(TFunc function)
+        {
+            ensure_data();
+            vector<TReturn>* updated=new std::vector<TReturn>();
+            size_t index =0;
+            for(TElement& e : data)
+            {
+                TReturn a = function(e,index);
+                updated->push_back(a);
+                ++index;
+            }
+            
+            enumerable<std::vector<TReturn>>* e = new enumerable<std::vector<TReturn>>(*updated);
+
+            return *e;
+        }
     
-		ensure_data();
-    //should use a smart pointer or find a less jank way of doing this.
-		vector<ret>* updated=new std::vector<ret>();
-		for(TElement e: data) {
-
-      ret a =function(e);
-			updated->push_back(a);
-		}
-		//data = updated;
-    //enumerable<vector<ret>>* new_type = new enumerable<vector<ret>>(updated);
-    //for(ret r: updated) cout<<r<<endl;
-    enumerable<std::vector<ret>>* e = new enumerable<std::vector<ret>>(*updated);
-
-
-		return *e;
-	}
-
-
-	template <typename TFunc,typename ret =typename std::result_of<TFunc(TElement&,size_t)>::type>
-	requires Function<TFunc, TElement, size_t>()
-	enumerable<TSource> select(TFunc function)
-	{
-    //using TReturn = decltype(function);
-
-		ensure_data();
-	vector<ret>* updated=new std::vector<ret>();
-  size_t index =0;
-    for(TElement& e: data) {
-
-      ret a =function(e,index);
-      updated->push_back(a);
-      ++index;
+    //
+    //
+    // Reverse
+    enumerable<TSource> reverse()
+    {
+        //actually swaps data so actual data is reversed
+        //might be better to reverse direction of the iterators
+        //though I'm not sure if this is possible
+        ensure_data();
+        std::reverse(data.begin(), data.end());
+        return *this;
     }
-
-    //data = updated;
-    //enumerable<vector<ret>>* new_type = new enumerable<vector<ret>>(updated);
-    //for(ret r: updated) cout<<r<<endl;
-    enumerable<std::vector<ret>>* e = new enumerable<std::vector<ret>>(*updated);
-
-		return *e;
-	}
-
-
-
-
-    
-	//
-	//
-	// Reverse
-	enumerable<TSource> reverse()
-	{
-		//actually swaps data so actual data is reversed
-		//might be better to reverse direction of the iterators
-		//though I'm not sure if this is possible
-		ensure_data();
-		std::reverse(data.begin(), data.end());
-		return *this;
-	}
         
         /**
          * @brief Returns a number that represents how many elements in the specified sequence satisfy a condition.
