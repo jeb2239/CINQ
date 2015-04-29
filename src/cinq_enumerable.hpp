@@ -123,8 +123,8 @@ namespace cinq
         return *this; 
     }
     
-        template <typename TFunc,typename TReturn = typename std::result_of<TFunc(TElement&)>::type>
-        requires Function<TFunc, TElement>()
+        template <typename TFunc, typename TReturn = typename std::result_of<TFunc(const TElement&)>::type>
+        requires Function<TFunc, const TElement&>() && Copy_constructible<TReturn>()
         enumerable<vector<TReturn>> select(TFunc function) 
         {
             ensure_data();
@@ -132,6 +132,7 @@ namespace cinq
             vector<TReturn> updated;
             for (TElement e : data) updated.push_back(function(e));
             
+            // TODO: extremely inefficient. Probably need a private constructor for enumerable that doesnt take arguments.
             enumerable<decltype(updated)> e(updated);
             e.data = updated;
             e.is_data_copied = true;
@@ -139,9 +140,8 @@ namespace cinq
             return e;
         }
 
-
-        template <typename TFunc, typename TReturn = typename std::result_of<TFunc(TElement&, size_t)>::type>
-        requires Function<TFunc, TElement, size_t>()
+        template <typename TFunc, typename TReturn = typename std::result_of<TFunc(const TElement&, size_t)>::type>
+        requires Function<TFunc, const TElement&, size_t>() && Copy_constructible<TReturn>()
         enumerable<TSource> select(TFunc function)
         {
             ensure_data();
