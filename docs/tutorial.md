@@ -232,3 +232,26 @@ string result3 = from(my_vector)
 string result4 = from(my_vector).last();
 				//returns "today"
 ```
+####[_single()_]()
+single takes in a `Predicate` and returns the only element of the sequence that satisfies that condition. If more than one element satisfies the condition an exception is thrown. If no `Predicate` is passed then single will return the only element in the sequence.
+```cpp
+string result = from(my_vector)
+				.single([](string x){return x[0]=='y';});
+```
+####[_order_by()_]()
+Arguably one of the more powerful features of the CINQ library, `order_by` takes a variable number of mappers and sorts the elements based on the order in which the mappers are passed. Its best to demonstrate with an example:
+
+```cpp
+vector<string> my_vector = {"hello","cello","fellow","cat"};
+```
+say we want to sort this vector of strings in order based on the length of the string. Notice two strings have the same length. If we want to specify a lower priority rule to further order the strings of matching length we can do so as follows:
+```cpp
+auto result = from(my_vector).order_by(
+						[](string x){return x.length();},
+						[](string x){return x[0];}
+						).to_vector();
+// returns {"cat","cello","hello","fellow"};
+```
+In this case the lower priority rule is based on the comparison of the first letter.
+
+
