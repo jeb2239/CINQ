@@ -25,10 +25,10 @@ $ git clone https://github.com/jeb2239/CINQ.git
 
 ```cpp 
 std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; 
-	auto result = cinq::from(my_array) 
-						.where([](int x){ return x > 0;})
-						.to_vector(); 
-	std::vector<int> answer { 1, 4, 6, 3, 2 }; //the output
+auto result = cinq::from(my_array) 
+					.where([](int x){ return x > 0;})
+					.to_vector(); 
+std::vector<int> answer { 1, 4, 6, 3, 2 }; //the output
 
 ``` 
 
@@ -45,7 +45,7 @@ function which returns a type convertible to bool. This `Predicate` is applied t
 sequence. Only the items for which this predicate evaluates true will be included in the output
 sequence. 
 
-`Where` now returns the modified sequence as an enumerable. At this point the user could
+`where()` now returns the modified sequence as an enumerable. At this point the user could
 chain more queries together to further modify the data set. However, in this example, we are now
 done changing our set so we proceed to call `to_vector()` on our `enumerable`, which stores the returned
 `std::vector` in `result`.  At the end of this query the original source object passed into from()
@@ -54,7 +54,42 @@ is not changed.
 ###__CINQ methods__
 
 The CINQ library allows for type safe, generic and arbitrarily complex queries via the chaining of
-query methods which operate on an enumerable object. 
+query methods which operate on an enumerable object. These methods can
+primarily be separated into a few separate categories: Boolean, Filter, Math and Sorting.
+
+####__Boolean__
+
+The Boolean family of methods are the simplest to understand. In general they
+test the sequence of values contained in the `enumerable` for whether a
+condition is satisfied. This condition is usually defined by a input predicate.
+
+```cpp
+std::vector<int> my_vector = { 1, 2, 3, 4, 5 };
+auto enum = cinq::from(my_vector);
+					
+if( enum.all([](int x) { return x>0; }) )
+	cout << "All values are greater than 0.\n";
+if( enum.empty() ) 
+	cout << "This is not empty!\n";
+
+```
+
+This family of methods provides helpful methods that are easily readable and
+obvious in their meaning.
+
+####__Math__
+
+The Mathematics set of methods adds additional functionality to enumerables
+that contain numbers. Like the Boolean methods, they are self-explanatory but
+are useful when performing calculations on a set of data.
+
+```cpp
+
+
+```
+ 
+
+
 
 ####[_select()_]() 
 
@@ -337,6 +372,7 @@ string result3 = from(my_vector) .last([](string x){return x[0]=='h';});
 				//returns "how"
 string result4 = from(my_vector).last();
 				//returns "today"
+
 ``` 
 
 ####[_single()_]() 
@@ -348,6 +384,7 @@ thrown. If no `Predicate` is passed then single will return the only element in 
 ```cpp 
 string result = cinq::from(my_vector) 
 					  .single([](string x){return x[0]=='y';}); 
+
 ```
 
 ####[_order_by()_]() Arguably one of the more powerful features of the CINQ library, `order_by`
@@ -356,6 +393,7 @@ are passed. Its best to demonstrate with an example:
 
 ```cpp 
 vector<string> my_vector = {"hello","cello","fellow","cat"}; 
+
 ``` 
 
 Say we want to sort this
@@ -363,10 +401,12 @@ vector of strings in order based on the length of the string. Notice two strings
 length. If we want to specify a lower priority rule to further order the strings of matching length
 we can do so as follows: 
 
-```cpp auto result = cinq::from(my_vector)
-						   .order_by( [](string x){return x.length();}, [](string x){return x[0];})
-						   .to_vector();
+```cpp 
+auto result = cinq::from(my_vector)
+				    .order_by( [](string x){return x.length();}, [](string x){return x[0];})
+					.to_vector();
 // returns {"cat","cello","hello","fellow"};
+
 ``` 
 
 In this case the lower priority rule is based on the comparison of the first letter.
