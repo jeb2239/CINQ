@@ -84,52 +84,52 @@ namespace cinq
             
             return *this;
         }
-    
-    /**
-     * @brief Determines whether a sequence contains any elements.
-     * 
-     * @return true if the source sequence contains any elements; otherwise, false.
-     */
-    bool any() 
-    {
-        return !empty();
-    }
-    
-    /**
-     * @brief Determines whether any element of a sequence satisfies a condition.
-     * 
-     * @param predicate A function to test each element for a condition.
-     * @return true if any elements in the source sequence pass the test 
-     * in the specified predicate; otherwise, false.
-     */
-    template <typename TFunc>
-    requires Predicate<TFunc,TElement>()
-    bool any(TFunc predicate)
-    {
-        ensure_data();
-        for(TElement i : data){
-            if(predicate(i)) return true;
+        
+        /**
+         * @brief Determines whether a sequence contains any elements.
+         * 
+         * @return true if the source sequence contains any elements; otherwise, false.
+         */
+        bool any() 
+        {
+            return !empty();
         }
+        
+        /**
+         * @brief Determines whether any element of a sequence satisfies a condition.
+         * 
+         * @param predicate A function to test each element for a condition.
+         * @return true if any elements in the source sequence pass the test 
+         * in the specified predicate; otherwise, false.
+         */
+        template <typename TFunc>
+        requires Predicate<TFunc,TElement>()
+        bool any(TFunc predicate)
+        {
+            ensure_data();
+            for(TElement i : data){
+                if(predicate(i)) return true;
+            }
 
-        return false;
-    }
-    
-    /**
-     * @brief Concatenate another enumerable to this enumerable.
-     * 
-     * @param other the enumerable to append
-     * @return this enumerable with the other enumerable appended
-     */
-    enumerable<TSource> concat(enumerable<TSource> other)
-    {
-        ensure_data();
+            return false;
+        }
         
-        if (other.is_data_copied) data.insert(data.end(), other.data.cbegin(), other.data.cend());
-        else data.insert(data.end(), other.begin, other.end);
+        /**
+         * @brief Concatenate another enumerable to this enumerable.
+         * 
+         * @param other the enumerable to append
+         * @return this enumerable with the other enumerable appended
+         */
+        enumerable<TSource> concat(enumerable<TSource> other)
+        {
+            ensure_data();
+            
+            if (other.is_data_copied) data.insert(data.end(), other.data.cbegin(), other.data.cend());
+            else data.insert(data.end(), other.begin, other.end);
+            
+            return *this; 
+        }
         
-        return *this; 
-    }
-    
         // Workaround which allows access to other enumerable instantiations' private members.
         template <typename TSourceFriend, typename TElementFriend, typename TIterFriend>
         friend class enumerable;
@@ -171,21 +171,21 @@ namespace cinq
             
             return e;
         }
-    
-    /**
-     * @brief Inverts the order of the elements in a sequence.
-     * 
-     * @return A sequence whose elements correspond to those of the input sequence in reverse order
-     */
-    enumerable<TSource> reverse()
-    {
-        //actually swaps data so actual data is reversed
-        //might be better to reverse direction of the iterators
-        //though I'm not sure if this is possible
-        ensure_data();
-        std::reverse(data.begin(), data.end());
-        return *this;
-    }
+        
+        /**
+         * @brief Inverts the order of the elements in a sequence.
+         * 
+         * @return A sequence whose elements correspond to those of the input sequence in reverse order
+         */
+        enumerable<TSource> reverse()
+        {
+            //actually swaps data so actual data is reversed
+            //might be better to reverse direction of the iterators
+            //though I'm not sure if this is possible
+            ensure_data();
+            std::reverse(data.begin(), data.end());
+            return *this;
+        }
         
         /**
          * @brief Returns a number that represents how many elements in the specified sequence satisfy a condition.
@@ -756,38 +756,38 @@ namespace cinq
         requires Predicate<TFunc, TElement>()
         TElement single(TFunc predicate)
         {
-                bool found = false;
-                
-                if (is_data_copied)
+            bool found = false;
+            
+            if (is_data_copied)
+            {
+                size_t return_idx;
+                for (size_t i = 0; i < data.size(); i++)
                 {
-                    size_t return_idx;
-                    for (size_t i = 0; i < data.size(); i++)
+                    bool matches = predicate(data[i]);
+                    if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
+                    if (matches)
                     {
-                        bool matches = predicate(data[i]);
-                        if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
-                        if (matches)
-                        {
-                            found = true;
-                            return_idx = i;
-                        }
+                        found = true;
+                        return_idx = i;
                     }
-                    return data[return_idx];
                 }
-                else
+                return data[return_idx];
+            }
+            else
+            {
+                TElement rv;
+                for (auto iter = begin; iter != end; ++iter)
                 {
-                    TElement rv;
-                    for (auto iter = begin; iter != end; ++iter)
+                    bool matches = predicate(*iter);
+                    if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
+                    if (matches)
                     {
-                        bool matches = predicate(*iter);
-                        if (found && matches) throw invalid_argument("cinq: more than one element satisfies the predicate");
-                        if (matches)
-                        {
-                            found = true;
-                            rv = *iter;
-                        }
+                        found = true;
+                        rv = *iter;
                     }
-                    return rv;
                 }
+                return rv;
+            }
         }
         
         /**
@@ -915,10 +915,7 @@ namespace cinq
         enumerable<T> e(source);
         return e;
     }
-
-
-
-
+    
 }
 
 #endif
