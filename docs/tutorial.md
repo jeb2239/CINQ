@@ -6,7 +6,11 @@
 You need a version of gcc with concepts support. See [concepts_setup.md](concepts_setup.md) for instructions on how to get this.
 
 ####Step 2: Obtain needed libraries.
-As of the the publishing of this document there are no concepts defined in the the included STL even though the compiler supports the necessary syntax. For this reason the CINQ library depends on Andrew Sutton's [Origin Libraries](https://github.com/asutton/origin) . These libraries include many useful concepts which are used in the CINQ implementation, these also are the concepts that will most likely be included in the STL if concepts ever are included in the standard. CINQ otherwise relies exclusively on the STL. These are included with the download of CINQ. To use CINQ clone the git repository using this command:
+As of the publishing of this document there are no concepts defined in the included STL even though
+the compiler supports the necessary syntax. For this reason the CINQ library depends on Andrew
+Sutton's [Origin Libraries](https://github.com/asutton/origin) . These libraries include many useful
+concepts which are used in the CINQ implementation. These are also the concepts that will most
+likely be included in the STL if concepts are ever included in the standard. CINQ otherwise relies exclusively on the STL. These are included with the download of CINQ. To use CINQ clone the git repository using this command:
 ```shell
 $ git clone https://github.com/jeb2239/Linq4Cpp.git
 ```
