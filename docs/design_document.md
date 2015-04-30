@@ -38,7 +38,39 @@ We have over 60 unit tests covering the correctness and performance of all metho
 
 ## Interface design
 
-combining orderby and thenby to reduce confusion
+One might imagine that implementing an existing library in a new programming language would remove the need to think about design. That is not true. The existing library provides a feature list of things that should be implemented, but the interface still needs to be adapted to match the target language's conventions.
+
+### Combining `order_by` and `then_by` to reduce confusion
+
+The C# version of LINQ allows specifying a primary sort order with `OrderBy()` and subsequent orderings with `ThenBy()`. For example:
+
+    myList.OrderBy(Person p => p.Age)
+          .ThenBy(p => p.LastName)
+          .ThenBy(p => p.FirstName);
+
+However, this syntax makes it possible to write nonsensical queries, such as:
+
+    myList.OrderBy(Person p => p.Age)
+          .ThenBy(p => p.LastName)
+          .Where(p => p.Age >= 30)
+          .ThenBy(p => p.FirstName);
+
+The C# compiler catches these, but unfortunately, outputs a difficult-to-understand error:
+
+> error CS0411: The type arguments for method `System.Linq.Enumerable.ThenBy<TSource,TKey>(this System.Linq.IOrderedEnumerable<TSource>, System.Func<TSource,TKey>)` cannot be inferred from the usage. Try specifying the type arguments explicitly
+
+To eliminate the possibility of the user making this error, we have combined `OrderBy` and `ThenBy` into a single `order_by()` method that takes multiple mapping lambdas for specifying the orderings:
+
+    cinq::from(my_vector)
+         .order_by([](person p) { return p.age; },
+                   [](person p) { return p.last_name; },
+                   [](person p) { return p.last_name; });
+
+Behind the scenes, we recursively construct a comparison lambda that we pass into `std::sort`.
+
+### Using `.` instead of `>>` for method chaining
+
+The "C++ way" of passing the result of one method to another would be overloading `operator>>`. `istream` and `ostream` are implemented this way. However, we know from using `cout` that the angle brackets are annoying to type. They are also confusing to C++ novices who think they are bit shift operators --- especially bad for a data processing library.
 
 ## Error handling
 
