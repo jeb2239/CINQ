@@ -68,6 +68,7 @@ namespace cinq
                 if (predicate(*iter)) updated.push_back(*iter);
             }
             data = updated;
+            is_data_copied = true;
         }
         
         template <typename TFunc, typename TIterator>
@@ -82,6 +83,7 @@ namespace cinq
                 i++;
             }
             data = updated;
+            is_data_copied = true;
         }
         
     public:
