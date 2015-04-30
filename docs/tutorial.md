@@ -10,7 +10,10 @@ As of the publishing of this document there are no concepts defined in the inclu
 the compiler supports the necessary syntax. For this reason the CINQ library depends on Andrew
 Sutton's [Origin Libraries](https://github.com/asutton/origin) . These libraries include many useful
 concepts which are used in the CINQ implementation. These are also the concepts that will most
-likely be included in the STL if concepts are ever included in the standard. CINQ otherwise relies exclusively on the STL. These are included with the download of CINQ. To use CINQ clone the git repository using this command:
+likely be included in the STL if concepts are ever included in the standard. These concepts are
+included with the download of CINQ. CINQ otherwise relies exclusively on the STL.
+
+To use CINQ clone the git repository using this command:
 ```shell
 $ git clone https://github.com/jeb2239/Linq4Cpp.git
 ```
