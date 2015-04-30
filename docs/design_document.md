@@ -8,6 +8,8 @@
 
 C++ Integrated Query (CINQ, pronounced "sink") is a C++ implementation of Microsoft's Language Integrated Query (LINQ). We implemented most of LINQ's method syntax, using concepts to ensure that the user passes the correct types. Additionally, our syntax is much cleaner than other C++ LINQ implementations, since we use the `.` operator instead of `>>` to chain methods.
 
+We chose this project because it would allow us to use templates and concepts. These C++ features were introduced in class, but having never used them, we felt that we did not have enough familiarity. Through this project, we have become scarily good at weird templating tricks.
+
 ## Feature set
 
 ### LINQ methods implemented
@@ -31,6 +33,8 @@ The nature of our project requires a lot of templating, especially since C++ lam
 With concepts, the compiler also tells the user which constraint could not be satisfied, making it easy to see which template argument had the wrong type. In our testing, we found that most of these errors are simple mistakes --- returning an `int` from a lambda instead of a `bool`, for example. Concepts allows the user to spend less time tracking down template problems and more time writing their application.
 
 Prior to this project, it was not easy to get up and running with a C++ concepts toolchain. GCC, Clang, and Microsoft do not have concepts on their feature roadmaps. There are many experimental compiler and standard library implementations, each one implementing a different draft TS. Some compilers did not come with a standard library, and vice versa. We have documented the steps we took to set up a C++ concepts toolchain to save others some trouble.
+
+(Using concepts in our library has also been a great learning experience for us. We were able to apply our knowledge from class, as well as try out a C++ feature that almost nobody else is using --- currently, there are only 55 questions [tagged `c++-concepts` on Stack Overflow](http://stackoverflow.com/questions/tagged/c%2b%2b-concepts).)
 
 ### Lots of tests
 
