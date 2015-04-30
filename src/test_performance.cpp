@@ -20,6 +20,11 @@ vector<test_perf> make_tests_perf()
             if (data.temp_max > 90) result.push_back(data);
         }
     }));
+
+    tests.push_back(test_perf("select() mapping weather_point to cloud_cover", [=]
+    {
+       cinq::from(weather_data).select([](auto& x){return x.cloud_cover;});
+    }));
     
     return tests;
 }
@@ -100,7 +105,7 @@ vector<weather_point> load_weather(string path)
         
         for (string event : split(line["Events"], '-'))
         {
-            weather_event e;
+            weather_event e = unrecognized;
             
             if (event == "Fog") e = fog;
             else if (event == "Rain") e = rain;

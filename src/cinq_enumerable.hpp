@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <tuple>
+#include <typeinfo>
 
 #include "all_concepts.hpp"
 #include "cinq_test.hpp"
@@ -30,6 +31,14 @@ namespace cinq
             begin = source.cbegin();
             end = source.cend();
         }
+
+        enumerable(TSource&& source) // requires Container<TSource>()
+        {
+            is_data_copied = false;
+            begin = source.cbegin();
+            end = source.cend();
+        }
+
         
         /**
          * @brief Filters a sequence of values based on a predicate.
@@ -75,7 +84,7 @@ namespace cinq
             
             return *this;
         }
-
+    
     /**
      * @brief Determines whether a sequence contains any elements.
      * 
@@ -85,6 +94,7 @@ namespace cinq
     {
         return !empty();
     }
+    
     /**
      * @brief Determines whether any element of a sequence satisfies a condition.
      * 
@@ -119,6 +129,48 @@ namespace cinq
         
         return *this; 
     }
+    
+        // Workaround which allows access to other enumerable instantiations' private members.
+        template <typename TSourceFriend, typename TElementFriend, typename TIterFriend>
+        friend class enumerable;
+        
+        template <typename TFunc, typename TReturn = typename std::result_of<TFunc(const TElement&)>::type>
+        requires Function<TFunc, const TElement&>() && Copy_constructible<TReturn>()
+        enumerable<vector<TReturn>> select(TFunc function) 
+        {
+            ensure_data();
+            
+            vector<TReturn> updated;
+            for (TElement e : data) updated.push_back(function(e));
+            
+            // TODO: extremely inefficient. Probably need a private constructor for enumerable that doesnt take arguments.
+            enumerable<decltype(updated)> e(updated);
+            e.data = updated;
+            e.is_data_copied = true;
+            
+            return e;
+        }
+
+        template <typename TFunc, typename TReturn = typename std::result_of<TFunc(const TElement&, size_t)>::type>
+        requires Function<TFunc, const TElement&, size_t>() && Copy_constructible<TReturn>()
+        enumerable<TSource> select(TFunc function)
+        {
+            ensure_data();
+            
+            vector<TReturn> updated;
+            size_t index = 0;
+            for (TElement e : data)
+            {
+                updated.push_back(function(e, index));
+                index++;
+            }
+            
+            enumerable<decltype(updated)> e(updated);
+            e.data = updated;
+            e.is_data_copied = true;
+            
+            return e;
+        }
     
     /**
      * @brief Inverts the order of the elements in a sequence.
@@ -845,6 +897,7 @@ namespace cinq
     
     // Allow automated tests to access private stuff.
     friend class test;
+
     };
     
     /**

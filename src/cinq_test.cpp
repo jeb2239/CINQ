@@ -188,7 +188,50 @@ vector<test> make_tests()
         std::vector<int> answer { 4, 3, 2, 1, 0};
         return (result == answer);
     }));
+
+    tests.push_back(test("select() std::vector", []
+    {
+        std::vector<int> my_vector { 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+			.select([](int x) { return x*2; })
+			.to_vector();
+
+        auto result2 = cinq::from(my_vector)
+			.select([](int x) { return x*x; })
+			.to_vector();
+
+        std::vector<int> answer { 0, 2, 4, 6, 8};
+        std::vector<int> answer2 { 0, 1, 4, 9, 16 };
+
+        return (result == answer && result2 == answer2);
+    }));
     
+    tests.push_back(test("select() with index std::vector<int>", []
+    {
+        std::vector<int> my_vector { 0, 1, 2, 3, 4};
+        auto result = cinq::from(my_vector)
+			.select([](int x, int index) { return x*index; })
+			.to_vector();
+
+        std::vector<int> answer { 0, 1, 4, 9, 16};
+
+        return (result == answer);
+    }));
+
+    tests.push_back(test("select() with index std::vector<string>", []
+    {
+        std::vector<string> my_vector { "apple", "banana", "mango", "orange", "passionfruit",
+										"grape"};
+        auto result = cinq::from(my_vector)
+			.select([](string fruit, int index) { return fruit.substr(0,index); })
+			.to_vector();
+
+
+        std::vector<string> answer { "", "b", "ma", "ora", "pass", "grape"};
+
+        return (result == answer);
+    }));
+
     tests.push_back(test("count() std::array", []
     {
         std::array<int, 5> my_array = { 0, 1, 2, 3, 4 }; // how much space is allocated changes the 
