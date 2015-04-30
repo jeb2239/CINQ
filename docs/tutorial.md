@@ -19,9 +19,13 @@ https://github.com/jeb2239/Linq4Cpp.git ```
 -----
 ###__Basic CINQ usage__ Lets take a look at a basic CINQ query:
 
-```cpp std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; auto result =
-cinq::from(my_array) .where([](int x){ return x > 0;}) .to_vector(); std::vector<int> answer { 1, 4,
-6, 3, 2 }; //the output
+```cpp 
+std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; 
+	auto result = cinq::from(my_array) 
+						.where([](int x){ return x > 0;})
+						.to_vector(); 
+	std::vector<int> answer { 1, 4, 6, 3, 2 }; //the output
+
 ``` 
 
 First we construct an `std::array` object. This could be any sequence container such as an
