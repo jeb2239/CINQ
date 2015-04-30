@@ -123,6 +123,10 @@ namespace cinq
         return *this; 
     }
     
+        // Workaround which allows access to other enumerable instantiations' private members.
+        template <typename TSourceFriend, typename TElementFriend, typename TIterFriend>
+        friend class enumerable;
+        
         template <typename TFunc, typename TReturn = typename std::result_of<TFunc(const TElement&)>::type>
         requires Function<TFunc, const TElement&>() && Copy_constructible<TReturn>()
         enumerable<vector<TReturn>> select(TFunc function) 
