@@ -77,6 +77,22 @@ vector<test_perf> make_tests_perf()
 
      }));
 
+    tests.push_back(test_perf("min(). finding the min temp_min in the data set",[=]
+    {
+
+        cinq::from(weather_data).min([](const auto& x){return x.temp_min;});
+
+        
+    }));
+
+    tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed",[=]
+    {
+        cinq::from(weather_data).where([](const auto& x){return x.snow;}).select([](const auto& x){return x.temp_min;});
+    }));
+
+
+
+
 
 
 
@@ -162,14 +178,14 @@ vector<weather_point> load_weather(string path)
         
         for (string event : split(line["Events"], '-'))
         {
-            weather_event e = unrecognized;
+            //weather_event e = unrecognized;
             
-            if (event == "Fog") e = fog;
-            else if (event == "Rain") e = rain;
-            else if (event == "Thunderstorm") e = thunderstorm;
-            else if (event == "Snow") e = snow;
+           p.fog = (event == "Fog");
+           p.rain =(event == "Rain");
+           p.thunderstorm= (event == "Thunderstorm");
+           p.snow = (event == "Snow");
             
-            p.events.push_back(e);
+            //p.events.push_back(e);
         }
         
         p.wind_direction = stoi(fix(line["WindDirDegrees"]));
