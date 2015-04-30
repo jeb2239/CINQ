@@ -38,53 +38,53 @@ namespace cinq
             begin = source.cbegin();
             end = source.cend();
         }
-
         
         /**
          * @brief Filters a sequence of values based on a predicate.
-         * 
-         * @param predicate A function to test each element for a condition. 
-         * @return an enumerable with the data filtered
-         */
-        template <typename TFunc>
-        requires Predicate<TFunc, TElement>()
-        enumerable<TSource> where(TFunc predicate)
-        {
-            
-            ensure_data();
-            
-            vector<TElement> updated;
-            for (auto& element : data)
-            {
-                if (predicate(element)) updated.push_back(element);
-            }
-            data = updated;
-            
-            return *this;
-        }
-        
-        /**
-         * @brief Filters a sequence of values based on a predicate. 
-         * Each element's index is used in the logic of the predicate function.
+         * Each element's index may be used in the logic of the predicate function.
          * 
          * @param predicate A function to test each element for a condition. 
          * @return An enumerable that contains elements from the input sequence that satisfy the condition.
          */
-        template <typename TFunc>                                   
-        requires Predicate<TFunc, TElement, size_t>()
+        template <typename TFunc>
+        requires Predicate<TFunc, TElement>() || Predicate<TFunc, TElement, size_t>()
         enumerable<TSource> where(TFunc predicate)
         {
-            ensure_data();
-            
-            vector<TElement> updated;
-            for (size_t i = 0; i < data.size(); i++)
-            {
-                if (predicate(data[i], i)) updated.push_back(data[i]);
-            }
-            data = updated;
+            if (is_data_copied) where(predicate, data.cbegin(), data.cend());
+            else where(predicate, begin, end);
             
             return *this;
         }
+        
+    private:
+        
+        template <typename TFunc, typename TIterator>
+        requires Predicate<TFunc, TElement>()
+        void where(TFunc predicate, TIterator begin, TIterator end)
+        {
+            vector<TElement> updated;
+            for (auto iter = begin; iter != end; ++iter)
+            {
+                if (predicate(*iter)) updated.push_back(*iter);
+            }
+            data = updated;
+        }
+        
+        template <typename TFunc, typename TIterator>
+        requires Predicate<TFunc, TElement, size_t>()
+        void where(TFunc predicate, TIterator begin, TIterator end)
+        {
+            vector<TElement> updated;
+            size_t i = 0;
+            for (auto iter = begin; iter != end; ++iter)
+            {
+                if (predicate(*iter, i)) updated.push_back(*iter);
+                i++;
+            }
+            data = updated;
+        }
+        
+    public:
         
         /**
          * @brief Determines whether a sequence contains any elements.
