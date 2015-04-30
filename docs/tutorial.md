@@ -16,13 +16,15 @@ To use CINQ clone the git repository using this command: ```shell $ git clone
 https://github.com/jeb2239/Linq4Cpp.git ```
 //we need to include details about how people can include this in their normal projects
 
------ ###__Basic CINQ usage__ Lets take a look at a basic CINQ query:
+-----
+###__Basic CINQ usage__ Lets take a look at a basic CINQ query:
 
 ```cpp std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; auto result =
 cinq::from(my_array) .where([](int x){ return x > 0;}) .to_vector(); std::vector<int> answer { 1, 4,
 6, 3, 2 }; //the output
-        
-``` First we construct an `std::array` object. This could be any sequence container such as an
+``` 
+
+First we construct an `std::array` object. This could be any sequence container such as an
 `std::vector` or `std::list`.
 
 First of all notice the initial call to `cinq::from()` this function serves as the entry point of
