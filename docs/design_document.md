@@ -30,6 +30,8 @@ The nature of our project requires a lot of templating, especially since C++ lam
 
 With concepts, the compiler also tells the user which constraint could not be satisfied, making it easy to see which template argument had the wrong type. In our testing, we found that most of these errors are simple mistakes --- returning an `int` from a lambda instead of a `bool`, for example. Concepts allows the user to spend less time tracking down template problems and more time writing their application.
 
+Prior to this project, it was not easy to get up and running with a C++ concepts toolchain. GCC, Clang, and Microsoft do not have concepts on their feature roadmaps. There are many experimental compiler and standard library implementations, each one implementing a different draft TS. Some compilers did not come with a standard library, and vice versa. We have documented the steps we took to set up a C++ concepts toolchain to save others some trouble.
+
 ### Lots of tests
 
 We have over 60 unit tests covering the correctness and performance of all methods in the library. This allows us to verify that changes to the code continue to return the correct results, and gives us a way to verify that performance fixes actually improved the library's performance.
