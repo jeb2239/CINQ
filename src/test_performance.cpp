@@ -105,7 +105,7 @@ vector<weather_point> load_weather(string path)
         
         for (string event : split(line["Events"], '-'))
         {
-            weather_event e;
+            weather_event e = unrecognized;
             
             if (event == "Fog") e = fog;
             else if (event == "Rain") e = rain;

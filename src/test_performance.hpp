@@ -14,7 +14,7 @@ using namespace std;
 
 vector<test_perf> make_tests_perf();
 
-enum weather_event { fog, rain, thunderstorm, snow };
+enum weather_event { unrecognized, fog, rain, thunderstorm, snow };
 
 class weather_point
 {
