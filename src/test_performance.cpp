@@ -5,17 +5,17 @@ vector<test_perf> make_tests_perf()
     vector<weather_point> weather_data = load_weather("../data/weather_kjfk_1948-2014.csv");
     
     vector<test_perf> tests;
-    
+
     tests.push_back(test_perf("where() by temperature", [=]
     {
         cinq::from(weather_data)
-              .where([](auto& x) -> bool { return x.temp_max > 90; });
+              .where([](const auto& x) -> bool { return x.temp_max > 90; });
     }));
     
     tests.push_back(test_perf("where() by temperature - manual", [=]
     {
         vector<weather_point> result;
-        for (auto data : weather_data)
+        for (const auto& data : weather_data)
         {
             if (data.temp_max > 90) result.push_back(data);
         }
@@ -23,10 +23,67 @@ vector<test_perf> make_tests_perf()
 
     tests.push_back(test_perf("select() mapping weather_point to cloud_cover", [=]
     {
-       cinq::from(weather_data).select([](auto& x){return x.cloud_cover;});
+       cinq::from(weather_data).select([](const auto& x){return x.cloud_cover;});
     }));
+
+     tests.push_back(test_perf("select() mapping weather_point to cloud_cover - manual", [=]
+    {
+        vector<int> result;
+        for(auto data:weather_data){
+            result.push_back(data.cloud_cover);
+        }
     
+    }));
+
+    tests.push_back(test_perf("where().average() finding the averge cloud_cover between 1980 and 2000", [=]
+    {
+
+        cinq::from(weather_data).where([](const auto& wp){return (1980-1900 <wp.date.tm_year && wp.date.tm_year< 2000-1900);})
+                                .average([](const auto& wp){return wp.cloud_cover;});
+            
+    }));
+
+    tests.push_back(test_perf("where().average() finding the averge cloud_cover between 1980 and 2000 - manual", [=]
+    {
+        vector<weather_point> result;
+        for (auto data : weather_data)
+        {
+            if (1980-1900 <data.date.tm_year && data.date.tm_year< 2000-1900) result.push_back(data);
+        }
+        double sum=0;
+        for (auto data: result){
+                   sum+=data.cloud_cover;
+        }
+       //double avg = sum/result.size();
+       
+  
+    }));
+
+    tests.push_back(test_perf("max(). finding the max temp_max in the data set ", [=]
+    {
+        cinq::from(weather_data).max([](const auto& x){return x.temp_max;});
+     //   cout<<max<<endl;
+
+    }));
+    tests.push_back(test_perf("max(). finding the max temp_max in the data set ", [=]
+    {
+
+       int locmax =numeric_limits<int>::min();
+       for(const auto& data:weather_data)
+       {
+            if(locmax<data.temp_max) locmax=data.temp_max;
+       }
+     //  cout<<locmax<<endl;
+
+     }));
+
+
+
+
     return tests;
+
+
+
 }
 
 vector<string> split(const string &str, char delimiter)

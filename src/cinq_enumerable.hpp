@@ -50,10 +50,11 @@ namespace cinq
         requires Predicate<TFunc, TElement>()
         enumerable<TSource> where(TFunc predicate)
         {
+            
             ensure_data();
             
             vector<TElement> updated;
-            for (auto element : data)
+            for (auto& element : data)
             {
                 if (predicate(element)) updated.push_back(element);
             }
