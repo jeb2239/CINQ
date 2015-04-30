@@ -78,7 +78,9 @@ The "C++ way" of passing the result of one method to another would be overloadin
 
 ## Error handling
 
-throw exceptions - returning magic numbers doesnt make sense for data processing lib
+In general, returning a magic number to indicate an error is a bad idea. For a data processing library, it makes even less sense --- there is a high risk that the error number is misinterpreted as the result of a computation.
+
+Each CINQ method checks its preconditions to catch possible runtime errors by the user, and throws an exception with a helpful message if the precondition is not met. For example, it does not make sense to `average()` an empty sequence, so the method will throw a `length_error`. Should the user catch the exception, the `enumerable` object's state is still valid and other calls can be made.
 
 ## Resource management
 
