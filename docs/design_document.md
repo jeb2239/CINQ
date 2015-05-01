@@ -84,9 +84,27 @@ Each CINQ method checks its preconditions to catch possible runtime errors by th
 
 ## Resource management
 
-based on what we learned from class, avoid using "new"
+Based on what we learned in class, we decided to avoid bare pointers and explicit heap memory allocation (with `new`) wherever possible. The result is that CINQ only allocates heap memory through STL classes such as `std::vector`, and does not use pointers. We were surprised at how easy it was to write error-free C++ code after adopting these rules.
 
-our library's interface is designed so that enumerable objects will be destroyed going out of scope
+Consider this CINQ call:
+
+    vector<int> result = cinq::from(my_vector)
+                              .where([](const int& x) { return x > 0; })
+                              .to_vector();
+
+Here is what happens to memory during that call:
+
+1. `from()` constructs the `enumerable` object, which holds information related to the sequence being queried.
+2. The `enumerable` object retrieves the iterators of `my_vector`. (This assumes that `my_vector` is not destroyed or modified during the CINQ call.)
+3. `from()` returns the `enumerable` instance by value --- no pointers involved. This will use the move constructor on compilers that support it.
+4. `where()` creates a new vector to store the result of the filtering. The new vector is assigned to the `data` member of the `enumerable`, which uses the copy constructor.
+5. `where()` returns the `enumerable` instance by value.
+6. `to_vector()` returns a copy of the `data` vector.
+7. The `enumerable` object goes out of scope and its destructor is automatically called.
+
+Our testing strategy includes running the program in [Valgrind](http://valgrind.org) to ensure we didn't miss anything.
+
+CINQ does not open files or listen on the network.
 
 ## Optimizations
 
