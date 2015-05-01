@@ -29,7 +29,7 @@ public:
     int gustspeed_max;
     double precipitation;
     int cloud_cover;
-    vector<weather_event> events;
+    bool rain,thunderstorm,snow,fog;
     int wind_direction;
 };
 
