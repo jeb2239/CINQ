@@ -15,16 +15,61 @@ namespace cinqBench
 
 		public static void Main (string[] args)
 		{
-
+			var weatherData = loadWeather ();
 		
-			tests.Add (new testPerf ("test",() => {
+			tests.Add (new testPerf ("where",() => {
 
 
-
+				weatherData.Where ((WeatherPoint x)=>{return x.temp_max>90;}).ToList ();
 
 
 				return 0;
 			}));
+
+			tests.Add (new testPerf ("select",() => {
+
+
+				weatherData.Select((WeatherPoint x)=>{return x.cloud_cover;}).ToList ();
+
+
+				return 0;
+			}));
+				
+
+			tests.Add (new testPerf ("where().average()",() => {
+
+
+				weatherData.Where((WeatherPoint x)=>{return 1980<x.date.Year && x.date.Year<2000;}).Average ((WeatherPoint wp)=>{return wp.cloud_cover;});
+
+
+				return 0;
+			}));
+			tests.Add (new testPerf ("max",() => {
+
+				weatherData.Max ((WeatherPoint x)=>{return x.temp_max; });
+
+				return 0;
+
+			}));
+
+			tests.Add (new testPerf ("min",() => {
+
+				weatherData.Min ((WeatherPoint x)=>{return x.temp_min; });
+				return 0;
+			}));
+
+			tests.Add (new testPerf ("where().select()",() => {
+
+				weatherData.Where ((WeatherPoint x)=>{return x.snow; }).Select ((WeatherPoint x) => {return x.temp_min;}).ToList ();
+				return 0;
+			}));
+
+
+
+
+
+
+
 
 
 
