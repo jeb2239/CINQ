@@ -3,3 +3,7 @@ cinq_test
 docs/html/
 
 *.DS_Store
+
+bin/
+obj/
+*.userprefs
