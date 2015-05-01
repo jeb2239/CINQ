@@ -64,7 +64,7 @@ test the sequence of values contained in the `enumerable` for whether a
 condition is satisfied. This condition is usually defined by a input predicate.
 
 ```cpp
-std::vector<int> my_vector = { 1, 2, 3, 4, 5 };
+std::vector<int> my_vector { 1, 2, 3, 4, 5 };
 auto enum = cinq::from(my_vector);
 					
 if( enum.all([](int x) { return x>0; }) )
@@ -80,14 +80,45 @@ obvious in their meaning.
 ####__Math__
 
 The Mathematics set of methods adds additional functionality to enumerables
-that contain numbers. Like the Boolean methods, they are self-explanatory but
+that contain numbers. Like the Boolean methods, they are self-explanatory, but
 are useful when performing calculations on a set of data.
+
+```cpp
+std::vector<int> my_ints { 1, 2, 3, 4, 5 };
+auto sum_results = cinq::from(my_ints).sum();
+// sum_results is now equal to 15
+
+```
+
+These methods are also able to operate on the values obtained by invoking a
+mapping function on each element in the input sequence.
+
+```cpp
+vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
+auto result = cinq::from(authors)
+					.average([](string x) { return x.length(); });
+// result is now 13, the average length of the strings in the vector<string> authors
+
+```
+
+In the above example, `average()` takes in a function that transforms each
+string in the authors vector to some useful value, and then taking the average
+of these values.
+
+####__Filter__
+
+Filtering functions allow us to filter the elements of a sequence such that the
+remaining elements are the only ones that we want. These functions range from
+methods such as `element_at()` that retrieves only the value at the input index,
+to `where()` which uses a predicate and applying it to each element to see if
+it satisfies the condition.
 
 ```cpp
 
 
-```
  
+ 
+
 
 
 
