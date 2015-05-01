@@ -123,9 +123,35 @@ Many of our library's functions involve calling small, one-line lambdas, whether
 
 ## Features for the convenience of users
 
-using concepts improves the compiler errors
+### Overrides that exist for preventing unsigned to `size_t` conversion errors
 
-overrides that exist only for error checking size_t values
+The convention for C++ indices is to store them in `size_t`, which is a typedef for an unsigned integer. However, this leads to some nasty problems where the user passes in a signed value that happens to be negative --- the signed value is interpreted as a very large unsigned value:
+
+    cinq::from(my_vector).take(-1);
+
+It will most likely cause the program to crash immediately, but depending on the value, it can also create more subtle errors: an invalid result from CINQ or even memory corruption that causes problems later.
+
+Critically, there will be no compile-time warnings. Neither Clang nor GCC gives warnings for the code above --- and even if they wanted to, they could not prevent all cases: an end user may enter "-1" into the application at run time.
+
+To solve this problem, any CINQ method that takes a `size_t` argument also has an `int` version that throws an exception if the argument is negative, exposing the problem at the source:
+
+    enumerable<TSource> take(int count)
+    {
+        if (count >= 0) return take((size_t)count);
+        else throw invalid_argument("cinq: take() was called with negative count");
+    }
+
+### Default versions of methods
+
+Many CINQ methods take mapper lambdas --- for example, `average()` will map the sequence using user-provided lambda, and average the result. But if the user already has a sequence of numbers, it would be very annoying to write:
+
+    cinq::from(class_grades).average([](float grade) { return grade; });
+
+So we provide a default version that does the same thing as the code above:
+
+    cinq::from(class_grades).average();
+
+Thanks to concepts, we can make the no-lambda overload of `average()` available only when used with a sequence of numeric type. This is also a much cleaner and less error-prone than the [C# implementation of average](https://github.com/mono/mono/blob/effa4c0/mcs/class/System.Core/System.Linq/Enumerable.cs#L163), which has a manually templated copy of the method for each numeric primitive and object wrapper.
 
 ## Ideas for release 1.2
 
