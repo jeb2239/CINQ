@@ -103,23 +103,9 @@ readable.
 Now that we have had a taste of CINQ, we can take a broader look at the various
 tools CINQ provides.
 
-The CINQ library allows for type safe, generic and arbitrarily complex queries via the chaining of
-query methods which operate on an enumerable object. Below is a list of all
-currently implemented methods.
-
-- **Select.** Creates a new sequence by mapping the source sequence with a user-supplied mapping lambda.
-- **Where.** Filters the sequence to remove items not matched by a user-supplied predicate.
-- **Single.** Filters the sequence. If there is only one element left, return the item. Otherwise, throw an exception.
-- **Any, All.** Checks whether any or all of the elements match a user-supplied predicate.
-- **Min, Max, Sum, Average.** If the source sequence is a `Number`, these methods will compute the min, max, sum, or average. Otherwise, it can compute those values on the results of a user-provided mapping lambda.
-- **Take.** Includes only the first _N_ elements. (Convenience method.)
-- **Skip.** Includes everything after and including the Nth element. (Convenience method.)
-- **ElementAt, First, Last.** Get the element at the specified index.
-- **Concat.** Concatenates two sequences.
-- **OrderBy.** Sorts the sequence. If a mapping lambda is provided, the sequences will be sorted based on the return value of the lambda. If multiple lambdas are provided, the other lambdas will be used to specify subsequent ordering for the sort.
-- **Reverse.** Reverses the order of the sequence.
-
-Most of these methods can be separated by their functionality into a few major
+The CINQ library allows for type safe, generic and arbitrarily complex queries
+via the chaining of query methods which operate on an enumerable object. Most
+of these methods can be separated by their functionality into a few major
 categories: Boolean, Filter, Math and Sorting.
 
 ###__Boolean__
@@ -291,10 +277,58 @@ Though not part of the actual query `to_vector()` is an essential part of any
 query that seeks to output its data to some useable form. As the name states,
 `to_vector()` takes the enumerable and converts it to a vector containing the
 appropriate type. 
+
+###__List of implmented methods__			
+
+Now that we have seen some of the power of CINQ, it might be time to have a
+quick overview of all the tools at our disposal.
+
+Below is a list of all currently implemented methods:
+
+- **Select.** Creates a new sequence by mapping the source sequence with a user-supplied mapping lambda.
+- **Where.** Filters the sequence to remove items not matched by a user-supplied predicate.
+- **Single.** Filters the sequence. If there is only one element left, return the item. Otherwise, throw an exception.
+- **Any, All.** Checks whether any or all of the elements match a user-supplied predicate.
+- **Min, Max, Sum, Average.** If the source sequence is a `Number`, these methods will compute the min, max, sum, or average. Otherwise, it can compute those values on the results of a user-provided mapping lambda.
+- **Take.** Includes only the first _N_ elements. (Convenience method.)
+- **Skip.** Includes everything after and including the Nth element. (Convenience method.)
+- **ElementAt, First, Last.** Get the element at the specified index.
+- **Concat.** Concatenates two sequences.
+- **OrderBy.** Sorts the sequence. If a mapping lambda is provided, the sequences will be sorted based on the return value of the lambda. If multiple lambdas are provided, the other lambdas will be used to specify subsequent ordering for the sort.
+- **Reverse.** Reverses the order of the sequence.
+
+
+###__Overloaded functions__
+
+As described in the list of implemented methods, some of the functions have been
+overloaded to provided additional functionality in certain cases. This added
+functionality is made possible by allowing those methods access to either a predicate,
+mapping function, or element index.
+
+#####__1. Predicate__
+
+Predicates return a value that is convertible to bool. As such they allow the
+function to test the elements for a condition so that they can return only
+those elements, or determine if those elements exist.
+
+####@__2. Mapping function__
+
+The mapping functions allow the data contained by the enumerable to be
+changed into another form. This allows non-numerical data be transformed to
+ueseable values that can be analyzed using some of the Mathematics functions. 
+
+#####__3. Element index__
+
+By having access to the element index, it is possible to perform actions or
+comparisons only on the desired indices.
+
+
+
+
  
 
 
-##__Usage__
+##__Putting it all together__
 
 The examples in the previous section seem to be fairly trivial, and you may be
 wondering what is the benefit of using CINQ over just implementing these
@@ -311,32 +345,60 @@ struct Person{
 	string name; 
 	int age; 
 	int weight; 
-	Person(string n, int a, int w) 
+	int id;
+	Person(string n, int a, int w, int i) 
 	{ 
 		name=n; 
 		age=a;
 		weight=w; 
+		id=i;
 	} 
-} tim("Tim",14,120), rich("Rich",20,145), kevin("Kevin",19,150),
-emily("Emily",30,110), cassy("Cassy",21,125), laura("Laura",18,105); 
+} tim("Tim",14,120,2), rich("Rich",20,145,5), kevin("Kevin",19,150,6),
+emily("Emily",30,110,4), cassy("Cassy",21,125,1), laura("Laura",18,105,3); 
 
 ```
 
-Let's say we wanted to find the weights of the people who are 18 or older,
-starting with the youngest and conflicts resolved by shortest name length, and
-then only keep the top 3. However, we only want to apply this query if there
-are at least 5 people. This is a somewhat complicated query. If written
-manully, this query would be several lines of code that increase the likelihood
-of introducing bugs into the code. 
+One such chain of queries consists of determining the number of people whose
+index is equal to their id after sorting from least to greatest weight. 
+
+```cpp
+vector<Person> my_people { tim, rich, kevin, emily, cassy, laura };
+
+// By applying each of these commands in succession, we are able to form a much
+// more complicated query.
+auto result = cinq::from(my_people)
+					.order_by([](const Person& p) { return p.weight; }
+					.where([](Person p, int index) { return index == id; }
+					.count();
+//returns 2
+
+```
+As you can see, we are using an overloaded version of `where()` in this
+instance.  `where()` still requires a `Predicate` but this time the predicate
+has two arguments. The first is the object which is contained by the source
+container and the second is the index of the item. This means we can use the
+index of the object when making our decision on what elements to keep. The
+example above filters out any elements whose id's are not equal to their index.
+This concept of accessing element index is utilized in other overloaded
+methods. 
+
+Let us consider another, more involved query. Using the same `Person` structure,
+we want to find the weights of the 3 youngest people, with sorting
+conflicts being determined by name length, who are 18 or older, However, we
+only want to apply this query if there there is at least one person whose age
+is an even number. This is a somewhat complicated query. If written manully,
+this query would require several lines of additional code, increasing the
+chance of introducing bugs into the code. 
 
 ```cpp
 vector<Person> my_people { tim, rich, kevin, emily, cassy, laura };
 
 auto my_enum = cinq::from(my_people);
-if(!my_enum.empty()) {
+if( my_enum.any([](Person p) { return (p.age%2) == 0; }) ) 
+{
 	auto result = my_enum.where([](Person p) { return p.age>=18; })
-						 .order_by([](const Person& p) { return p.age; }, 
-								   [](const Person& p) { return p.name.length(); })
+						 .order_by([](const Person& p) { return p.age; },
+						 		   [](const Person& p) { return p.name.length(); }) 
 						 .take(3)
 						 .select([](Person p) { return p.weight; })
 						 .to_vector();
@@ -348,10 +410,11 @@ if(!my_enum.empty()) {
 Rather than having a large block of handwritten code, the query is reduced to 7 easily
 understood CINQ method calls.
 
-			
-
-
-
+Just like the first example in which `where()` was overloaded to access an
+index, this block of code gives us an example of how a `Predicate` is used to
+give Boolean functions the ability to test for additional conditions. In this
+case, `any()`, rather than test for whether or not the enumerable contains an
+element, checks whether or not a `Person` has an even numbered age.
 
 
 
