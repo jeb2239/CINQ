@@ -11,16 +11,28 @@ namespace cinqBench
 {
 	class MainClass
 	{
+		public static List<testPerf> tests = new List<testPerf>();
 
 		public static void Main (string[] args)
 		{
-			
 
-			List<WeatherPoint> weatherData = loadWeather ();
-
-
+		
+			tests.Add (new testPerf ("test",() => {
 
 
+
+
+
+				return 0;
+			}));
+
+
+
+
+
+			foreach (var test in tests) {
+				test.run ();
+			}
 
 		}
 
@@ -30,6 +42,8 @@ namespace cinqBench
 			else return s;
 
 		}
+
+
 			
 
 		public static List<WeatherPoint> loadWeather(){
@@ -37,9 +51,8 @@ namespace cinqBench
 
 			string[] lines = System.IO.File.ReadAllLines (Path.Combine ("..","..","..", "..", "..", "data", "weather_kjfk_1948-2014.csv"));
 			string[] headers = lines [0].Split (',');
-			Console.WriteLine (headers.Length);
 			List<WeatherPoint> weatherData = new List<WeatherPoint> ();
-List<Dictionary<string,string>> dictList = new List<Dictionary<string,string>> ();
+			List<Dictionary<string,string>> dictList = new List<Dictionary<string,string>> ();
 			for (int i = 1; i < lines.Length; i++) {
 				string[] tok = lines [i].Split (',');
 				if (tok.Length < 23)
@@ -54,12 +67,7 @@ List<Dictionary<string,string>> dictList = new List<Dictionary<string,string>> (
 						dict [header] = fix(tok [count]);
 						count++;
 					}
-					catch(Exception expt){
-						//Console.WriteLine (headers.Length);
-						foreach(string a in tok){
-							Console.WriteLine(a);
-						}
-					}
+					catch(Exception expt){}
 					finally{}
 				}
 				dictList.Add (dict);
@@ -125,6 +133,7 @@ List<Dictionary<string,string>> dictList = new List<Dictionary<string,string>> (
 				}
 				catch(Exception e){
 					foreach (string header in headers) {
+						
 						Console.WriteLine (header);
 					}
 				}
@@ -133,18 +142,14 @@ List<Dictionary<string,string>> dictList = new List<Dictionary<string,string>> (
 			return weatherData;
 		}
 
-
-
-
-
-						
-
-
-
+	
 
 
 
 		}
+
+
+
 
 
 
