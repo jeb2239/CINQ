@@ -155,4 +155,32 @@ Thanks to concepts, we can make the no-lambda overload of `average()` available 
 
 ## Ideas for release 1.2
 
-take from github issues
+### Parallel queries
+
+No other C++ LINQ implementation allows the user to parallelize a query automatically. For example, the following code would detect the number of CPUs on your computer (using `std::thread::hardware_concurrency()`) and distribute the filtering so that each core is doing something:
+
+    cinq::from(my_vector).as_parallel().where([](person p) { return some_very_expensive_call(p); });
+
+By making it so easy to parallelize queries, CINQ in practice might even be _faster_ than writing the query out by hand. More programmers will be inclined to parallelize if it's as easy as writing "as_parallel."
+
+### Full implementation of LINQ method syntax
+
+We did not get around to implementing some of the LINQ method syntax, mostly the set operations. It would be good to have a complete implementation, so that we can meet the expectations of programmers already familiar with LINQ.
+
+- select_many
+- join
+- group_join
+- distinct
+- except
+- intersect
+- union
+- group_by
+- aggregate
+
+### Query Syntax
+
+In our opinion, query syntax is harder to use and less flexible than method syntax. So it's not a high priority. However, it looks cooler --- especially if implemented in a language that is not supposed to have an SQL-like syntax:
+
+    auto result = ( <from> my_contacts
+                    <where> [](person &p) { return p.age >= 21 }
+                    <order_by> ascending ).to_vector();
