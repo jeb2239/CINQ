@@ -226,6 +226,17 @@ Finally, we have a specialization to handle the base case:
 
 The compiler generates all the necessary templates and lambdas, and has the opportunity to inline the lambdas. An informal test showed that the performance overhead of our sort is less than 10 percent, which indicates that most or all the lambdas were inlined. So we did not look for further optimizations in this method.
 
+### Access private members of other template instantiations
+
+Normally, an object of type `foo` can access private members of other `foo` objects. However, this is not true for templated classes on some compilers: each template instantiation is treated as its own class.
+
+Templates created this problem, but fortunately, templates can solve it:
+
+    template <typename TSourceFriend, typename TElementFriend, typename TIterFriend>
+    friend class enumerable;
+
+Any time we try to access the private members of another `enumerable`, the template will friend that instantiation for us. Neat!
+
 ## Ideas for release 1.2
 
 ### Parallel queries
