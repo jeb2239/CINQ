@@ -108,13 +108,18 @@ CINQ does not open files or listen on the network.
 
 ## Optimizations
 
-determining when we should cache in "data"
+### Template specializations improve performance in specific cases
 
-certain operations can work without the cache.
+A wide variety of containers and iterators can be used as inputs to CINQ. This could be a problem when implementing methods like `count()`:
 
-count overloads for linked list vs vector iterators, etc
+- Incrementing the iterator until we hit the end works for all containers, but is inefficient for random-access containers like vector.
+- On the other hand, not all iterators can get the distance as an O(1) operation.
 
-take advantage of inlining
+We overloaded `count()` using concepts. One requires `Random_access_iterator` and the other requires only `Forward_iterator`. If the constraints on the more specific and more efficient specialization cannot be satisfied, the compiler will fall back to the other one. 
+
+### GCC lambda inlining reduces mapper & predicate overhead
+
+Many of our library's functions involve calling small, one-line lambdas, whether they are predicates or mappers. At first, this seems extremely inefficient. However, lambdas are more easily optimized by the compiler than function pointers. When compiling with the `-S` flag to output assembly, we have never observed a situation where the lambdas are not inlined.
 
 ## Features for the convenience of users
 
