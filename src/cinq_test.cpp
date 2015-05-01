@@ -44,7 +44,7 @@ void test_performance()
     auto tests = make_tests_perf();
     for (test_perf t : tests)
     {
-        printf("[%4d] %s\n", t.func(), t.name.c_str());
+        printf("[%4d] %dx %s\n", t.func(), t.runs, t.name.c_str());
     }
 }
 

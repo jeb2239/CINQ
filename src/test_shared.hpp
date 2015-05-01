@@ -22,9 +22,14 @@ public:
 class test_perf
 {
 public:
-    test_perf(string name, function<void()> func, int run_count = 100)
+    test_perf(string name, function<void()> func) : test_perf(name, 100, func)
+    {
+    }
+    
+    test_perf(string name, int run_count, function<void()> func)
     {
         this->name = name;
+        this->runs = run_count;
         this->func = [=]()
         {
             using namespace std::chrono;
@@ -38,6 +43,7 @@ public:
     
     string name;
     function<int()> func;
+    int runs;
 };
 
 #endif
