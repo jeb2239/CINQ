@@ -24,7 +24,7 @@ namespace cinqBench
 
 
 				return 0;
-			}));
+			},2000));
 
 			tests.Add (new testPerf ("select",() => {
 
@@ -33,7 +33,7 @@ namespace cinqBench
 
 
 				return 0;
-			}));
+			},2000));
 				
 
 			tests.Add (new testPerf ("where().average()",() => {
@@ -43,26 +43,33 @@ namespace cinqBench
 
 
 				return 0;
-			}));
+			},500));
 			tests.Add (new testPerf ("max",() => {
 
 				weatherData.Max ((WeatherPoint x)=>{return x.temp_max; });
 
 				return 0;
 
-			}));
+			},1300));
 
 			tests.Add (new testPerf ("min",() => {
 
 				weatherData.Min ((WeatherPoint x)=>{return x.temp_min; });
 				return 0;
-			}));
+			},1300));
 
 			tests.Add (new testPerf ("where().select()",() => {
 
 				weatherData.Where ((WeatherPoint x)=>{return x.snow; }).Select ((WeatherPoint x) => {return x.temp_min;}).ToList ();
 				return 0;
-			}));
+			},2000));
+
+			tests.Add (new testPerf ("where().Orderby.select().take",() => {
+				weatherData.Where((x)=>{return x.rain;}).OrderBy ((x)=>{return x.temp_min;}).Take (5).Select ((x)=>{return x.temp_min;}).ToList ();
+				return 0;
+			},100));
+
+
 
 
 
