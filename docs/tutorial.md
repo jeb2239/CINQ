@@ -4,10 +4,10 @@
 *What is CINQ?*
 
 C++ Integrated Query (CINQ, pronounced "sink") is a play on words on
-Microsoft's Language-Integrated Query (LINQ) REFERENCE
-HERE(https://msdn.microsoft.com/en-us/library/bb397926.aspx). LINQ
-allows both C# and Visual Basic to perform various queries on potentially any
-data store. It standardizes patterns for querying and updating data. 
+Microsoft's [Language-Integrated Query
+(LINQ)](https://msdn.microsoft.com/en-us/library/bb397926.aspx).  LINQ allows
+both C# and Visual Basic to perform various queries on potentially any data
+store. It standardizes patterns for querying and updating data. 
 
 CINQ is our C++ implementation of LINQ. It contains most of LINQ's method
 syntax, utilizing C++'s templating for great robustness while adding C++14's
@@ -23,7 +23,7 @@ CINQ.
 
 <sub><sup>These instructions have only been tested on Ubuntu 14.04</sup></sub>
 
-###Step 1: compile and install the GCC 5 concepts branch 
+###Step 1: Compile and install the GCC 5 concepts branch 
 
 You need a version of gcc with concepts support. See
 [concepts_setup.md](concepts_setup.md) for instructions on how to get this.
@@ -93,7 +93,9 @@ passed into `from()` is not changed.
 Notice how this example uses a lambda as the input to the `Predicate` parameter
 of `where()`. Throughout this tutorial, we will be using lambdas for
 convenience and legibility, but function objects can also be easily used
-instead. 
+instead. Also, unlike other C++ implementations of LINQ, we use the `.`
+operator to chain our queries, rather than `>>`. This also makes the code more
+readable. 
 
 
 ##__CINQ methods__
@@ -102,8 +104,23 @@ Now that we have had a taste of CINQ, we can take a broader look at the various
 tools CINQ provides.
 
 The CINQ library allows for type safe, generic and arbitrarily complex queries via the chaining of
-query methods which operate on an enumerable object. Most of these methods can
-be separated by their functionality into a few major categories: Boolean, Filter, Math and Sorting.
+query methods which operate on an enumerable object. Below is a list of all
+currently implemented methods.
+
+- **Select.** Creates a new sequence by mapping the source sequence with a user-supplied mapping lambda.
+- **Where.** Filters the sequence to remove items not matched by a user-supplied predicate.
+- **Single.** Filters the sequence. If there is only one element left, return the item. Otherwise, throw an exception.
+- **Any, All.** Checks whether any or all of the elements match a user-supplied predicate.
+- **Min, Max, Sum, Average.** If the source sequence is a `Number`, these methods will compute the min, max, sum, or average. Otherwise, it can compute those values on the results of a user-provided mapping lambda.
+- **Take.** Includes only the first _N_ elements. (Convenience method.)
+- **Skip.** Includes everything after and including the Nth element. (Convenience method.)
+- **ElementAt, First, Last.** Get the element at the specified index.
+- **Concat.** Concatenates two sequences.
+- **OrderBy.** Sorts the sequence. If a mapping lambda is provided, the sequences will be sorted based on the return value of the lambda. If multiple lambdas are provided, the other lambdas will be used to specify subsequent ordering for the sort.
+- **Reverse.** Reverses the order of the sequence.
+
+Most of these methods can be separated by their functionality into a few major
+categories: Boolean, Filter, Math and Sorting.
 
 ###__Boolean__
 
