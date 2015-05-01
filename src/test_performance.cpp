@@ -6,13 +6,13 @@ vector<test_perf> make_tests_perf()
 
     vector<test_perf> tests;
 
-    tests.push_back(test_perf("where() by temperature", [=]
+    tests.push_back(test_perf("where() by temperature", 2000, [=]
     {
         cinq::from(weather_data)
               .where([](const auto& x) -> bool { return x.temp_max > 90; });
     }));
 
-    tests.push_back(test_perf("where() by temperature - manual", [=]
+    tests.push_back(test_perf("where() by temperature - manual", 2000, [=]
     {
         vector<weather_point> result;
         for (const auto& data : weather_data)
@@ -21,12 +21,12 @@ vector<test_perf> make_tests_perf()
         }
     }));
 
-    tests.push_back(test_perf("select() mapping weather_point to cloud_cover", [=]
+    tests.push_back(test_perf("select() mapping weather_point to cloud_cover", 2000, [=]
     {
        cinq::from(weather_data).select([](const auto& x){return x.cloud_cover;});
     }));
 
-     tests.push_back(test_perf("select() mapping weather_point to cloud_cover - manual", [=]
+     tests.push_back(test_perf("select() mapping weather_point to cloud_cover - manual", 2000, [=]
     {
         vector<int> result;
         for(auto& data:weather_data){
@@ -35,7 +35,7 @@ vector<test_perf> make_tests_perf()
 
     }));
 
-    tests.push_back(test_perf("where().average() finding the averge cloud_cover between 1980 and 2000", [=]
+    tests.push_back(test_perf("where().average() finding the averge cloud_cover between 1980 and 2000", 500, [=]
     {
 
         cinq::from(weather_data).where([](const auto& wp){return (1980-1900 <wp.date.tm_year && wp.date.tm_year< 2000-1900);})
@@ -43,7 +43,7 @@ vector<test_perf> make_tests_perf()
 
     }));
 
-    tests.push_back(test_perf("where().average() finding the averge cloud_cover between 1980 and 2000 - manual", [=]
+    tests.push_back(test_perf("where().average() finding the averge cloud_cover between 1980 and 2000 - manual", 500, [=]
     {
         vector<weather_point> result;
         for (auto& data : weather_data)
@@ -59,13 +59,13 @@ vector<test_perf> make_tests_perf()
 
     }));
 
-    tests.push_back(test_perf("max(). finding the max temp_max in the data set ", [=]
+    tests.push_back(test_perf("max(). finding the max temp_max in the data set ", 130000000, [=]
     {
         cinq::from(weather_data).max([](const auto& x){return x.temp_max;});
      //   cout<<max<<endl;
 
     }));
-    tests.push_back(test_perf("max(). finding the max temp_max in the data set - manual ", [=]
+    tests.push_back(test_perf("max(). finding the max temp_max in the data set - manual ", 130000000, [=]
     {
 
        int locmax =numeric_limits<int>::min();
@@ -77,7 +77,7 @@ vector<test_perf> make_tests_perf()
 
      }));
 
-    tests.push_back(test_perf("min(). finding the min temp_min in the data set",[=]
+    tests.push_back(test_perf("min(). finding the min temp_min in the data set", 130000000, [=]
     {
 
         cinq::from(weather_data).min([](const auto& x){return x.temp_min;});
@@ -85,12 +85,12 @@ vector<test_perf> make_tests_perf()
 
     }));
 
-    tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed",[=]
+    tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed", 2000, [=]
     {
         cinq::from(weather_data).where([](const auto& x){return x.snow;}).select([](const auto& x){return x.temp_min;}).to_vector();
     }));
 
-    tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed - manual",[=]
+    tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed - manual", 2000, [=]
     {
         vector<weather_point> result;
         for(auto& data: weather_data){
@@ -106,19 +106,34 @@ vector<test_perf> make_tests_perf()
 
     }));
 
-
-
-
-
-
-
-
-
-
+    tests.push_back(test_perf("where().select().order_by().take() - 5 coldest rainy days", 100, [=]
+    {
+        cinq::from(weather_data)
+             .where([](const weather_point& w) { return w.rain; })
+             .order_by([](const weather_point& w) { return w.temp_min; })
+             .take(5)
+             .select([](const weather_point& w) { return w.temp_min; })
+             .to_vector();
+    }));
+    
+    tests.push_back(test_perf("where().select().order_by().take() - 5 coldest rainy days - manual", 100, [=]
+    {
+        vector<weather_point> result;
+        for (auto& data : weather_data)
+        {
+            if (data.rain) result.push_back(data);
+        }
+        
+        sort(result.begin(), result.end(), [](const auto &a, const auto &b) { return a.temp_min < b.temp_min; });
+        
+        vector<weather_point> five;
+        for (size_t i = 0; i < 5; i++) five.push_back(result[i]);
+        
+        vector<int> temps;
+        for (auto& data : five) temps.push_back(data.temp_min);
+    }));
+    
     return tests;
-
-
-
 }
 
 vector<string> split(const string &str, char delimiter)
