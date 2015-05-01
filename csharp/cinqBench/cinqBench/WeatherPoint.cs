@@ -1,9 +1,12 @@
 ﻿using System;
 
+
+
 namespace cinqBench
 {
 	public class WeatherPoint
 	{
+		public DateTime date;
 		public int temp_max;
 		public int temp_avg;
 		public int temp_min;
@@ -19,7 +22,13 @@ namespace cinqBench
 		public int wind_direction;
 
 
+		public string ToString(){
+			return date.ToString ();
+		}
+
 	}
+
+
 		
 }
 
