@@ -108,6 +108,35 @@ CINQ does not open files or listen on the network.
 
 ## Optimizations
 
+### Performance comparisons
+
+We performed performance testing on a computer with Intel i7-4850HQ. Equivalent queries were performed with the following languages and libraries:
+
+- CINQ on Linux 3.16.0-34-generic
+- C++ "by hand" on Linux 3.16.0-34-generic (rewriting CINQ queries manually, using the standard library)
+- Microsoft C# VM on Windows 8.1
+
+We ran the tests located in `test_performance.cpp`. Here is a summary of what they test:
+
+1. where(): Find days hotter than 90 degrees F
+2. select(): Mapping to cloud cover
+3. where().average(): Average daily cloud cover
+4. max(): finding max temperature
+5. where().select(): coldest snowy days
+6. where().select().order_by().take(): 5 coldest rainy days
+
+Results (all times are listed in milliseconds)
+
+    Test Number     1     2     3     4     5     6
+    CINQ          142   178   207   212   301   254
+    C++ by hand   131   160   219   209   248   201
+    MS C#         603  1085   935   393   530   249
+
+CINQ's overhead per test (CINQ time / by hand time - 1):
+
+    Test Number     1     2     3     4     5     6
+    Overhead       8%   11%   60%    1%   21%   26%
+
 ### Template specializations improve performance in specific cases
 
 A wide variety of containers and iterators can be used as inputs to CINQ. This could be a problem when implementing methods like `count()`:
