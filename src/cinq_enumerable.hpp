@@ -146,16 +146,12 @@ namespace cinq
         requires Function<TFunc, TElement>() || Function<TFunc, TElement, size_t>()
         auto select(TFunc fun)
         {
-
-          if(is_data_copied) return select(fun,data.cbegin(),data.cend());
-          else return select(fun,begin,end);
-
-
-
+            if(is_data_copied) return select(fun,data.cbegin(),data.cend());
+            else return select(fun,begin,end);
         }
 
-
-      private:
+    private:
+        
         template <typename TFunc, typename TReturn = typename std::result_of<TFunc(const TElement&)>::type,typename TIterator>
         requires Function<TFunc, const TElement&>() && Copy_constructible<TReturn>()
         enumerable<vector<TReturn>> select(TFunc fun,TIterator begin, TIterator end )
@@ -172,8 +168,6 @@ namespace cinq
         requires Function<TFunc, const TElement&, size_t>() && Copy_constructible<TReturn>()
         enumerable<vector<TReturn>> select(TFunc fun,TIterator begin, TIterator end)
         {
-          
-
             enumerable<vector<TReturn>> updated;
 
             size_t index = 0;
@@ -182,14 +176,14 @@ namespace cinq
                 updated.data.push_back(fun(*iter, index));
                 index++;
             }
-
-          
-
+            
             updated.is_data_copied = true;
-
+            
             return updated;
         }
-      public:
+        
+    public:
+        
         /**
          * @brief Inverts the order of the elements in a sequence.
          *

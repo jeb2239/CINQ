@@ -201,10 +201,10 @@ vector<weather_point> load_weather(string path)
         auto result = split(line["Events"], '-');
         for (string event : result)
         {
-        if(event == "Fog") p.fog=true;
-        if(event == "Rain") p.rain=true;
-        if(event == "Thunderstorm") p.thunderstorm=true;  
-        if(event == "Snow") p.snow=true;  
+            if(event == "Fog") p.fog=true;
+            if(event == "Rain") p.rain=true;
+            if(event == "Thunderstorm") p.thunderstorm=true;  
+            if(event == "Snow") p.snow=true;  
         }
        
         p.wind_direction = stoi(fix(line["WindDirDegrees"]));
