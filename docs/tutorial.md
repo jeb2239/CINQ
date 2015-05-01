@@ -50,8 +50,7 @@ auto result = cinq::from(my_array)
 // The result should be { 1, 4, 6, 3, 2 }
 ```
 
-In this example, we construct an `std::array` object. This could be any sequence container such as an
-`std::vector` or `std::list`.
+In this example, we construct an `std::array` object. This could be any sequence container such as an `std::vector` or `std::list`.
 
 First of all, notice the initial call to `cinq::from()`. This function is the entry point of all CINQ queries. It constructs an `enumerable` object from the passed in sequence container, `my_array`. This enumerable is then returned and is passed as the implicit argument to `where()`.
 
@@ -225,11 +224,11 @@ The mapping functions allow the data contained by the enumerable to be changed i
 
 #### 3. Element index (`size_t`)
 
-By having access to the element index, it is possible to perform actions or comparisons only on the desired indices.
+By having access to the element index, it is possible to perform actions or comparisons only on the desired indices or possibly include the indices in calculations.
 
 ## Putting it all together
 
-The examples in the previous section seem to be fairly trivial, and you may be wondering what is the benefit of using CINQ over just implementing these seemingly simple functions yourself and applying them to the actual container.
+The examples in the previous sections seem to be fairly trivial, and you may be wondering what is the benefit of using CINQ over just implementing these seemingly simple functions yourself and applying them to the actual container.
 
 One of the main benefits is that CINQ functions are able to be applied one after the other to form a much more complicated query. The CINQ query is easier to understand than an equivalent query written without CINQ.
 
@@ -291,3 +290,7 @@ if( my_enum.any([](const Person& p) { return (p.age % 2) == 0; }) )
 Rather than having a large block of handwritten code, the query is reduced to 7 easily understood CINQ method calls.
 
 Just like the first example in which `where()` was overloaded to access an index, this block of code gives us an example of how a `Predicate` is used to give Boolean functions the ability to test for additional conditions. In this case, `any()`, rather than test for whether or not the enumerable contains an element, checks whether or not a `Person` has an even numbered age.
+
+## Closing comments
+
+CINQ is a powerful tool capable of robust, complicated queries. It allows users to manipulate data in a quick and repeatable way without much loss in performance. Even though CINQ handles typing generically, if you have an error somewhere due to an incorrect type, the compiler will still generate an error. This is primarily due to CINQ utilizing concepts to enforce correct typing. By combining this type safety and easy building of queries, CINQ is a useful tool whenever you need to handle a data set.
