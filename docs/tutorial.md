@@ -1,6 +1,6 @@
 #__CINQ Tutorial__
 
-###__Introduction__
+##__Introduction__
 *What is CINQ?*
 
 C++ Integrated Query (CINQ, pronounced "sink") is a play on words on
@@ -9,36 +9,56 @@ HERE(https://msdn.microsoft.com/en-us/library/bb397926.aspx). LINQ
 allows both C# and Visual Basic to perform various queries on potentially any
 data store. It standardizes patterns for querying and updating data. 
 
-CINQ is our C++ implementation of LINQ.
+CINQ is our C++ implementation of LINQ. It contains most of LINQ's method
+syntax, utilizing C++'s templating for great robustness while adding C++14's
+concepts for type security.
 
 
-###__Getting Setup__ 
+
+
+##__Getting Setup__ 
 
 Before we jump into the gritty details, we first need to get set up to use
 CINQ.
 
 <sub><sup>These instructions have only been tested on Ubuntu 14.04</sup></sub>
 
-####Step 1: compile and install the GCC 5 concepts branch You need a version of gcc with concepts
-support. See [concepts_setup.md](concepts_setup.md) for instructions on how to get this.
+###Step 1: compile and install the GCC 5 concepts branch 
 
-####Step 2: Obtain needed libraries.  As of the publishing of this document there are no concepts
-defined in the included STL even though the compiler supports the necessary syntax. For this reason
-the CINQ library depends on Andrew Sutton's [Origin Libraries](https://github.com/asutton/origin) .
-These libraries include many useful concepts which are used in the CINQ implementation. These are
-also the concepts that will most likely be included in the STL if concepts are ever included in the
-standard. These concepts are included with the download of CINQ. CINQ otherwise relies exclusively
-on the STL.
+You need a version of gcc with concepts support. See
+[concepts_setup.md](concepts_setup.md) for instructions on how to get this.
+
+###Step 2: Obtain needed libraries  
+
+As of the publishing of this document there are no concepts defined in the
+included STL even though the compiler supports the necessary syntax. For this
+reason the CINQ library depends on Andrew Sutton's [Origin
+Libraries](https://github.com/asutton/origin). These libraries include many
+useful concepts which are used in the CINQ implementation. These are also the
+concepts that will most likely be included in the STL if concepts are ever
+included in the standard. These concepts are included with the download of
+CINQ. CINQ otherwise relies exclusively on the STL.
 
 To use CINQ clone the git repository using this command: 
 ```shell 
 $ git clone https://github.com/jeb2239/CINQ.git 
 
 ```
+###Step 3: Include CINQ header files
 
-//we need to include details about how people can include this in their normal projects
+For convenience CINQ has been implemented entirely in the header file
+"cinq_enumerables.hpp". All you need to do is make sure your compiler includes
+the directory src directory and that your C++ file has the includes statement
 
-###__Basic CINQ usage__ 
+```cpp
+#includes "cinq_enumerables.hpp"
+
+```
+
+
+
+
+##__Basic CINQ usage__ 
 
 Now that we have gotten all set up, let's take a look at a basic CINQ query:
 
@@ -54,14 +74,15 @@ std::vector<int> answer { 1, 4, 6, 3, 2 }; //the output
 In this example, we construct an `std::array` object. This could be any sequence container such as an
 `std::vector` or `std::list`.
 
-First of all, notice the initial call to `cinq::from()` this function serves as the entry point of
-all CINQ queries. It constructs an `enumerable` object from the passed in sequence container. This
-enumerable is then returned and is passed as the implicit argument to `where()`. 
-`where()` is a method that filters a sequence of values based on a input function. That function is
-constrained to those only satisfying the `Predicate` concept. For convenience we use a lambda
-function which returns a type convertible to bool. This `Predicate` is applied to each item in the
-sequence. Only the items for which this predicate evaluates true will be included in the output
-sequence. `where()` now returns the modified sequence as an enumerable.
+First of all, notice the initial call to `cinq::from()` this function serves as
+the entry point of all CINQ queries. It constructs an `enumerable` object from
+the passed in sequence container. This enumerable is then returned and is
+passed as the implicit argument to `where()`.  `where()` is a method that
+filters a sequence of values based on a input function. That function is
+constrained to those only satisfying the `Predicate` concept. This `Predicate`
+is applied to each item in the sequence. Only the items for which this
+predicate evaluates true will be included in the output sequence. `where()` now
+returns the modified sequence as an enumerable.
 
 At this point the user could chain more queries together to further modify the
 data set. However, in this example, we are now done changing our set so we
@@ -69,13 +90,22 @@ proceed to call `to_vector()` on our `enumerable`, which stores the returned
 `std::vector` in `result`.  At the end of this query the original source object
 passed into `from()` is not changed. 
 
-###__CINQ methods__
+Notice how this example uses a lambda as the input to the `Predicate` parameter
+of `where()`. Throughout this tutorial, we will be using lambdas for
+convenience and legibility, but function objects can also be easily used
+instead. 
+
+
+##__CINQ methods__
+
+Now that we have had a taste of CINQ, we can take a broader look at the various
+tools CINQ provides.
 
 The CINQ library allows for type safe, generic and arbitrarily complex queries via the chaining of
 query methods which operate on an enumerable object. Most of these methods can
 be separated by their functionality into a few major categories: Boolean, Filter, Math and Sorting.
 
-####__Boolean__
+###__Boolean__
 
 The Boolean family of methods are the simplest to understand. In general, they
 test the sequence of values contained in the `enumerable` for whether or not a
@@ -97,14 +127,14 @@ if( my_enum.empty() )
 
 ```
 
-As before, `from()` returns an enumerable from which we can query with `all()`
-and `empty()`. Each of these functions return a boolean value that states
+As before, `from()` returns an enumerable from which we can use `all()` and
+`empty()` to query. Each of these functions return a boolean value that states
 whether or not their condition has been satisfied.
 
 This family of methods provides helpful methods that are easily readable and
 obvious in their meaning.
 
-####__Math__
+###__Math__
 
 The Mathematics set of methods adds additional functionality to enumerables
 that contain numbers. Like the Boolean methods, they are mostly self-explanatory, but
@@ -124,17 +154,20 @@ mapping function on each element in the input sequence.
 
 ```cpp
 vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
+
+//calculates the average length of the strings in the vector<string> authors
 auto result = cinq::from(authors)
 					.average([](string x) { return x.length(); });
-// returns 13, the average length of the strings in the vector<string> authors
+// returns 13
 
 ```
 
-In the above example, `average()` takes in a function that transforms each
-string in the authors vector to some useful value, and then calculates the average
-of these values.
+`average()` takes in a function that transforms each string in the authors
+vector to some useful value, and then calculates the average of these values.
+In the above example, `average()` converts the strings to their lengths and
+then finds the average.
 
-####__Filter__
+###__Filter__
 
 Filtering functions allow us to filter the elements of a sequence such that the
 remaining elements are the only ones that we want. These functions range from
@@ -146,35 +179,44 @@ it satisfies the condition.
 std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; 
 auto my_enum = cinq::from(my_array);
 
+// finds the element at index 2, with the first element being at index 0
 auto e = my_enum.element_at(2); 
 // returns 6
 
+// finds the elements whose value is greater than 0
 auto result = my_enum.where([](int x) { return x > 0; })
                      .to_vector();
 // returns { 1, 4, 6, 3, 2 }
 
 ```
 
-####__Sorting__
+By using filtering queries, we are able to retain only the elements that we
+wish to keep. This would speed up further queries on this enumerable since
+unnecessary elements are removed.
 
-These are arguably the most powerful functions in the CINQ library. Currently,
-`order_by()` is the only method implemented, but is powerful due to its broad
-scope of applications. Since 'order_by()' is a variadic function, it is able to
-take in a variable number of mappers and sorts the elements based on the order
-in which the mappers are passed. Its best to demonstrate with an example:
+###__Sorting__
+
+Sorting is one of the most useful features of CINQ. Currently, `order_by()` is
+the only method implemented, but is arguably the most powerful function in the
+library due to its broad scope of applications. `order_by()` does its sorting
+by utilizing an input function to determine the output order. Since
+'order_by()' is a variadic function, it is able to take in a variable number of
+mapping functions and sorts the elements based on the order in which the mappers are
+passed. This is best to demonstrate with an example:
 
 ```cpp 
 vector<string> my_strings = { "hello", "cello", "fellow", "cat" }; 
 
 ``` 
 
-Say we want to sort this
-vector of strings in order based on the length of the string. Notice both
-`"hello"` and `"cello"` have the same length. If we want to specify a lower
-priority rule to further order the strings of matching length we can do so as
-follows: 
+Say we want to sort this vector of strings in order based on the length of the
+string. Notice both `"hello"` and `"cello"` have the same length. If we want to
+specify a lower priority rule to further order the strings of matching length
+we can do so as follows: 
 
 ```cpp 
+// sorts the strings go from shortest to longest, with conflicts resolved by
+// the value of the first character
 auto result = cinq::from(my_vector)
 				    .order_by( [](string x) { return x.length(); }, 
 							   [](string x) { return x[0]; } )
@@ -185,27 +227,57 @@ auto result = cinq::from(my_vector)
 
 In this case the lower priority rule is based on the comparison of the first letter.
 
-####__Miscellaneous__
+You may have noticed in the above example, the return strings go from shortest
+to longest, with the character 'c' in "cello" being taken over 'h' in "hello".
+This is because `order_by()` sorts from lowest value to highest as returned by
+its input mapping functions.
 
-There are other functions that do not really fit into any of the above
-categories. The most common one would likely be `select()`.
+Since `order_by()` is able to use any number of user-defined mapping function,
+it is essentially your go to function to perform any sorting on your data set. 
+
+
+###__Miscellaneous__
+
+Though most methods have functionalities that fit into at least one of the
+above categoriers, there are a few methods that do not exactly belong in one.
+The most common query in this group would likely be `select()`.
 
 ```cpp 
 vector<int> my_ints { 1, 2, 3, 4, 5 }; 
-auto result = cinq::from(nums)
+
+// projects the values in my_ints into a new form
+auto result = cinq::from(my_ints)
 					.select([](int x) { return x * x; }) 
 					.to_vector(); 
 // returns { 1, 4, 9, 16, 25 }
 
 ``` 
 
-Select transforms every element in the sequence according to a mapper function
+`select()` transforms every element in the sequence according to a mapper function
 which is taken as an argument. This mapper must satisfy the constraints required by the `Invokeable`
 concept (something that can be called). This method is an easy way to apply a certain operation to
 every object with out changing the original source container. Select instead returns an `enumerable`
-which contains the original elements but mapped.
+which contains the original elements but mapped. These mapped elements need not
+even be the same type as they were originally.
 
-###__Usage__
+```cpp
+// appends each integer to a set string, returning each element as a string
+// rather than an integer
+auto result = cinq::from(my_ints)
+					.select( [](int x) { string s {"s"}; return s + std::to_string(x); })
+					.to_vector();
+// returns { "s0", "s1", "s2", "s3", "s4" }
+
+```
+
+Though not part of the actual query `to_vector()` is an essential part of any
+query that seeks to output its data to some useable form. As the name states,
+`to_vector()` takes the enumerable and converts it to a vector containing the
+appropriate type. 
+ 
+
+
+##__Usage__
 
 The examples in the previous section seem to be fairly trivial, and you may be
 wondering what is the benefit of using CINQ over just implementing these
@@ -228,30 +300,36 @@ struct Person{
 		age=a;
 		weight=w; 
 	} 
-} tim("Tim",14,120), rich("Rich",20,145), kevin("Kevin",19,150), emily("Emily",30,110), cassy("Cassy",21,125), laura("Laura",18,105); 
+} tim("Tim",14,120), rich("Rich",20,145), kevin("Kevin",19,150),
+emily("Emily",30,110), cassy("Cassy",21,125), laura("Laura",18,105); 
 
 ```
 
 Let's say we wanted to find the weights of the people who are 18 or older,
-starting with the youngest and then by shortest name length, and then only keep
-the top 3. This is a somewhat complicated query. If written manully, this query
-would be several lines of code that increase the likelihood of introducing bugs
-into the code. Instead, with CINQ, this is reduced to 6 method calls.
+starting with the youngest and conflicts resolved by shortest name length, and
+then only keep the top 3. However, we only want to apply this query if there
+are at least 5 people. This is a somewhat complicated query. If written
+manully, this query would be several lines of code that increase the likelihood
+of introducing bugs into the code. 
 
 ```cpp
 vector<Person> my_people { tim, rich, kevin, emily, cassy, laura };
 
-auto result = cinq::from(my_people)
-					.where([](Person p) { return p.age>=18; })
-					.order_by([](const Person& p) { return p.age; }, 
-							  [](const Person& p) { return p.name.length(); })
-					.take(3)
-					.select([](Person p) { return p.weight; })
-					.to_vector();
-//returns { 105, 150, 145 }
+auto my_enum = cinq::from(my_people);
+if(!my_enum.empty()) {
+	auto result = my_enum.where([](Person p) { return p.age>=18; })
+						 .order_by([](const Person& p) { return p.age; }, 
+								   [](const Person& p) { return p.name.length(); })
+						 .take(3)
+						 .select([](Person p) { return p.weight; })
+						 .to_vector();
+	//returns { 105, 150, 145 }
+}
 
 ```
 
+Rather than having a large block of handwritten code, the query is reduced to 7 easily
+understood CINQ method calls.
 
 			
 
