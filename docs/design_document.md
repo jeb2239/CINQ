@@ -121,6 +121,22 @@ We overloaded `count()` using concepts. One requires `Random_access_iterator` an
 
 Many of our library's functions involve calling small, one-line lambdas, whether they are predicates or mappers. At first, this seems extremely inefficient. However, lambdas are more easily optimized by the compiler than function pointers. When compiling with the `-S` flag to output assembly, we have never observed a situation where the lambdas are not inlined.
 
+### What happened to caching?
+
+In our project proposal, we wrote:
+
+> A good compromise is to use both solutions: use the original vector until a function involving deletion is called. Then, we can silently copy the vector's contents into our lazy deletion vector before continuing to execute the query. We will need to measure this to know whether it is faster.
+
+We implemented something like this in CINQ before mostly throwing it away --- you can still see the remnants in the `ensure_data()` method. The idea was to keep a cache of the data in a vector to avoid accessing the original container, which might be a linked list.
+
+As it turns out, this approach was too heavy-handed. For example, in `where()`, it would cause the method to:
+
+1. Copy all the elements into the cache.
+2. Read the items out of the cache one by one.
+3. Pass them to the predicate lambda. If it returns true, copy it to the result vector.
+
+In the case of `where()`, step 1 was unnecessary because the items could just be read out of the source vector. Writing the method without `ensure_data()` decreased the average running time from 212 ms to 11 ms (95 percent faster) and putting us on par with writing the same code by hand. This experience showed that knowing the exact needs of each method allows us to optimize better.
+
 ## Features for the convenience of users
 
 ### Overrides that exist for preventing unsigned to `size_t` conversion errors
