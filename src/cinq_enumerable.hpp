@@ -160,14 +160,9 @@ namespace cinq
         requires Function<TFunc, const TElement&>() && Copy_constructible<TReturn>()
         enumerable<vector<TReturn>> select(TFunc fun,TIterator begin, TIterator end )
         {
-            //ensure_data();
+            
             enumerable<vector<TReturn>> updated;
-
             for (auto iter = begin; iter != end; ++iter) updated.data.push_back(fun(*iter));
-
-            // TODO: extremely inefficient. Probably need a private constructor for enumerable that doesnt take arguments.
-
-            // e.data = updated;
             updated.is_data_copied = true;
 
             return updated;
@@ -177,7 +172,7 @@ namespace cinq
         requires Function<TFunc, const TElement&, size_t>() && Copy_constructible<TReturn>()
         enumerable<vector<TReturn>> select(TFunc fun,TIterator begin, TIterator end)
         {
-          //  ensure_data();
+          
 
             enumerable<vector<TReturn>> updated;
 
@@ -188,7 +183,7 @@ namespace cinq
                 index++;
             }
 
-          //  enumerable<decltype(updated)> e;
+          
 
             updated.is_data_copied = true;
 

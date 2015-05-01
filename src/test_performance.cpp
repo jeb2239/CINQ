@@ -87,14 +87,14 @@ vector<test_perf> make_tests_perf()
 
     tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed",[=]
     {
-        cinq::from(weather_data).where([](const auto& x){return x.snow;}).select([](const auto& x){return x.temp_min;});
+        cinq::from(weather_data).where([](const auto& x){return x.snow;}).select([](const auto& x){return x.temp_min;}).to_vector();
     }));
 
     tests.push_back(test_perf("where().select(). get a vector of temp_mins for the days that it snowed - manual",[=]
     {
         vector<weather_point> result;
-        for(auto& data: result){
-
+        for(auto& data: weather_data){
+           // cout<<data.snow<<endl;
           if(data.snow) result.push_back(data);
 
         }
@@ -102,8 +102,10 @@ vector<test_perf> make_tests_perf()
         for(auto& data: result){
           temps.push_back(data.temp_min);
         }
+       // cout<<temps.size()<<endl;
 
     }));
+
 
 
 
@@ -192,19 +194,19 @@ vector<weather_point> load_weather(string path)
         p.precipitation = stod(fix(line["PrecipitationIn"]));
 
         p.cloud_cover = stoi(fix(line["CloudCover"]));
-
-        for (string event : split(line["Events"], '-'))
+        p.fog=false;
+        p.rain=false;
+        p.thunderstorm=false;
+        p.snow=false;
+        auto result = split(line["Events"], '-');
+        for (string event : result)
         {
-            //weather_event e = unrecognized;
-
-           p.fog = (event == "Fog");
-           p.rain =(event == "Rain");
-           p.thunderstorm= (event == "Thunderstorm");
-           p.snow = (event == "Snow");
-
-            //p.events.push_back(e);
+        if(event == "Fog") p.fog=true;
+        if(event == "Rain") p.rain=true;
+        if(event == "Thunderstorm") p.thunderstorm=true;  
+        if(event == "Snow") p.snow=true;  
         }
-
+       
         p.wind_direction = stoi(fix(line["WindDirDegrees"]));
 
         parsed.push_back(p);
