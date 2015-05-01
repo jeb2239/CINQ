@@ -6,7 +6,9 @@ This library and the included documentation assumes you have a compiler with exp
 
 If you've never compiled gcc before, here's how to do it. Alternatively, you may download our virtual machine image, which has the environment set up already.
 
-## Instructions
+Note: Although [Concepts-Lite (clite)](http://concepts.axiomatics.org/%7Eans/) has a nice-looking website, it is not the most recent implementation and you should not use it. Also, clite is pretty hard to compile on modern versions of Linux.
+
+## Compiling the compiler
 
 While writing these instructions, we were helped by ["Building gcc 4.8 from source on Ubuntu 12.04"](http://eli.thegreenplace.net/2014/01/16/building-gcc-4-8-from-source-on-ubunu-12-04) by Eli Bendersky.
 
@@ -47,3 +49,23 @@ To make our freshly compiled gcc and libstdc++ the default, add this to your `.p
 
 - The first line makes your shell search for gcc in our install directory before looking elsewhere.
 - The second causes the dynamic linker to link your applications with our libstdc++. It is important to use the same standard library when compiling and running the program.
+
+## Get the concepts-enabled standard library
+
+If you want to develop your own applications or libraries using concepts, it is easiest if you are able to use the prewritten constraints. That way, you don't have to write things like `Function` or `Number` by yourself.
+
+[Andrew Sutton's origin library](https://github.com/asutton/origin) has the most complete concepts implementation. (There are some concepts in clite, but not very many.)
+
+    git clone git@github.com:asutton/origin.git
+
+If you only need the constraints, you can just use our header file in `src/all_concepts.hpp`, which brings in all of the constraints in origin.
+
+In case you have to compile the library, here's how:
+
+You need CMake to compile origin. The version of CMake in many package managers is too old, so download it from the [cmake website](http://www.cmake.org/download/). Once you have CMake, you should be able to compile origin with:
+
+    cd origin
+    cmake CMakeLists.txt
+    make
+
+...although we were not able to get it compiling.
