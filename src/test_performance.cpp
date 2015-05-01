@@ -106,19 +106,34 @@ vector<test_perf> make_tests_perf()
 
     }));
 
-
-
-
-
-
-
-
-
-
+    tests.push_back(test_perf("where().select().order_by().take() - 5 coldest rainy days", 100, [=]
+    {
+        cinq::from(weather_data)
+             .where([](const weather_point& w) { return w.rain; })
+             .order_by([](const weather_point& w) { return w.temp_min; })
+             .take(5)
+             .select([](const weather_point& w) { return w.temp_min; })
+             .to_vector();
+    }));
+    
+    tests.push_back(test_perf("where().select().order_by().take() - 5 coldest rainy days - manual", 100, [=]
+    {
+        vector<weather_point> result;
+        for (auto& data : weather_data)
+        {
+            if (data.rain) result.push_back(data);
+        }
+        
+        sort(result.begin(), result.end(), [](const auto &a, const auto &b) { return a.temp_min < b.temp_min; });
+        
+        vector<weather_point> five;
+        for (size_t i = 0; i < 5; i++) five.push_back(result[i]);
+        
+        vector<int> temps;
+        for (auto& data : five) temps.push_back(data.temp_min);
+    }));
+    
     return tests;
-
-
-
 }
 
 vector<string> split(const string &str, char delimiter)
