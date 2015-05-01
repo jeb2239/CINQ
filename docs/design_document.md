@@ -169,6 +169,63 @@ So we provide a default version that does the same thing as the code above:
 
 Thanks to concepts, we can make the no-lambda overload of `average()` available only when used with a sequence of numeric type. This is also a much cleaner and less error-prone than the [C# implementation of average](https://github.com/mono/mono/blob/effa4c0/mcs/class/System.Core/System.Linq/Enumerable.cs#L163), which has a manually templated copy of the method for each numeric primitive and object wrapper.
 
+## Behind the scenes: templating tricks
+
+Here, we will explain some of our C++ templates that we thought were cool.
+
+### Building the `order_by` comparison function
+
+`std::sort()` expects a comparison function that tells it whether the first element is less than the second. We wanted the user to have the option of providing multiple lambdas, but we also wanted to generate the comparison function at compile time so the compiler would have the opportunity to do some inlining.
+
+Here is the public `order_by()` method that users of our library call. `TFunc... rest` is one or multiple lambdas. Each lambda's return value is what we will use to order the sequence.
+
+    template<typename ... TFunc>
+    enumerable<TSource> order_by(TFunc... rest) 
+    {
+        ensure_data();
+        std::stable_sort(data.begin(), data.end(), multicmp(rest...));
+
+        return *this;
+    }
+
+The code calls out to `multicmp()` to do the heavy lifting and return a lambda that can be passed into `std::sort()`:
+
+    template<typename ... TFunc,
+             typename TFirst = typename std::tuple_element<0, std::tuple<TFunc...>>::type,
+             typename TReturn = typename result_of<TFirst(TElement)>::type>
+    requires Invokable<TFirst, TElement>() && Totally_ordered<TReturn>()
+    auto multicmp(TFirst first, TFunc... rest)
+    {
+        return [=](const TElement& a, const TElement& b) -> bool
+        {
+            auto a_map = first(a);
+            auto b_map = first(b);
+            if (a_map == b_map) return multicmp(rest...)(a, b);
+            else return a_map < b_map;
+        };
+    }
+
+`TFirst` is the type of the first lambda, `TReturn` is its return type, and `TFunc...` is the type of the rest. We require that `TFirst` can be called on (`TFunc...` will be checked recursively). And we make sure that `TReturn` is totally ordered: that is, we can call `operator==()` and `operator<()` on it.
+
+In the comparison function we return:
+
+1. If this mapper causes the items to be equal, recursively ask the next mapper what the answer should be.
+2. Otherwise, return whether the first item is less than the second.
+
+Finally, we have a specialization to handle the base case:
+
+    template<typename TFirst, typename TReturn = typename result_of<TFirst(TElement)>::type>
+    requires Invokable<TFirst, TElement>() && Totally_ordered<TReturn>()
+    auto multicmp(TFirst first)
+    {
+        return [=](const TElement& a, const TElement& b) -> bool
+        {
+            return first(a) < first(b);
+        };
+    }
+
+The compiler generates all the necessary templates and lambdas, and has the opportunity to inline the lambdas. An informal test showed that the performance overhead of our sort is less than 10 percent, which indicates that most or all the lambdas were inlined. So we did not look for further optimizations in this method.
+
 ## Ideas for release 1.2
 
 ### Parallel queries
