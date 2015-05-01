@@ -54,25 +54,31 @@ is not changed.
 ###__CINQ methods__
 
 The CINQ library allows for type safe, generic and arbitrarily complex queries via the chaining of
-query methods which operate on an enumerable object. These methods can
-primarily be separated into a few separate categories: Boolean, Filter, Math and Sorting.
+query methods which operate on an enumerable object. Most of these methods can
+be separated by their functionality into a few major categories: Boolean, Filter, Math and Sorting.
 
 ####__Boolean__
 
-The Boolean family of methods are the simplest to understand. In general they
-test the sequence of values contained in the `enumerable` for whether a
-condition is satisfied. This condition is usually defined by a input predicate.
+The Boolean family of methods are the simplest to understand. In general, they
+test the sequence of values contained in the `enumerable` for whether or not a
+certain condition is satisfied. This condition is usually defined by a input predicate.
+
+Consider the following example using `all()` and `empty()`:
 
 ```cpp
 std::vector<int> my_vector { 1, 2, 3, 4, 5 };
-auto enum = cinq::from(my_vector);
+auto my_enum = cinq::from(my_vector);
 					
-if( enum.all([](int x) { return x>0; }) )
+if( my_enum.all([](int x) { return x>0; }) )
 	cout << "All values are greater than 0.\n";
-if( enum.empty() ) 
+if( my_enum.empty() ) 
 	cout << "This is not empty!\n";
 
 ```
+
+As before, `from()` returns an enumerable from which we can query with `all()`
+and `empty()`. Each of these functions return a boolean value that states
+whether or not their condition has been satisfied.
 
 This family of methods provides helpful methods that are easily readable and
 obvious in their meaning.
@@ -86,7 +92,7 @@ are useful when performing calculations on a set of data.
 ```cpp
 std::vector<int> my_ints { 1, 2, 3, 4, 5 };
 auto sum_results = cinq::from(my_ints).sum();
-// sum_results is now equal to 15
+// returns 15
 
 ```
 
@@ -97,12 +103,12 @@ mapping function on each element in the input sequence.
 vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
 auto result = cinq::from(authors)
 					.average([](string x) { return x.length(); });
-// result is now 13, the average length of the strings in the vector<string> authors
+// returns 13, the average length of the strings in the vector<string> authors
 
 ```
 
 In the above example, `average()` takes in a function that transforms each
-string in the authors vector to some useful value, and then taking the average
+string in the authors vector to some useful value, and then calculates the average
 of these values.
 
 ####__Filter__
@@ -114,10 +120,76 @@ to `where()` which uses a predicate and applying it to each element to see if
 it satisfies the condition.
 
 ```cpp
+std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; 
+auto my_enum = cinq::from(my_array);
+
+auto e = my_enum.element_at(2); 
+// returns 6
+
+auto result = my_enum.where([](int x) { return x > 0; })
+                     .to_vector();
+// returns { 1, 4, 6, 3, 2 }
+
+```
+
+####__Sorting__
+
+These are arguably the most powerful functions in the CINQ library. Currently,
+`order_by()` is the only method implemented, but is powerful due to its broad
+scope of applications. Since 'order_by()' is a variadic function, it is able to
+take in a variable number of mappers and sorts the elements based on the order
+in which the mappers are passed. Its best to demonstrate with an example:
+
+```cpp 
+vector<string> my_strings = { "hello", "cello", "fellow", "cat" }; 
+
+``` 
+
+Say we want to sort this
+vector of strings in order based on the length of the string. Notice both
+`"hello"` and `"cello"` have the same length. If we want to specify a lower
+priority rule to further order the strings of matching length we can do so as
+follows: 
+
+```cpp 
+auto result = cinq::from(my_vector)
+				    .order_by( [](string x) { return x.length(); }, 
+							   [](string x) { return x[0]; } )
+					.to_vector();
+// returns { "cat", "cello", "hello", "fellow" }
+
+``` 
+
+In this case the lower priority rule is based on the comparison of the first letter.
+
+####__Miscellaneous__
+
+There are other functions that do not really fit into any of the above
+categories. The most common one would likely be `select()`.
+
+```cpp 
+vector<int> my_ints { 1, 2, 3, 4, 5 }; 
+auto result = cinq::from(nums)
+					.select([](int x) { return x * x; }) 
+					.to_vector(); 
+// returns { 1, 4, 9, 16, 25 }
+
+``` 
+
+Select transforms every element in the sequence according to a mapper function
+which is taken as an argument. This mapper must satisfy the constraints required by the `Invokeable`
+concept (something that can be called). This method is an easy way to apply a certain operation to
+every object with out changing the original source container. Select instead returns an `enumerable`
+which contains the original elements but mapped.
 
 
- 
- 
+
+
+
+
+
+
+
 
 
 
@@ -127,20 +199,22 @@ it satisfies the condition.
 Consider the following example using `select()`: 
 
 ```cpp 
-vector<int> nums { 1,2,3,4,5 }; 
+vector<int> my_ints { 1, 2, 3, 4, 5 }; 
 auto result = cinq::from(nums)
 					.select([](int x) { return x * x; }) 
 					.to_vector(); 
-vector<int> answer{1,4,9,16,25}; 
+// returns { 1, 4, 9, 16, 25 }
 
 ``` 
 
-Lets use a `vector<int>` this time. As before `from()` returns an enumerable which we can query with
-`select()` this time. Select transforms every element in the sequence according to a mapper function
-which is taken as an argument. This mapper must satisfy the constraints required by the `Invokeable`
-concept (something that can be called). This method is an easy way to apply a certain operation to
-every object with out changing the original source container. Select instead returns an `enumerable`
-which contains the original elements but mapped.
+Lets use a vector<int> this time. As before from() returns an enumerable which
+we can query with select() this time. Select transforms every element in the
+sequence according to a mapper function which is taken as an argument. This
+mapper must satisfy the constraints required by the Invokeable concept
+(something that can be called). This method is an easy way to apply a certain
+operation to every object with out changing the original source container.
+Select instead returns an enumerable which contains the original elements but
+mapped.
 
 ####[_where()_]()
 
@@ -418,28 +492,29 @@ string result = cinq::from(my_vector)
 
 ```
 
-####[_order_by()_]() Arguably one of the more powerful features of the CINQ library, `order_by`
-takes a variable number of mappers and sorts the elements based on the order in which the mappers
-are passed. Its best to demonstrate with an example:
+####[_order_by()_]() 
+
+Arguably one of the more powerful features of the CINQ library, order_by takes
+a variable number of mappers and sorts the elements based on the order in which
+the mappers are passed. Its best to demonstrate with an example:
 
 ```cpp 
-vector<string> my_vector = {"hello","cello","fellow","cat"}; 
+vector<string> my_strings = { "hello", "cello", "fellow", "cat" }; 
 
 ``` 
 
-Say we want to sort this
-vector of strings in order based on the length of the string. Notice two strings have the same
-length. If we want to specify a lower priority rule to further order the strings of matching length
-we can do so as follows: 
+say we want to sort this vector of strings in order based on the length of the
+string. Notice two strings have the same length. If we want to specify a lower
+priority rule to further order the strings of matching length we can do so as
+follows:
 
 ```cpp 
 auto result = cinq::from(my_vector)
-				    .order_by( [](string x){return x.length();}, [](string x){return x[0];})
+				    .order_by( [](string x) { return x.length(); }, 
+							   [](string x) { return x[0]; } )
 					.to_vector();
-// returns {"cat","cello","hello","fellow"};
+// returns { "cat", "cello", "hello", "fellow" }
 
 ``` 
 
 In this case the lower priority rule is based on the comparison of the first letter.
-
-
