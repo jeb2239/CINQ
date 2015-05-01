@@ -12,10 +12,10 @@ CINQ is our C++ implementation of LINQ. It contains most of LINQ's method syntax
 
 
 ##__Getting Setup__ 
+<sub><sup>These instructions have only been tested on Ubuntu 14.04</sup></sub>
 
 Before we jump into the gritty details, we first need to get set up to use CINQ.
 
-<sub><sup>These instructions have only been tested on Ubuntu 14.04</sup></sub>
 
 ###Step 1: Compile and install the GCC 5 concepts branch 
 
@@ -55,8 +55,7 @@ std::vector<int> answer { 1, 4, 6, 3, 2 }; //the output
 
 ``` 
 
-In this example, we construct an `std::array` object. This could be any sequence container such as an
-`std::vector` or `std::list`.
+In this example, we construct an `std::array` object. This could be any sequence container such as an `std::vector` or `std::list`.
 
 First of all, notice the initial call to `cinq::from()` this function serves as the entry point of all CINQ queries. It constructs an `enumerable` object from the passed in sequence container. This enumerable is then returned and is passed as the implicit argument to `where()`.  `where()` is a method that filters a sequence of values based on a input function. That function is constrained to those only satisfying the `Predicate` concept. This `Predicate`is applied to each item in the sequence. Only the items for which this predicate evaluates true will be included in the output sequence. `where()` now returns the modified sequence as an enumerable.
 
@@ -230,11 +229,11 @@ Predicates return a value that is convertible to bool. As such they allow the fu
 
 ####__2. Mapping function__
 
-The mapping functions allow the data contained by the enumerable to be changed into another form. This allows non-numerical data be transformed to useable values that can be analyzed using some of the Mathematics functions. 
+The mapping functions allow the data contained by the enumerable to be changed into another form. This allows non-numerical data be transformed to usable values that can be analyzed using some of the Mathematics functions. 
 
 ####__3. Element index__
 
-By having access to the element index, it is possible to perform actions or comparisons only on the desired indices.
+By having access to the element index, it is possible to perform actions or comparisons only on the desired indices or possibly include the indices in calculations.
 
 
 
@@ -244,7 +243,7 @@ By having access to the element index, it is possible to perform actions or comp
 
 ##__Putting it all together__
 
-The examples in the previous section seem to be fairly trivial, and you may be wondering what is the benefit of using CINQ over just implementing these seemingly simple functions yourself and applying them to the actual container.
+The examples in the previous sections seem to be fairly trivial, and you may be wondering what is the benefit of using CINQ over just implementing these seemingly simple functions yourself and applying them to the actual container.
 
 One of the main benefits is that CINQ functions are able to be applied one after the other to form a much more complicated query.
 
@@ -307,5 +306,6 @@ Rather than having a large block of handwritten code, the query is reduced to 7 
 
 Just like the first example in which `where()` was overloaded to access an index, this block of code gives us an example of how a `Predicate` is used to give Boolean functions the ability to test for additional conditions. In this case, `any()`, rather than test for whether or not the enumerable contains an element, checks whether or not a `Person` has an even numbered age.
 
+##__Closing comments__
 
-
+CINQ is a powerful tool capable of robust, complicated queries. It allows users to manipulate data in a quick and repeatable way without much loss in performance. Even though CINQ handles typing generically, if you have an error somewhere due to an incorrect type, the compiler will still generate an error. This is primarily due to CINQ utilizing concepts to enforce correct typing. By combining this type safety and easy building of queries, CINQ is a useful tool whenever you need to handle a data set.
