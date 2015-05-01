@@ -1,6 +1,24 @@
-#__Cinq Tutorial__
+#__CINQ Tutorial__
 
-###__Getting Setup__ <sub><sup>These instructions have only been tested on Ubuntu 14.04</sup></sub>
+###__Introduction__
+*What is CINQ?*
+
+C++ Integrated Query (CINQ, pronounced "sink") is a play on words on
+Microsoft's Language-Integrated Query (LINQ) REFERENCE
+HERE(https://msdn.microsoft.com/en-us/library/bb397926.aspx). LINQ
+allows both C# and Visual Basic to perform various queries on potentially any
+data store. It standardizes patterns for querying and updating data. 
+
+CINQ is our C++ implementation of LINQ.
+
+
+###__Getting Setup__ 
+
+Before we jump into the gritty details, we first need to get set up to use
+CINQ.
+
+<sub><sup>These instructions have only been tested on Ubuntu 14.04</sup></sub>
+
 ####Step 1: compile and install the GCC 5 concepts branch You need a version of gcc with concepts
 support. See [concepts_setup.md](concepts_setup.md) for instructions on how to get this.
 
@@ -20,8 +38,9 @@ $ git clone https://github.com/jeb2239/CINQ.git
 
 //we need to include details about how people can include this in their normal projects
 
------
-###__Basic CINQ usage__ Lets take a look at a basic CINQ query:
+###__Basic CINQ usage__ 
+
+Now that we have gotten all set up, let's take a look at a basic CINQ query:
 
 ```cpp 
 std::array<int, 8> my_array = { 1, 4, 6, 3, -6, 0, -3, 2 }; 
@@ -38,18 +57,17 @@ In this example, we construct an `std::array` object. This could be any sequence
 First of all, notice the initial call to `cinq::from()` this function serves as the entry point of
 all CINQ queries. It constructs an `enumerable` object from the passed in sequence container. This
 enumerable is then returned and is passed as the implicit argument to `where()`. 
-
-Where is a method that filters a sequence of values based on a input function. That function is
+`where()` is a method that filters a sequence of values based on a input function. That function is
 constrained to those only satisfying the `Predicate` concept. For convenience we use a lambda
 function which returns a type convertible to bool. This `Predicate` is applied to each item in the
 sequence. Only the items for which this predicate evaluates true will be included in the output
-sequence. 
+sequence. `where()` now returns the modified sequence as an enumerable.
 
-`where()` now returns the modified sequence as an enumerable. At this point the user could
-chain more queries together to further modify the data set. However, in this example, we are now
-done changing our set so we proceed to call `to_vector()` on our `enumerable`, which stores the returned
-`std::vector` in `result`.  At the end of this query the original source object passed into from()
-is not changed. 
+At this point the user could chain more queries together to further modify the
+data set. However, in this example, we are now done changing our set so we
+proceed to call `to_vector()` on our `enumerable`, which stores the returned
+`std::vector` in `result`.  At the end of this query the original source object
+passed into `from()` is not changed. 
 
 ###__CINQ methods__
 
@@ -69,8 +87,11 @@ Consider the following example using `all()` and `empty()`:
 std::vector<int> my_vector { 1, 2, 3, 4, 5 };
 auto my_enum = cinq::from(my_vector);
 					
+//check if all values in my_enum are greater than 0
 if( my_enum.all([](int x) { return x>0; }) )
 	cout << "All values are greater than 0.\n";
+
+//check if my_enum is empty
 if( my_enum.empty() ) 
 	cout << "This is not empty!\n";
 
@@ -86,11 +107,13 @@ obvious in their meaning.
 ####__Math__
 
 The Mathematics set of methods adds additional functionality to enumerables
-that contain numbers. Like the Boolean methods, they are self-explanatory, but
+that contain numbers. Like the Boolean methods, they are mostly self-explanatory, but
 are useful when performing calculations on a set of data.
 
 ```cpp
 std::vector<int> my_ints { 1, 2, 3, 4, 5 };
+
+// sums the values in my_ints
 auto sum_results = cinq::from(my_ints).sum();
 // returns 15
 
@@ -182,9 +205,55 @@ concept (something that can be called). This method is an easy way to apply a ce
 every object with out changing the original source container. Select instead returns an `enumerable`
 which contains the original elements but mapped.
 
+###__Usage__
+
+The examples in the previous section seem to be fairly trivial, and you may be
+wondering what is the benefit of using CINQ over just implementing these
+seemingly simple functions yourself and applying them to the actual container.
+
+One of the main benefits is that CINQ functions are able to be applied one
+after the other to form a much more complicated query.
+
+Consider the `Person` structure containing information on a person's name, age,
+and weight:
+
+```cpp
+struct Person{ 
+	string name; 
+	int age; 
+	int weight; 
+	Person(string n, int a, int w) 
+	{ 
+		name=n; 
+		age=a;
+		weight=w; 
+	} 
+} tim("Tim",14,120), rich("Rich",20,145), kevin("Kevin",19,150), emily("Emily",30,110), cassy("Cassy",21,125), laura("Laura",18,105); 
+
+```
+
+Let's say we wanted to find the weights of the people who are 18 or older,
+starting with the youngest and then by shortest name length, and then only keep
+the top 3. This is a somewhat complicated query. If written manully, this query
+would be several lines of code that increase the likelihood of introducing bugs
+into the code. Instead, with CINQ, this is reduced to 6 method calls.
+
+```cpp
+vector<Person> my_people { tim, rich, kevin, emily, cassy, laura };
+
+auto result = cinq::from(my_people)
+					.where([](Person p) { return p.age>=18; })
+					.order_by([](const Person& p) { return p.age; }, 
+							  [](const Person& p) { return p.name.length(); })
+					.take(3)
+					.select([](Person p) { return p.weight; })
+					.to_vector();
+//returns { 105, 150, 145 }
+
+```
 
 
-
+			
 
 
 
