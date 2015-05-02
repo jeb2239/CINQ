@@ -7,8 +7,6 @@
 
 using namespace origin;
 
-//TODO:Container concept
-
 template<typename _Iter>
     concept bool Sortable()
     {

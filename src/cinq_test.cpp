@@ -82,6 +82,15 @@ vector<test> make_tests()
         return (result == answer);
     }));
     
+    tests.push_back(test("where() with std::string", []
+    {
+        string s = "C++ INtegrated Query";
+        auto result = cinq::from(s)
+                      .where([](auto& x) { return 'A' < x && x < 'Z'; })
+                      .to_vector();
+        return (result == vector<char>({ 'C', 'I', 'N', 'Q' }));
+    }));
+    
     tests.push_back(test("where() with index std::vector", []
     {
         std::vector<int> my_vector { 0, 1, 2, 3, 4 };
@@ -91,7 +100,6 @@ vector<test> make_tests()
         std::vector<int> answer { 0, 1, 2 };
         return (result == answer);
     }));
-    
     
     tests.push_back(test("where() with index std::list", []
     {
