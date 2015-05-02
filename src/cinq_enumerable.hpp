@@ -32,13 +32,6 @@ namespace cinq
             end = source.cend();
         }
 
-        enumerable(TSource&& source) requires Range<TSource>()
-        {
-            is_data_copied = false;
-            begin = source.cbegin();
-            end = source.cend();
-        }
-        
     private:
         
         enumerable()
