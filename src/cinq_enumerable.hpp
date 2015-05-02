@@ -419,8 +419,7 @@ namespace cinq
         }
         
     public:
-
-        // TODO: OK, this manual templating REALLY needs to be cleaned up.
+        
         /**
          * @brief calculates the average of the terms in a sequence
          *
@@ -428,22 +427,12 @@ namespace cinq
          * @return average of fields of interest
          */
         template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
-        requires Invokable<TFunc, TElement>() && Number<TValue>() && is_integral<TValue>::value
-        double average(TFunc mapper)
+        requires Invokable<TFunc, TElement>() && Number<TValue>()
+        auto average(TFunc mapper)
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
-            TValue sum = 0;
-            size_t count = 0;
-            for (auto iter = seq_begin; iter != seq_end; ++iter)
-            {
-                sum += mapper(*iter);
-                count++;
-            }
-            return sum / (double)count;
+            if (is_data_copied) return average(mapper, data.cbegin(), data.cend());
+            else return average(mapper, begin, end);
         }
 
         /**
@@ -451,13 +440,37 @@ namespace cinq
          *
          * @return average
          */
-        double average() requires Number<TElement>() && is_integral<TElement>::value
+        auto average() requires Number<TElement>()
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
+            if (is_data_copied) return average(data.cbegin(), data.cend());
+            else return average(begin, end);
+        }
+        
+    private:
+        
+        // We have a ton of overloads here because we want to provide this behavior:
+        // - For floating point types, average should return the same type (float for float, double for double).
+        // - Otherwise, for integral types, average should return double.
+        
+        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type, typename TIterator>
+        requires is_integral<TValue>::value
+        double average(TFunc mapper, TIterator seq_begin, TIterator seq_end)
+        {
+            TValue sum = 0;
+            size_t count = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                sum += mapper(*iter);
+                count++;
+            }
+            return sum / (double)count;
+        }
+        
+        template <typename TIterator>
+        requires is_integral<TElement>::value
+        double average(TIterator seq_begin, TIterator seq_end)
+        {
             TElement sum = 0;
             size_t count = 0;
             for (auto iter = seq_begin; iter != seq_end; ++iter)
@@ -468,15 +481,9 @@ namespace cinq
             return sum / (double)count;
         }
 
-        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
-        requires Invokable<TFunc, TElement>() && Number<TValue>()
-        TElement average(TFunc mapper)
+        template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type, typename TIterator>
+        TElement average(TFunc mapper, TIterator seq_begin, TIterator seq_end)
         {
-            ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
             TValue sum = 0;
             size_t count = 0;
             for (auto iter = seq_begin; iter != seq_end; ++iter)
@@ -486,14 +493,10 @@ namespace cinq
             }
             return sum / count;
         }
-
-        TElement average() requires Number<TElement>()
+        
+        template <typename TIterator>
+        TElement average(TIterator seq_begin, TIterator seq_end)
         {
-            ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
             TElement sum = 0;
             size_t count = 0;
             for (auto iter = seq_begin; iter != seq_end; ++iter)
@@ -503,6 +506,8 @@ namespace cinq
             }
             return sum / count;
         }
+        
+    public:
 
         /**
          * @brief Tests whether the enumerable contains no elements.

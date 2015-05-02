@@ -745,7 +745,7 @@ vector<test> make_tests()
     
     tests.push_back(test("average() on int", []
     {
-        vector<int> nums { -1, 26, 42, -10002, 0, 8 };
+        list<int> nums { -1, 26, 42, -10002, 0, 8 };
         auto result = cinq::from(nums).average();
         return is_same<decltype(result), double>::value && (result == -9927 / (double)nums.size());
     }));
