@@ -25,25 +25,29 @@ namespace cinq
          * @param source the source container which
          * provides the data cinq operates on
          */
-         enumerable(){
+        enumerable(TSource& source) requires Range<TSource>()
+        {
+            is_data_copied = false;
+            begin = source.cbegin();
+            end = source.cend();
+        }
+
+        enumerable(TSource&& source) requires Range<TSource>()
+        {
+            is_data_copied = false;
+            begin = source.cbegin();
+            end = source.cend();
+        }
+        
+    private:
+        
+        enumerable()
+        {
            is_data_copied=false;
-
-         }
-
-        enumerable(TSource& source) // requires Container<TSource>()
-        {
-            is_data_copied = false;
-            begin = source.cbegin();
-            end = source.cend();
         }
-
-        enumerable(TSource&& source) // requires Container<TSource>()
-        {
-            is_data_copied = false;
-            begin = source.cbegin();
-            end = source.cend();
-        }
-
+        
+    public:
+        
         /**
          * @brief Filters a sequence of values based on a predicate.
          * Each element's index may be used in the logic of the predicate function.
@@ -920,10 +924,9 @@ namespace cinq
      * @return constructs a type enumerable from the container
      */
     template <typename T>
-    //requires Container<T>()
+    requires Range<T>()
     auto from(T& source)
     {
-        //enumerable<decltype(source.cbegin())> e(source);
         enumerable<T> e(source);
         return e;
     }
