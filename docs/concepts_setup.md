@@ -4,7 +4,9 @@
 
 This library and the included documentation assumes you have a compiler with experimental support for C++ concepts --- basically the `concept` and `requires` keywords. We used the [`c++-concepts` branch](https://gcc.gnu.org/svn.html) of gcc.
 
-If you've never compiled gcc before, here's how to do it. Alternatively, you may download our virtual machine image, which has the environment set up already.
+If you've never compiled gcc before, here's how to do it. Alternatively, you may download our OVF virtual machine image, which has the environment set up already.
+
+[ConceptsGCC.tar, 1.4 GB](http://files.kevinchen.co/ConceptsGCC.tar) (MD5 checksum `7b9c022a1f3fe4534b3002c86704a20d`)
 
 Note: Although [Concepts-Lite (clite)](http://concepts.axiomatics.org/%7Eans/) has a nice-looking website, it is not the most recent implementation and you should not use it. Also, clite is pretty hard to compile on modern versions of Linux.
 
