@@ -383,13 +383,8 @@ namespace cinq
         TReturn sum(TFunc mapper)
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
-            TReturn sum = 0;
-            for (auto iter = seq_begin; iter != seq_end; ++iter) sum += mapper(*iter);
-            return sum;
+            if (is_data_copied) return sum(mapper, data.cbegin(), data.cend());
+            else return sum(mapper, begin, end);
         }
 
         /**
@@ -401,14 +396,29 @@ namespace cinq
         TElement sum() requires Number<TElement>()
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
+            if (is_data_copied) return sum(data.cbegin(), data.cend());
+            else return sum(begin, end);
+        }
+        
+    private:
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type, typename TIterator>
+        TReturn sum(TFunc mapper, TIterator seq_begin, TIterator seq_end)
+        {
+            TReturn sum = 0;
+            for (auto iter = seq_begin; iter != seq_end; ++iter) sum += mapper(*iter);
+            return sum;
+        }
+        
+        template <typename TIterator>
+        TElement sum(TIterator seq_begin, TIterator seq_end)
+        {
             TElement sum = 0;
             for (auto iter = seq_begin; iter != seq_end; ++iter) sum += *iter;
             return sum;
         }
+        
+    public:
 
         // TODO: OK, this manual templating REALLY needs to be cleaned up.
         /**
