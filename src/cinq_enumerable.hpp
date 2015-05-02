@@ -268,19 +268,9 @@ namespace cinq
         requires Invokable<TFunc, TElement>() && Number<TReturn>()
         TReturn max(TFunc mapper)
         {
-            if (empty()) throw length_error("cinq: sequence is empty");
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
-            TReturn max = numeric_limits<TReturn>::min();
-            for (auto iter = seq_begin; iter != seq_end; ++iter)
-            {
-                TReturn val = mapper(*iter);
-                if (val > max) max = val;
-            }
-
-            return max;
+            ensure_nonempty();
+            if (is_data_copied) return max(mapper, data.cbegin(), data.cend());
+            else return max(mapper, begin, end);
         }
 
         // TODO: This could call the other max override w/ a lambda that returns itself, if we
@@ -294,19 +284,37 @@ namespace cinq
         TElement max() requires Number<TElement>()
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
+            if (is_data_copied) return max(data.cbegin(), data.cend());
+            else return max(begin, end);
+        }
+        
+    private:
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type, typename TIterator>
+        TReturn max(TFunc mapper, TIterator seq_begin, TIterator seq_end)
+        {
+            TReturn max = numeric_limits<TReturn>::min();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TReturn val = mapper(*iter);
+                if (val > max) max = val;
+            }
+            return max;
+        }
+        
+        template <typename TIterator>
+        TElement max(TIterator seq_begin, TIterator seq_end)
+        {
             TElement max = numeric_limits<TElement>::min();
             for (auto iter = seq_begin; iter != seq_end; ++iter)
             {
                 TElement val = *iter;
                 if (val > max) max = val;
             }
-
             return max;
         }
+        
+    public:
 
         /**
          * @brief the minimum value in a sequence of mapped values.
@@ -319,18 +327,8 @@ namespace cinq
         TReturn min(TFunc mapper)
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
-            TReturn min = numeric_limits<TReturn>::max();
-            for (auto iter = seq_begin; iter != seq_end; ++iter)
-            {
-                TReturn val = mapper(*iter);
-                if (val < min) min = val;
-            }
-
-            return min;
+            if (is_data_copied) return min(mapper, data.cbegin(), data.cend());
+            else return min(mapper, begin, end);
         }
 
         /**
@@ -342,19 +340,37 @@ namespace cinq
         TElement min() requires Number<TElement>()
         {
             ensure_nonempty();
-
-            auto seq_begin = (is_data_copied ? data.cbegin() : begin);
-            auto seq_end   = (is_data_copied ? data.cend()   : end  );
-
+            if (is_data_copied) return min(data.cbegin(), data.cend());
+            else return min(begin, end);
+        }
+        
+    private:
+        
+        template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type, typename TIterator>
+        TReturn min(TFunc mapper, TIterator seq_begin, TIterator seq_end)
+        {
+            TReturn min = numeric_limits<TReturn>::max();
+            for (auto iter = seq_begin; iter != seq_end; ++iter)
+            {
+                TReturn val = mapper(*iter);
+                if (val < min) min = val;
+            }
+            return min;
+        }
+        
+        template <typename TIterator>
+        TElement min(TIterator seq_begin, TIterator seq_end)
+        {
             TElement min = numeric_limits<TElement>::max();
             for (auto iter = seq_begin; iter != seq_end; ++iter)
             {
                 TElement val = *iter;
                 if (val < min) min = val;
             }
-
             return min;
         }
+        
+    public:
 
         /**
          * @brief computes the sum of a sequence
