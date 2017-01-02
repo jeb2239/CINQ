@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
     int failed = test_correctness();
     
-    test_performance();
+    // test_performance();
     
     return failed;
 }
@@ -39,14 +39,14 @@ int test_correctness()
     return failed;
 }
 
-void test_performance()
-{
-    auto tests = make_tests_perf();
-    for (test_perf t : tests)
-    {
-        printf("[%4d] %dx %s\n", t.func(), t.runs, t.name.c_str());
-    }
-}
+// void test_performance()
+// {
+//     auto tests = make_tests_perf();
+//     for (test_perf t : tests)
+//     {
+//         printf("[%4d] %dx %s\n", t.func(), t.runs, t.name.c_str());
+//     }
+// }
 
 vector<test> make_tests()
 {
@@ -680,99 +680,99 @@ vector<test> make_tests()
         return result == answer;
     }));
     
-    tests.push_back(test("max() on int", []
-    {
-        vector<int> nums { -1, 26, 42, -10002, 0, 8 };
-        int result = cinq::from(nums).max();
-        return (result == 42);
-    }));
+    // tests.push_back(test("max() on int", []
+    // {
+    //     vector<int> nums { -1, 26, 42, -10002, 0, 8 };
+    //     int result = cinq::from(nums).max();
+    //     return (result == 42);
+    // }));
     
-    tests.push_back(test("max() on double", []
-    {
-        vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
-        double result = cinq::from(nums).max();
-        return (result == nums[2]); // 4.2
-    }));
+    // tests.push_back(test("max() on double", []
+    // {
+    //     vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+    //     double result = cinq::from(nums).max();
+    //     return (result == nums[2]); // 4.2
+    // }));
     
-    tests.push_back(test("max() on strings with mapping function", []
-    {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
-        auto result = cinq::from(authors).max([](string x) { return x.length(); });
-        return (result == authors[1].length()); // barrios
-    }));
+    // tests.push_back(test("max() on strings with mapping function", []
+    // {
+    //     vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
+    //     auto result = cinq::from(authors).max([](string x) { return x.length(); });
+    //     return (result == authors[1].length()); // barrios
+    // }));
     
-    tests.push_back(test("min() on int", []
-    {
-        vector<int> nums { -1, 26, 42, -10002, 0, 8 };
-        int result = cinq::from(nums).min();
-        return (result == -10002);
-    }));
+    // tests.push_back(test("min() on int", []
+    // {
+    //     vector<int> nums { -1, 26, 42, -10002, 0, 8 };
+    //     int result = cinq::from(nums).min();
+    //     return (result == -10002);
+    // }));
     
-    tests.push_back(test("min() on double", []
-    {
-        vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
-        double result = cinq::from(nums).min();
-        return (result == nums[3]); // 4.2
-    }));
+    // tests.push_back(test("min() on double", []
+    // {
+    //     vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+    //     double result = cinq::from(nums).min();
+    //     return (result == nums[3]); // 4.2
+    // }));
     
-    tests.push_back(test("min() on strings with mapping function", []
-    {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
-        auto result = cinq::from(authors).min([](string x) { return x.length(); });
-        return (result == authors[0].length()); // chen
-    }));
+    // tests.push_back(test("min() on strings with mapping function", []
+    // {
+    //     vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
+    //     auto result = cinq::from(authors).min([](string x) { return x.length(); });
+    //     return (result == authors[0].length()); // chen
+    // }));
     
-    tests.push_back(test("sum() on int", []
-    {
-        vector<int> nums { -1, 26, 42, -10002, 0, 8 };
-        int result = cinq::from(nums).sum();
-        return (result == -9927);
-    }));
+    // tests.push_back(test("sum() on int", []
+    // {
+    //     vector<int> nums { -1, 26, 42, -10002, 0, 8 };
+    //     int result = cinq::from(nums).sum();
+    //     return (result == -9927);
+    // }));
     
-    tests.push_back(test("sum() on double", []
-    {
-        vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
-        double result = cinq::from(nums).sum();
-        return (result == nums[0] + nums[1] + nums[2] + nums[3] + nums[4] + nums[5]);
-    }));
+    // tests.push_back(test("sum() on double", []
+    // {
+    //     vector<double> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+    //     double result = cinq::from(nums).sum();
+    //     return (result == nums[0] + nums[1] + nums[2] + nums[3] + nums[4] + nums[5]);
+    // }));
     
-    tests.push_back(test("sum() on strings with mapping function", []
-    {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
-        auto result = cinq::from(authors).sum([](string x) { return x.length(); });
-        return (result == authors[0].length() + authors[1].length() + authors[2].length());
-    }));
+    // tests.push_back(test("sum() on strings with mapping function", []
+    // {
+    //     vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong" };
+    //     auto result = cinq::from(authors).sum([](string x) { return x.length(); });
+    //     return (result == authors[0].length() + authors[1].length() + authors[2].length());
+    // }));
     
-    tests.push_back(test("average() on int", []
-    {
-        list<int> nums { -1, 26, 42, -10002, 0, 8 };
-        auto result = cinq::from(nums).average();
-        return is_same<decltype(result), double>::value && (result == -9927 / (double)nums.size());
-    }));
+    // tests.push_back(test("average() on int", []
+    // {
+    //     list<int> nums { -1, 26, 42, -10002, 0, 8 };
+    //     auto result = cinq::from(nums).average();
+    //     return is_same<decltype(result), double>::value && (result == -9927 / (double)nums.size());
+    // }));
     
-    tests.push_back(test("average() on float", []
-    {
-        vector<float> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
-        auto result = cinq::from(nums).average();
-        return is_same<decltype(result), float>::value
-               && (result == (nums[0] + nums[1] + nums[2] + nums[3] + nums[4] + nums[5]) / nums.size());
-    }));
+    // tests.push_back(test("average() on float", []
+    // {
+    //     vector<float> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+    //     auto result = cinq::from(nums).average();
+    //     return is_same<decltype(result), float>::value
+    //            && (result == (nums[0] + nums[1] + nums[2] + nums[3] + nums[4] + nums[5]) / nums.size());
+    // }));
     
-    tests.push_back(test("average() on string length with mapping function", []
-    {
-        vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong", "hi" };
-        auto result = cinq::from(authors).average([](string x) { return x.length(); });
-        return is_same<decltype(result), double>::value
-               && (result == (double)(authors[0].length() + authors[1].length() + authors[2].length() + authors[3].length()) / authors.size());
-    }));
+    // tests.push_back(test("average() on string length with mapping function", []
+    // {
+    //     vector<string> authors { "kevin chen", "jonathan barrios", "jonathan wong", "hi" };
+    //     auto result = cinq::from(authors).average([](string x) { return x.length(); });
+    //     return is_same<decltype(result), double>::value
+    //            && (result == (double)(authors[0].length() + authors[1].length() + authors[2].length() + authors[3].length()) / authors.size());
+    // }));
     
-    tests.push_back(test("average() on float with mapping function", []
-    {
-        vector<float> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
-        auto result = cinq::from(nums).average([](float x) { return x * x; });
-        return is_same<decltype(result), float>::value
-               && (result == (nums[0]*nums[0] + nums[1]*nums[1] + nums[2]*nums[2] + nums[3]*nums[3] + nums[4]*nums[4] + nums[5]*nums[5]) / nums.size());
-    }));
+//     tests.push_back(test("average() on float with mapping function", []
+//     {
+//         vector<float> nums { -0.1, 2.6, 4.2, -1000.2, 0.0, 0.8 };
+//         auto result = cinq::from(nums).average([](float x) { return x * x; });
+//         return is_same<decltype(result), float>::value
+//                && (result == (nums[0]*nums[0] + nums[1]*nums[1] + nums[2]*nums[2] + nums[3]*nums[3] + nums[4]*nums[4] + nums[5]*nums[5]) / nums.size());
+//     }));
     
-    return tests;
-}
+     return tests;
+ }

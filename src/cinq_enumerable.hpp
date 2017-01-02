@@ -25,7 +25,7 @@ namespace cinq
          * @param source the source container which
          * provides the data cinq operates on
          */
-        enumerable(TSource& source) requires Range<TSource>()
+        enumerable(TSource& source) //requires Range<TSource>()
         {
             is_data_copied = false;
             begin = source.cbegin();
@@ -869,7 +869,7 @@ namespace cinq
         template<typename ... TFunc,
                  typename TFirst = typename std::tuple_element<0, std::tuple<TFunc...>>::type,
                  typename TReturn = typename result_of<TFirst(TElement)>::type>
-        requires Invokable<TFirst, TElement>() && Totally_ordered<TReturn>()
+        requires Invokable<TFirst, TElement>() && Ordered<TReturn>()
         auto multicmp(TFirst first, TFunc... rest)
         {
             return [=](const TElement& a, const TElement& b) -> bool
