@@ -1,4 +1,4 @@
-CC  = gcc
+CC  = g++
 CXX = g++
 
 INCLUDES = -I../origin/
@@ -11,14 +11,14 @@ LDFLAGS = -lstdc++
 LDLIBS  =
 
 EXE = cinq_test
-# OBJ = cinq_test.o
+OBJ = cinq_test.o test_performance.o
 
 .PHONY: default
 default: $(EXE)
 
 $(EXE): $(OBJ)
 
-$(OBJ): cinq_enumerable.hpp cinq_test.hpp test_shared.hpp all_concepts.hpp cinq_test.cpp
+$(OBJ): cinq_enumerable.hpp cinq_test.hpp test_performance.hpp test_shared.hpp all_concepts.hpp
 
 .PHONY: clean
 clean:

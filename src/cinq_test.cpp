@@ -4,9 +4,18 @@ int main(int argc, char **argv)
 {
     int failed = test_correctness();
     
-    // test_performance();
+    test_performance();
     
     return failed;
+}
+
+void test_performance()
+{
+    auto tests = make_tests_perf();
+    for (test_perf t : tests)
+    {
+        printf("[%4d] %dx %s\n", t.func(), t.runs, t.name.c_str());
+    }
 }
 
 int test_correctness()
