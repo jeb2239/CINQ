@@ -258,7 +258,7 @@ namespace cinq
          * @return max value element based on the field of interest
          */
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
-        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        requires Invokable<TFunc, TElement>() //&& Number<TReturn>()
         TReturn max(TFunc mapper)
         {
             ensure_nonempty();
@@ -274,7 +274,7 @@ namespace cinq
          * @return max value
          * @requires requires Number<TElement>()
          */
-        TElement max() requires Number<TElement>()
+        TElement max() //requires Number<TElement>()
         {
             ensure_nonempty();
             if (is_data_copied) return max(data.cbegin(), data.cend());
@@ -316,7 +316,7 @@ namespace cinq
          * @return min value element based on the field of interest
          */
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
-        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        requires Invokable<TFunc, TElement>() //&& Number<TReturn>()
         TReturn min(TFunc mapper)
         {
             ensure_nonempty();
@@ -330,7 +330,7 @@ namespace cinq
          * @param mapper function to expose the field of interest
          * @return min value element based on the field of interest
          */
-        TElement min() requires Number<TElement>()
+        TElement min() //requires Number<TElement>()
         {
             ensure_nonempty();
             if (is_data_copied) return min(data.cbegin(), data.cend());
@@ -372,7 +372,7 @@ namespace cinq
          * @return sum of the values once mapped
          */
         template <typename TFunc, typename TReturn = typename result_of<TFunc(TElement)>::type>
-        requires Invokable<TFunc, TElement>() && Number<TReturn>()
+        requires Invokable<TFunc, TElement>() //&& Number<TReturn>()
         TReturn sum(TFunc mapper)
         {
             ensure_nonempty();
@@ -386,7 +386,7 @@ namespace cinq
          * @return sum of the values
          * @requires requires Number<TElement>()
          */
-        TElement sum() requires Number<TElement>()
+        TElement sum() //requires Number<TElement>()
         {
             ensure_nonempty();
             if (is_data_copied) return sum(data.cbegin(), data.cend());
@@ -420,7 +420,7 @@ namespace cinq
          * @return average of fields of interest
          */
         template <typename TFunc, typename TValue = typename result_of<TFunc(TElement)>::type>
-        requires Invokable<TFunc, TElement>() && Number<TValue>()
+        requires Invokable<TFunc, TElement>() //&& Number<TValue>()
         auto average(TFunc mapper)
         {
             ensure_nonempty();
@@ -433,7 +433,7 @@ namespace cinq
          *
          * @return average
          */
-        auto average() requires Number<TElement>()
+        auto average() //requires Number<TElement>()
         {
             ensure_nonempty();
             if (is_data_copied) return average(data.cbegin(), data.cend());
